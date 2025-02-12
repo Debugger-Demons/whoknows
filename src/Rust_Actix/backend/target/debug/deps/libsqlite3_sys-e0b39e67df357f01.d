@@ -1,0 +1,11 @@
+C:\Users\HP\OneDrive\. Universitet\. Github\. electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\deps\liblibsqlite3_sys-e0b39e67df357f01.rmeta: C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\lib.rs C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\error.rs C:\Users\HP\OneDrive\.\ Universitet\.\ Github\.\ electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\build\libsqlite3-sys-0cf4d9cd0b698f9c\out/bindgen.rs
+
+C:\Users\HP\OneDrive\. Universitet\. Github\. electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\deps\liblibsqlite3_sys-e0b39e67df357f01.rlib: C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\lib.rs C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\error.rs C:\Users\HP\OneDrive\.\ Universitet\.\ Github\.\ electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\build\libsqlite3-sys-0cf4d9cd0b698f9c\out/bindgen.rs
+
+C:\Users\HP\OneDrive\. Universitet\. Github\. electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\deps\libsqlite3_sys-e0b39e67df357f01.d: C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\lib.rs C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\error.rs C:\Users\HP\OneDrive\.\ Universitet\.\ Github\.\ electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\build\libsqlite3-sys-0cf4d9cd0b698f9c\out/bindgen.rs
+
+C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\lib.rs:
+C:\Users\HP\.cargo\registry\src\index.crates.io-6f17d22bba15001f\libsqlite3-sys-0.27.0\src\error.rs:
+C:\Users\HP\OneDrive\.\ Universitet\.\ Github\.\ electives\DevOps\Debugger_Demons\whoknows\src\Rust_Actix\backend\target\debug\build\libsqlite3-sys-0cf4d9cd0b698f9c\out/bindgen.rs:
+
+# env-dep:OUT_DIR=C:\\Users\\HP\\OneDrive\\. Universitet\\. Github\\. electives\\DevOps\\Debugger_Demons\\whoknows\\src\\Rust_Actix\\backend\\target\\debug\\build\\libsqlite3-sys-0cf4d9cd0b698f9c\\out
