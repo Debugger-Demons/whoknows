@@ -1,0 +1,58 @@
+# Development Task Template
+# .github/ISSUE_TEMPLATE/development.yml
+name: Development Task
+description: Create a new development task for the WhoKnows project
+title: "[DEV]: "
+labels: ["development"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for creating a development issue! Please fill out the information below.
+  
+  - type: textarea
+    id: overview
+    attributes:
+      label: Overview
+      description: Brief description of the development task
+      placeholder: "Example: Migrate user authentication module from Python to Rust"
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-context
+    attributes:
+      label: Technical Context
+      description: Current state, target state, and dependencies
+      value: |
+        **Current State:**
+        
+        **Target State:**
+        
+        **Dependencies:**
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: The requirements for this task to be considered complete
+      options:
+        - label: Implementation complete
+        - label: Tests written and passing
+        - label: Documentation updated
+        - label: PR review completed
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources
+      description: Related documentation, reference implementations, or architecture diagrams
+      value: |
+        **Related Documentation:**
+        
+        **Reference Implementations:**
+        
+        **Architecture Diagrams:**
+
