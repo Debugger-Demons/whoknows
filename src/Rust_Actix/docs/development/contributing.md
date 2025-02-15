@@ -28,8 +28,10 @@
 ### Code Standards
 - Follow Rust style guide
 - Add tests for new features
+- Run Clippy (cargo clippy) and fix warnings before committing
 - Update documentation
 - Ensure CI checks pass
+
 
 ### PR Guidelines
 - Use PR template
