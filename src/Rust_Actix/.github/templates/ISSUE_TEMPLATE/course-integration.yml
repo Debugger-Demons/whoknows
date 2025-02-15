@@ -1,0 +1,57 @@
+# Course Integration Template
+# .github/ISSUE_TEMPLATE/course-integration.yml
+name: Course Integration
+description: Create a new course integration task
+title: "[COURSE]: "
+labels: ["course-integration"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for creating a course integration issue! Please fill out the information below.
+  
+  - type: textarea
+    id: learning-objective
+    attributes:
+      label: Learning Objective
+      description: Weekly topic/concept to be implemented
+      placeholder: "Example: Implement GitHub Actions CI pipeline for test automation"
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation-requirements
+    attributes:
+      label: Implementation Requirements
+      description: Specific requirements for this integration
+      value: |
+        **Course Content to Implement:**
+        
+        **Integration Points:**
+        
+        **Documentation Needs:**
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: deliverables
+    attributes:
+      label: Deliverables
+      description: Required items for completion
+      options:
+        - label: Concept implementation
+        - label: Integration with existing codebase
+        - label: Documentation
+        - label: Assignment submission
+
+  - type: textarea
+    id: resources
+    attributes:
+      label: Resources
+      description: Lesson materials, reference documentation, and examples
+      value: |
+        **Lesson Materials:**
+        
+        **Reference Documentation:**
+        
+        **Examples:**
