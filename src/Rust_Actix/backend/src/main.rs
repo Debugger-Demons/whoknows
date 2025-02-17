@@ -1,6 +1,11 @@
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use actix_cors::Cors;
 
+const HOST_NAME: &str = "0.0.0.0";
+const PORT: i32 = 8080;
+
+
+
 #[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -21,7 +26,7 @@ async fn add() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    println!("Server starting at http://0.0.0.0:8080");
+    println!("Server starting at http://{}:{}", HOST_NAME, PORT); 
 
     HttpServer::new(|| {
 
@@ -37,7 +42,7 @@ async fn main() -> std::io::Result<()> {
             .service(search)
             .service(add)
     })
-    .bind(("0.0.0.0", 8080))?
+    .bind((HOST_NAME, PORT))?
     .run()
     .await
 }
