@@ -18,7 +18,15 @@ A modern search engine implementation using Rust and ActixWeb, modernizing the l
 ## Project Status
 
 current status: **In Development**
-- [Roadmap](docs/development/roadmap.md)
+
+current phase: 
+- DevOps => Phase 2: CI/CD & Cloud Infrastructure
+- Rust Backend => phase 1 & 2: Rust Core and Web & Data
+
+roadmap docs:
+- [DevOps Roadmap](docs/development/roadmap.DevOps.md)
+- [Rust Backend Roadmap](docs/development/roadmap.Rust_Devving.md)
+    - [Ambitious Rust Learning and Devving Roadmap](docs/development/roadmap.Rust_Devving.ambitious.md)
 
 ## Quick Start
 - [Getting Started Guide](docs/Getting-Started.md)
