@@ -7,11 +7,18 @@ echo "Starting initialization..."
 
 # Install system dependencies
 sudo apt-get update
-sudo apt-get install -y \
-    build-essential \
-    curl \
-    pkg-config \
-    libssl-dev
+
+# Fix array syntax: remove commas and spaces around =
+installs=("build-essential" "curl" "pkg-config" "gcc" "libssl-dev")
+
+# Rest of the script is correct
+for i in "${installs[@]}"; do 
+    if command -v "$i" &> /dev/null; then
+        echo "$i is already installed"
+    else
+        sudo apt-get install -y "$i"
+    fi
+done
 
 # Install Rust if not present
 if ! command -v rustc &> /dev/null; then
