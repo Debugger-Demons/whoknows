@@ -3,6 +3,23 @@
 
 A modern search engine implementation using Rust and ActixWeb, modernizing the legacy WhoKnows project from 2009.
 
+## Table of Contents
+- [Project Status](#project-status)
+- [Quick Start](#quick-start)
+- [Project Structure](#project-structure)
+- [Documentation Structure](#documentation-structure)
+- [Development](#development)
+- [Operations](#operations)
+- [Architecture](#architecture)
+- [API Documentation](#api-documentation)
+- [License](#license)
+- [Contact](#contact)
+
+## Project Status
+
+current status: **In Development**
+- [Roadmap](docs/development/roadmap.md)
+
 ## Quick Start
 - [Getting Started Guide](docs/Getting-Started.md)
 - [Development Setup](docs/development/setup.md)
@@ -37,7 +54,9 @@ docs/
 ### Local Setup
 See [Getting Started](docs/Getting-Started.md) for detailed setup instructions.
 
-## Contributing
+## Development
+_before heading into it, orient yourself with:_
+ 
 - [Contribution Guidelines](docs/development/contributing.md)
 - [Git Workflow](docs/VCS/VCS-Git-flow.md)
 - [Pull Request Template](.github/templates/PULL_REQUEST_TEMPLATE.md)
