@@ -1,0 +1,13 @@
+Unit]
+Description=WhoKnows Rust Backend Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/path/to/whoknows/src/Rust_Actix/backend
+ExecStart=/path/to/whoknows/src/Rust_Actix/backend/Scripts/run_forever_fixed.sh
+Restart=always
+RestartSec=1
+
+[Install]
+WantedBy=multi-user.target
