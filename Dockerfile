@@ -1,20 +1,17 @@
-# Use Ubuntu as base image - required for systemd
+# Use Ubuntu as base image
 FROM ubuntu:22.04
 
-# Enable systemd
-ENV container docker
 ENV DEBIAN_FRONTEND noninteractive
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
-    systemd systemd-sysv \
     build-essential \
     curl \
     pkg-config \
     gcc \
     libssl-dev \
     git \
-    cron \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust
@@ -27,16 +24,15 @@ WORKDIR /whoknows
 # Copy application files
 COPY . .
 
-# Copy service file
-COPY src/Rust_Actix/backend/Scripts/rust-app.service /etc/systemd/system/
-RUN systemctl enable rust-app
+# Make scripts executable
+RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
 
-# Copy entrypoint script
-COPY docker-entrypoint.sh /
-RUN chmod +x /docker-entrypoint.sh
+# Setup supervisor configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# Configure cron for auto-update
-RUN (crontab -l 2>/dev/null; echo "*/5 * * * * /whoknows/src/Rust_Actix/backend/Scripts/auto_update.sh >> /var/log/whoknows-update.log 2>&1") | crontab -
+# Create log directory
+RUN mkdir -p /var/log/supervisor
 
-VOLUME [ "/sys/fs/cgroup" ]
-CMD ["/docker-entrypoint.sh"]
+EXPOSE 8080
+
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

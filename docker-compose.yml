@@ -3,11 +3,12 @@ version: '3.8'
 services:
   rust-app:
     build: .
-    privileged: true  # Required for systemd
+    # privileged: true  # Required for systemd
     container_name: rust-app
     ports:
       - "8080:8080"
     volumes:
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - ./logs:/var/log  # For accessing logs outside container
+      #- /sys/fs/cgroup:/sys/fs/cgroup:ro
+      #- ./logs:/var/log  # For accessing logs outside container
+      - ./logs:/var/log/supervisor
     restart: unless-stopped
