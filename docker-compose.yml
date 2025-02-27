@@ -7,11 +7,9 @@ services:
     environment:
       - RUST_LOG=info
       - RUST_BACKTRACE=1
-      # Add any other environment variables your application needs
+
     volumes:
       - app_logs:/app/logs
-    # Uncomment if you want to see logs directly
-    # command: /app/backend 2>&1 | tee /app/logs/app.log
 
 volumes:
   app_logs:
