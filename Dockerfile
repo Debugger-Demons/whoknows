@@ -2,7 +2,7 @@
 FROM rust:slim as builder
 WORKDIR /app
 
-# Copy dependencies info first for better layer caching
+# Copy dependencies 
 COPY ./src/Rust_Actix/backend/Cargo.toml ./src/Rust_Actix/backend/Cargo.lock ./src/Rust_Actix/backend/
 
 # Build dependencies
@@ -12,32 +12,28 @@ RUN cd ./src/Rust_Actix/backend && \
     cargo build --release && \
     rm -rf src
 
-# Copy the actual source code
 COPY ./src/Rust_Actix/backend/src ./src/Rust_Actix/backend/src/
 
 # Build the application
 RUN cd ./src/Rust_Actix/backend && cargo build --release
 
-# Runtime stage - using Ubuntu as in your original file
+# Runtime stage - using Ubuntu 
 FROM ubuntu:latest
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required packages
+# Install only the packages needed for runtime
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    pkg-config \
-    gcc \
     libssl-dev \
-    supervisor \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup working directory
-WORKDIR /whoknows
+WORKDIR /app
 
 # Copy the built application from the builder stage
-COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /whoknows/backend
+COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /app/backend
 
+# Make the binary executable
 RUN chmod +x /app/backend
 
 EXPOSE 8080
