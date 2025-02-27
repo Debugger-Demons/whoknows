@@ -6,7 +6,7 @@ set -e
 # Project directory
 APP_DIR="/whoknows"
 GIT_REPO="https://github.com/Debugger-Demons/whoknows.git"
-GIT_BRANCH="development"
+GIT_BRANCH="test2/updating_mechanism"
 LOG_FILE="/var/log/supervisor/git-updates.log"
 
 # Create a unique run ID for this update check

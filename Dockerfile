@@ -21,14 +21,11 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Setup working directory
 WORKDIR /whoknows
 
-# executable before copying (just to be sure) 
-RUN chmod +x ./src/Rust_Actix/backend/Scripts/*.sh
-
 # Copy application files
 COPY . .
 
 # Make scripts executable
-RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
+RUN sudo chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
 
 # Setup cron job for auto-updates
 RUN echo "*/5 * * * * /whoknows/src/Rust_Actix/backend/Scripts/auto_update.sh >> /var/log/supervisor/cron-auto-update.log 2>&1" > /etc/cron.d/auto-update-cron
