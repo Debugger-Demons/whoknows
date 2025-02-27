@@ -19,7 +19,7 @@ COPY ./src/Rust_Actix/backend/src ./src/Rust_Actix/backend/src/
 RUN cd ./src/Rust_Actix/backend && cargo build --release
 
 # Runtime stage
-FROM debian:slim
+FROM debian:stable-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libssl-dev \
