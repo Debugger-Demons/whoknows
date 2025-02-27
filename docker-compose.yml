@@ -3,12 +3,24 @@ version: '3.8'
 services:
   rust-app:
     build: .
-    # privileged: true  # Required for systemd
     container_name: rust-app
     ports:
       - "8080:8080"
     volumes:
-      #- /sys/fs/cgroup:/sys/fs/cgroup:ro
-      #- ./logs:/var/log  # For accessing logs outside container
-      - ./logs:/var/log/supervisor
+      - ./logs:/var/log
+      # Optional: Persist git repo between container restarts
+      - git-data:/whoknows
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    # Necessary for proper signal handling
+    init: true
+
+volumes:
+  # Optional: Uncomment if you want to persist git data
+  git-data:
+

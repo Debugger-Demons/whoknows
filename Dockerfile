@@ -1,38 +1,26 @@
-# Use Ubuntu as base image
-FROM ubuntu:22.04
 
-ENV DEBIAN_FRONTEND noninteractive
+FROM rust:1.68-slim
 
-# Install required packages
+# Install dependencies
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    pkg-config \
-    gcc \
     libssl-dev \
+    pkg-config \
+    curl \
     git \
-    supervisor \
+    procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Rust
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-ENV PATH="/root/.cargo/bin:${PATH}"
-
-# Setup working directory
+# Setup working directory (starting with an empty directory)
 WORKDIR /whoknows
 
-# Copy application files
-COPY . .
+# Copy only the scripts first to optimize caching
+COPY ./src/Rust_Actix/backend/Scripts /whoknows/src/Rust_Actix/backend/Scripts
 
 # Make scripts executable
 RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
 
-# Setup supervisor configuration
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Create log directory
-RUN mkdir -p /var/log/supervisor
-
+# Expose the application port
 EXPOSE 8080
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Use start.sh as entrypoint - it will handle git clone
+CMD ["/whoknows/src/Rust_Actix/backend/Scripts/start.sh"]
