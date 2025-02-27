@@ -8,23 +8,10 @@ This solution uses cron instead of supervisor for scheduling auto-updates. This 
 2. It prevents the repeated spawn/exit cycles in the logs
 3. It provides cleaner, more focused logging
 
-## Quick Deployment Steps
 
-1. **Update your Dockerfile**:
-   - Replace with the new version that includes cron setup
-   - This adds cron and configures the scheduler
-
-2. **Update supervisord.conf**:
-   - Remove the auto-update program entry
-   - Add cron program entry instead
-
-3. **Improve the auto_update.sh script**:
-   - Replace with the enhanced version
-   - Make sure it's executable: `chmod +x auto_update.sh`
-
-4. **Rebuild and restart your container**:
+## Setup Instructions
    ```bash
-   docker-compose down
+   docker-compose down 
    docker-compose build
    docker-compose up -d
    ```
