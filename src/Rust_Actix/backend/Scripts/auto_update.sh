@@ -52,6 +52,8 @@ if [ "$LOCAL_HASH" != "$REMOTE_HASH" ]; then
     log "Updates available. Pulling changes..."
     git pull origin $GIT_BRANCH
     
+    chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
+
     # Get list of changed files
     CHANGED_FILES=$(git diff --name-only ${LOCAL_HASH} ${REMOTE_HASH})
     log "Changed files: $(echo $CHANGED_FILES | tr '\n' ' ')"

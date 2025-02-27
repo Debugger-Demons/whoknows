@@ -1,5 +1,4 @@
 FROM ubuntu:latest
-
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install required packages
@@ -24,10 +23,10 @@ WORKDIR /whoknows
 # Copy application files
 COPY . .
 
-# Make scripts executable
+# Make scripts executable - this will now persist
 RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
 
-# Setup cron job for auto-updates
+# Setup cron job for auto-updates - fix the formatting
 RUN echo "*/5 * * * * /whoknows/src/Rust_Actix/backend/Scripts/auto_update.sh >> /var/log/supervisor/cron-auto-update.log 2>&1" > /etc/cron.d/auto-update-cron
 RUN chmod 0644 /etc/cron.d/auto-update-cron
 
@@ -38,5 +37,4 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN mkdir -p /var/log/supervisor
 
 EXPOSE 8080
-
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
