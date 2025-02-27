@@ -5,7 +5,7 @@ const PORT: u16 = 8080;
 
 #[get("/")]
 async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
+    HttpResponse::Ok().body("Hello world2!")
 }
 
 #[get("/search")]
@@ -13,11 +13,34 @@ async fn search() -> impl Responder {
     HttpResponse::Ok().body("Search endpoint")
 }
 
+/*
+Vi skal afgøre hvilket endpoint der er post, og hvilket der ikke er. 
+*/
+
+#[get("/weather")]
+async fn weather() -> impl Responder {
+    HttpResponse::Ok().body("Get weather")
+}
+
+#[get("/api/weather")]
+async fn get_weather() -> impl Responder {
+    HttpResponse::Ok().body("Weather API")
+}
+
+#[get("/register")]
+async fn register_user() -> impl Responder {
+    HttpResponse::Ok().body("Register User")
+}
+
+#[get("/api/register")]
+async fn register() -> impl Responder {
+    HttpResponse::Ok().body("Get register")
+}
+
 #[post("/")]
 async fn add() -> impl Responder {
     HttpResponse::Ok().body("Add endpoint")
 }
-
 
 // Main function
 #[actix_web::main]
@@ -36,6 +59,7 @@ async fn main() -> std::io::Result<()> {
     // Start the server
         // HttpServer::new() creates a new instance of the server
             // .bind() binds the server to the specified address and port
+            
     HttpServer::new(|| {
 
         let cors = Cors::default()
@@ -45,13 +69,17 @@ async fn main() -> std::io::Result<()> {
 
         // App instance
             // .service() registers a service with the application
-            // .wrap() adds middleware to the application -- middleware is code that runs before or after a request is processed
-                // here, we are adding the CORS middleware
+            // .wrap() adds middleware to the application                 
+        
         App::new()
-            .wrap(cors)
+            .wrap(cors)  // cors middleware added 
             .service(hello)
             .service(search)
             .service(add)
+            .service(weather)
+            .service(get_weather)
+            .service(register_user)
+            .service(register)
     })
 
     // .bind() returns a Result, so we use ? to handle the error
