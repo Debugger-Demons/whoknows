@@ -9,4 +9,6 @@ mkdir -p /app/logs
 chmod 755 /app/logs
 ls -l /app/logs
 echo "Running backend and logging:"
-/app/backend > /app/logs/backend.log 2>&1
+
+nohup /app/backend > /app/logs/backend.log 2>&1 &
+tail -f /app/logs/backend.log
