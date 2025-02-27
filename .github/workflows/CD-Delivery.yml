@@ -35,8 +35,21 @@ jobs:
         port: ${{ secrets.SERVER_SSH_PORT }}
         username: ${{ secrets.SERVER_USERNAME }}
         key: ${{ secrets.SERVER_SSH_KEY }}
+        timeout: 60s
+        script_stop: true
         script: |
           cd ~/whoknows-deployment
+          
+          # Force stop any containers using port 8080
+          echo "Stopping any services using port 8080..."
+          docker ps | grep "0.0.0.0:8080" | awk '{print $1}' | xargs -r docker stop
+          
+          # Make sure all containers from the compose file are down
+          docker-compose down --remove-orphans
+          
+          # Wait a moment to ensure ports are released
+          sleep 5
+          
+          # Pull and start the updated containers
           docker-compose pull
-          docker-compose down
-          docker-compose up -d
+          docker-compose up -d 
