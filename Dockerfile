@@ -25,7 +25,7 @@ WORKDIR /whoknows
 COPY . .
 
 # Make scripts executable
-RUN sudo chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
+RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
 
 # Setup cron job for auto-updates
 RUN echo "*/5 * * * * /whoknows/src/Rust_Actix/backend/Scripts/auto_update.sh >> /var/log/supervisor/cron-auto-update.log 2>&1" > /etc/cron.d/auto-update-cron
