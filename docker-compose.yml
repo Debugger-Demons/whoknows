@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   rust-app:
@@ -7,9 +7,8 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./logs:/var/log
-      # Optional: Persist git repo between container restarts
-      - git-data:/whoknows
+      - ./logs:/var/log/supervisor
+      - ./src:/whoknows/src  # for dev (optional)
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
@@ -17,10 +16,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
-    # Necessary for proper signal handling
-    init: true
-
-volumes:
-  # Optional: Uncomment if you want to persist git data
-  git-data:
-
