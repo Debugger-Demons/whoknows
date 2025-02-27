@@ -27,10 +27,15 @@ ENV DEBIAN_FRONTEND=noninteractive
 WORKDIR /app
 # Copy the built application from the builder stage
 COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /app/backend
-# Make the binary executable
-RUN chmod +x /app/backend
+
+# entrypoint.sh 
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
+
 # Create a log directory
 RUN mkdir -p /app/logs
 EXPOSE 8080
+
 # Set the main command to run your application
 CMD ["/app/backend"]
