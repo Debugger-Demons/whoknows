@@ -38,17 +38,9 @@ WORKDIR /whoknows
 # Copy the built application from the builder stage
 COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /whoknows/backend
 
-# Copy necessary scripts from your source
-COPY ./src/Rust_Actix/backend/Scripts /whoknows/Scripts
-
-# Make scripts executable
-RUN chmod +x /whoknows/Scripts/*.sh
-
-# Setup supervisor configuration
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Create log directory
-RUN mkdir -p /var/log/supervisor
+RUN chmod +x /app/backend
 
 EXPOSE 8080
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+
+# Simple direct execution of the binary
+CMD ["/app/backend"]
