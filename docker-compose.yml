@@ -1,17 +1,7 @@
 
-
 services:
-  rust-app:
-    build: .
-    container_name: rust-app
+  app:
+    image: alekomom/whoknows:latest
     ports:
       - "8080:8080"
-    volumes:
-      - ./logs:/var/log/supervisor
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 1m
-      timeout: 10s
-      retries: 3
-      start_period: 30s
+    restart: always

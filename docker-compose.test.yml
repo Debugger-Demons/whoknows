@@ -1,7 +1,0 @@
-
-services:
-  rust-app:
-    image: rust-app/test2:latest
-    container_name: rust-app-test2
-    ports:
-      - "3000:8080"
