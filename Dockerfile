@@ -18,31 +18,37 @@ COPY ./src/Rust_Actix/backend/src ./src/Rust_Actix/backend/src/
 # Build the application
 RUN cd ./src/Rust_Actix/backend && cargo build --release
 
-# Runtime stage
-FROM debian:stable-slim
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    libssl-dev \
+# Runtime stage - using Ubuntu as in your original file
+FROM ubuntu:latest
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    build-essential \
     curl \
-    procps \
+    pkg-config \
+    gcc \
+    libssl-dev \
+    supervisor \
     && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
-COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /app/
+# Setup working directory
+WORKDIR /whoknows
 
-# Make the binary executable
-RUN chmod +x /app/backend
+# Copy the built application from the builder stage
+COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /whoknows/backend
 
-# Health check to verify the application is running properly
-HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8080/ || exit 1
+# Copy necessary scripts from your source
+COPY ./src/Rust_Actix/backend/Scripts /whoknows/Scripts
 
-# Create a non-root user to run the application
-RUN groupadd -r appuser && useradd -r -g appuser appuser
-RUN chown -R appuser:appuser /app
-USER appuser
+# Make scripts executable
+RUN chmod +x /whoknows/Scripts/*.sh
+
+# Setup supervisor configuration
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Create log directory
+RUN mkdir -p /var/log/supervisor
 
 EXPOSE 8080
-
-# Modify the CMD to be more verbose and capture logs
-CMD ["/bin/bash", "-c", "/app/backend || (echo 'Application failed to start with exit code $?' && cat /tmp/app.log && exit 1)"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
