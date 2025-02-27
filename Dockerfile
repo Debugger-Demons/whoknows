@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     git \
     supervisor \
+    cron \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Rust
@@ -20,11 +21,18 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Setup working directory
 WORKDIR /whoknows
 
+# executable before copying (just to be sure) 
+RUN chmod +x ./src/Rust_Actix/backend/Scripts/*.sh
+
 # Copy application files
 COPY . .
 
 # Make scripts executable
 RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
+
+# Setup cron job for auto-updates
+RUN echo "*/5 * * * * /whoknows/src/Rust_Actix/backend/Scripts/auto_update.sh >> /var/log/supervisor/cron-auto-update.log 2>&1" > /etc/cron.d/auto-update-cron
+RUN chmod 0644 /etc/cron.d/auto-update-cron
 
 # Setup supervisor configuration
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
