@@ -28,6 +28,11 @@ WORKDIR /app
 # Copy the built application from the builder stage
 COPY --from=builder /app/src/Rust_Actix/backend/target/release/backend /app/backend
 
+# logs mkdir 
+RUN mkdir -p /app/logs \
+    && chown root:root /app/logs \
+    && chmod 755 /app/logs
+
 # entrypoint.sh 
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
