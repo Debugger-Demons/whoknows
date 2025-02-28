@@ -3,23 +3,12 @@
 
 set -e
 
-echo "Starting Rust application in container..."
+echo "Starting container setup..."
 
 # Clone the repository if it doesn't exist
 if [ ! -d "/whoknows/.git" ]; then
     echo "Cloning repository..."
-    # If /whoknows is not empty but has no .git, we need to handle this carefully
-    if [ "$(ls -A /whoknows)" ]; then
-        # Move existing files to a temp directory
-        mkdir -p /tmp/whoknows-backup
-        mv /whoknows/* /whoknows/.* /tmp/whoknows-backup/ 2>/dev/null || true
-    fi
-    
-    # Clone the repository
-    git clone https://github.com/Debugger-Demons/whoknows.git /whoknows-temp
-    mv /whoknows-temp/.git /whoknows/
-    mv /whoknows-temp/* /whoknows/ 2>/dev/null || true
-    rm -rf /whoknows-temp
+    git clone https://github.com/Debugger-Demons/whoknows.git /whoknows
     
     # Set the git config to not require authentication for pulls
     git config --global pull.rebase false
@@ -34,15 +23,19 @@ cd /whoknows/src/Rust_Actix/backend
 echo "Building application..."
 cargo build --release
 
-# Start the auto-update service in background
-echo "Starting auto-update service..."
-/whoknows/src/Rust_Actix/backend/Scripts/auto_update.sh &
+# Setup automatic updates via cron
+echo "Setting up automatic updates..."
+echo "*/15 * * * * cd /whoknows && git pull && cd /whoknows/src/Rust_Actix/backend && cargo build --release && kill -HUP \$(pgrep -f 'cargo run --release')" > /etc/cron.d/update-app
+chmod 0644 /etc/cron.d/update-app
+service cron start
 
 # Function to handle signals
 handle_signal() {
     echo "Received signal to restart application"
-    kill -TERM $APP_PID
-    wait $APP_PID
+    if [ -n "$APP_PID" ]; then
+        kill -TERM $APP_PID
+        wait $APP_PID
+    fi
     exec cargo run --release
 }
 

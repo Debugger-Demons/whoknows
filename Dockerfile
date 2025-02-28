@@ -1,5 +1,4 @@
-
-FROM rust:1.68-slim
+FROM rust:latest
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -7,20 +6,19 @@ RUN apt-get update && apt-get install -y \
     pkg-config \
     curl \
     git \
+    cron \
     procps \
     && rm -rf /var/lib/apt/lists/*
 
-# Setup working directory (starting with an empty directory)
-WORKDIR /whoknows
+# Set up working directory
+WORKDIR /
 
-# Copy only the scripts first to optimize caching
-COPY ./src/Rust_Actix/backend/Scripts /whoknows/src/Rust_Actix/backend/Scripts
+# Copy scripts
+COPY ./Scripts/start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Make scripts executable
-RUN chmod +x /whoknows/src/Rust_Actix/backend/Scripts/*.sh
+# Create log file
+RUN touch /var/log/whoknows.log
 
-# Expose the application port
-EXPOSE 8080
-
-# Use start.sh as entrypoint - it will handle git clone
-CMD ["/whoknows/src/Rust_Actix/backend/Scripts/start.sh"]
+# Run the start script as entry point
+CMD ["/start.sh"]
