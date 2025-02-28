@@ -1,10 +1,8 @@
 services:
-  rust-app:
-    build: .
-    container_name: rust-app
+  app:
+    image: alekomom/whoknows:latest
     ports:
       - "8080:8080"
+    command: ["/bin/bash", "-c", "/app/entrypoint.sh"]
     volumes:
-      - ./logs:/var/log
-    restart: unless-stopped
-    init: true
+      - ./logs:/app/logs
