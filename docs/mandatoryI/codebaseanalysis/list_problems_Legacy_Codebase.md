@@ -11,17 +11,11 @@
 
 2. **Weak Password Security**
 
-   - Using MD5 for password hashing (hash_password function)
-   - MD5 is cryptographically broken and unsuitable for password storage
-   - No salt used in password hashing
-   - Impact: Vulnerable to rainbow table attacks and collision attacks
    - Admin username and password is not in an environmental variable, and can be accessed through GitHub repository
 
 3. **No Input Validation/Sanitization**
    - Raw user input used directly in queries
-   - No protection against XSS attacks
    - No content-type enforcement
-   - Impact: Multiple attack vectors for malicious input
 
 ## High Priority (Major Technical Debt)
 
@@ -40,32 +34,27 @@
    - No proper logging mechanism
    - Impact: Difficult debugging, poor reliability
 
-6. **Database Issues**
-   - Hard-coded database path
-   - No connection pooling
-   - SQLite used in multi-user context
-   - Impact: Scalability limitations, potential data corruption
+6. **Environmental Issues**
+   - Hard-coded environmental variables
 
 ## Medium Priority (Architectural Problems)
 
 7. **Configuration Management**
 
    - Hardcoded configuration values
-   - Development key in production
-   - No environment separation
+   - Development key hardcoded
    - Impact: Security risks, deployment difficulties
 
 8. **Code Organization**
 
    - Mixed concerns in app.py
-   - No separation of business logic
+   - No separation of business logic (no service layer)
    - Lack of proper MVC structure
    - Impact: Poor maintainability
 
 9. **Testing Inadequacies**
    - Incomplete test coverage
    - Missing integration tests
-   - No performance tests
    - Impact: Reliability issues
 
 ## Low Priority (Improvement Opportunities)
@@ -79,32 +68,6 @@
 
 11. **Frontend Integration**
 
-    - No asset pipeline
-    - No frontend build process
+    - No frontend folder
     - Static file handling issues
-    - Impact: Poor user experience
-
-12. **Performance Optimization**
-    - No caching strategy
-    - Inefficient query patterns
-    - No pagination implementation
-    - Impact: Scalability limitations
-
-## Recommendations for Mitigation
-
-1. Immediate Security Fixes:
-
-   - Implement parameterized queries
-   - Update password hashing to Argon2 or bcrypt
-   - Add input validation
-
-2. Modernization Path:
-
-   - Migrate to Python 3.x
-   - Update Flask and dependencies
-   - Implement proper configuration management
-
-3. Architectural Improvements:
-   - Implement proper service layer
-   - Add comprehensive logging
-   - Improve test coverage
+    - Impact: Poor file architecture
