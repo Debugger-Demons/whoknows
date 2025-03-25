@@ -55,6 +55,7 @@
 3. Respond to reviewer feedback
 4. Get approval
 5. Merge when ready
+6. Delete branch after merge
 
 ## Getting Help
 
