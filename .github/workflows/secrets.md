@@ -1,4 +1,3 @@
-
 # Github Secrets utilized
 
 - SERVER_HOST
@@ -6,11 +5,11 @@
 - SERVER_USERNAME
 - SERVER_SSH_KEY
 
-- DOCKER_HUB_USERNAME
-- DOCKER_HUB_TOKEN
+GitHub Container Registry
 
+- CR_PAT
 
-## safety of secrets 
+## safety of secrets
 
 - User in server is heavily restricted and has no sudo access
 
