@@ -11,7 +11,7 @@
 
 ## Branch Naming
 
-- `feature/` - New features (e.g., feature/search-api)
+- `feat/` - New features (e.g., feature/search-api)
 - `bugfix/` - Bug fixes (e.g., bugfix/login-error)
 - `hotfix/` - Critical fixes (e.g., hotfix/security-patch)
 - `docs/` - Documentation (e.g., docs/api-guide)
@@ -22,11 +22,12 @@
 ### Git Practices
 - Write clear commit messages describing why not what
 - Keep commits focused and logical
-- Rebase feature branches on latest main
-- Delete branches after merge
+- Use default branch (development) for feature development and testing
+- Delete branches after merge (always merge to 'development')
+- Don't use main, it is protected and solely for releases (CI/CD) -- i.e. its a production branch
 
 ### Code Standards
-- Follow Rust style guide
+- Follow Rust style guide (use clippy)
 - Add tests for new features
 - Run Clippy (cargo clippy) and fix warnings before committing
 - Update documentation
@@ -54,6 +55,7 @@
 3. Respond to reviewer feedback
 4. Get approval
 5. Merge when ready
+6. Delete branch after merge
 
 ## Getting Help
 

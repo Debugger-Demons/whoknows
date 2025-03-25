@@ -1,0 +1,8 @@
+services:
+  app:
+    image: alekomom/whoknows:latest
+    ports:
+      - "8080:8080"
+    command: ["/bin/bash", "-c", "/app/entrypoint.sh"]
+    volumes:
+      - ./logs:/app/logs
