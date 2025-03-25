@@ -53,3 +53,15 @@ cargo build
 # Run tests
 cargo test
 ```
+
+## Linting with Clippy
+We use Clippy to catch common mistakes and enforce Rust best practices.
+Install it with:
+```bash
+rustup component add clippy
+```
+Run it with:
+```bash
+- cargo clippy --all-targets --all-features
+```
+Ensure there are no warnings before committing changes.

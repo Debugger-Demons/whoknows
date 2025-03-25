@@ -1,8 +1,8 @@
 FROM rust:latest
 
-# Install dependencies
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
-    libssl-dev \
+    build-essential \
     pkg-config \
     curl \
     git \

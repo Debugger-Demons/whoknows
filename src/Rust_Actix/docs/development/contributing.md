@@ -29,8 +29,10 @@
 ### Code Standards
 - Follow Rust style guide (use clippy)
 - Add tests for new features
+- Run Clippy (cargo clippy) and fix warnings before committing
 - Update documentation
 - Ensure CI checks pass
+
 
 ### PR Guidelines
 - Use PR template
@@ -53,6 +55,7 @@
 3. Respond to reviewer feedback
 4. Get approval
 5. Merge when ready
+6. Delete branch after merge
 
 ## Getting Help
 

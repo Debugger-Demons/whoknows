@@ -14,6 +14,10 @@ async fn search() -> impl Responder {
     HttpResponse::Ok().body("Search endpoint")
 }
 
+/*
+Vi skal afgøre hvilket endpoint der er post, og hvilket der ikke er. 
+*/
+
 #[get("/weather")]
 async fn weather() -> impl Responder {
     HttpResponse::Ok().body("Get weather")
@@ -79,6 +83,8 @@ async fn main() -> std::io::Result<()> {
             .service(register)
     })
 
+    // .bind() returns a Result, so we use ? to handle the error
+        // if the Result is an error, the ? operator will return the error to the caller
     .bind((HOST_NAME, PORT))?
     .run()
     .await
