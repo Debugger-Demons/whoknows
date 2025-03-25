@@ -1,0 +1,41 @@
+2025-02-20 13:10:19,507 INFO Set uid to user 0 succeeded
+2025-02-20 13:10:19,510 INFO supervisord started with pid 1
+2025-02-20 13:10:20,521 INFO spawned: 'auto-update' with pid 7
+2025-02-20 13:10:20,531 INFO spawned: 'rust-app' with pid 8
+2025-02-20 13:10:20,533 INFO exited: auto-update (exit status 127; not expected)
+2025-02-20 13:10:20,536 INFO exited: rust-app (exit status 127; not expected)
+2025-02-20 13:10:21,544 INFO spawned: 'auto-update' with pid 9
+2025-02-20 13:10:21,549 INFO spawned: 'rust-app' with pid 10
+2025-02-20 13:10:21,551 INFO exited: auto-update (exit status 127; not expected)
+2025-02-20 13:10:21,553 INFO exited: rust-app (exit status 127; not expected)
+2025-02-20 13:10:23,562 INFO spawned: 'auto-update' with pid 11
+2025-02-20 13:10:23,568 INFO spawned: 'rust-app' with pid 12
+2025-02-20 13:10:23,570 INFO exited: auto-update (exit status 127; not expected)
+2025-02-20 13:10:23,572 INFO exited: rust-app (exit status 127; not expected)
+2025-02-20 13:10:26,583 INFO spawned: 'auto-update' with pid 13
+2025-02-20 13:10:26,589 INFO spawned: 'rust-app' with pid 14
+2025-02-20 13:10:26,592 INFO exited: auto-update (exit status 127; not expected)
+2025-02-20 13:10:26,595 INFO exited: rust-app (exit status 127; not expected)
+2025-02-20 13:10:27,598 INFO gave up: auto-update entered FATAL state, too many start retries too quickly
+2025-02-20 13:10:27,598 INFO gave up: rust-app entered FATAL state, too many start retries too quickly
+2025-02-27 14:20:32,703 INFO Set uid to user 0 succeeded
+2025-02-27 14:20:32,721 INFO supervisord started with pid 1
+2025-02-27 14:20:33,741 INFO spawned: 'auto-update' with pid 7
+2025-02-27 14:20:33,760 INFO spawned: 'rust-app' with pid 8
+2025-02-27 14:20:33,773 INFO exited: auto-update (exit status 127; not expected)
+2025-02-27 14:20:33,789 INFO exited: rust-app (exit status 127; not expected)
+2025-02-27 14:20:34,805 INFO spawned: 'auto-update' with pid 9
+2025-02-27 14:20:34,816 INFO spawned: 'rust-app' with pid 10
+2025-02-27 14:20:34,819 INFO exited: auto-update (exit status 127; not expected)
+2025-02-27 14:20:34,823 INFO exited: rust-app (exit status 127; not expected)
+2025-02-27 14:20:36,836 INFO spawned: 'auto-update' with pid 11
+2025-02-27 14:20:36,848 INFO spawned: 'rust-app' with pid 12
+2025-02-27 14:20:36,851 INFO exited: auto-update (exit status 127; not expected)
+2025-02-27 14:20:36,855 INFO exited: rust-app (exit status 127; not expected)
+2025-02-27 14:20:39,879 INFO spawned: 'auto-update' with pid 13
+2025-02-27 14:20:39,894 INFO spawned: 'rust-app' with pid 14
+2025-02-27 14:20:39,896 INFO exited: auto-update (exit status 127; not expected)
+2025-02-27 14:20:39,900 INFO exited: rust-app (exit status 127; not expected)
+2025-02-27 14:20:40,904 INFO gave up: auto-update entered FATAL state, too many start retries too quickly
+2025-02-27 14:20:40,905 INFO gave up: rust-app entered FATAL state, too many start retries too quickly
+2025-02-27 14:46:08,826 WARN received SIGTERM indicating exit request
