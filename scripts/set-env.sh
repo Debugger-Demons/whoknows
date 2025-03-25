@@ -107,6 +107,11 @@ echo "APP_DESCRIPTION=${APP_DESCRIPTION:-Simple Node.js application}"
 echo "APP_LICENSE=${APP_LICENSE:-MIT}"
 echo "APP_VERSION=${APP_VERSION:-1.0.0}"
 
+# Rust Configuration
+echo "RUST_VERSION=${RUST_VERSION:-1.85.0}"
+echo "RUST_MAIN_PATH=${RUST_MAIN_PATH:-src/backend/main.rs}"
+echo "BINARY_NAME=${BINARY_NAME:-app}"
+
 # Node.js Configuration
 echo "NODE_VERSION=${NODE_VERSION:-lts}"
 echo "NODE_VERSION_TAG=${NODE_VERSION_TAG:-slim}"
