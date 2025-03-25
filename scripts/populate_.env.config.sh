@@ -33,7 +33,7 @@ if [ -f "$ENV_CONFIG_FILE" ]; then
 else
     
     # Default content - will be used if no existing file
-    cat > "$ENV_CONFIG_FILE" << 'EOF
+    cat > "$ENV_CONFIG_FILE" < EOF
 fi
 
 # Function to display the current configuration with line numbers
