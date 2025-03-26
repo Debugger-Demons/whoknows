@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  lint:
     name: lint
     runs-on: ubuntu-latest
     permissions:
@@ -39,16 +39,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-super-linter-
 
-      - name: Super-linter
+      - name: Setup reviewdog
+        uses: reviewdog/action-setup@e04ffabe3898a0af8d0fb1af00c188831c4b5893 # v1.3.2
+        with:
+          reviewdog_version: latest
+
+      - name: Run Super-linter
         uses: super-linter/super-linter@v7.3.0
+        id: super-linter
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_ERRORS: false
-          OUTPUT_FORMAT: "github"
-          OUTPUT_DETAILS: "detailed"
+          OUTPUT_FORMAT: "tap"
+          LOG_LEVEL: "ERROR"
+          OUTPUT_DETAIL: "detailed"
           VALIDATE_RUST_2021: true
           VALIDATE_RUST_CLIPPY: true
           VALIDATE_ALL_CODEBASE: true
-          GITHUB_COMMENT: true
-          # Remove this line
-          # USE_FIND_ALGORITHM: true
+          # Don't use GITHUB_COMMENT since we'll use reviewdog for that
+          GITHUB_COMMENT: false
+          # Enable file creation for reviewdog to process
+          CREATE_LOG_FILE: true
+
+      - name: Run reviewdog
+        if: always()
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Process the TAP format logs from super-linter and feed to reviewdog
+          find /tmp/lint/tap -name "*.tap" -type f | while read file; do
+            linter_name=$(basename "$file" .tap)
+            cat "$file" | reviewdog -f=tap -name="${linter_name}" -reporter=github-pr-review
+          done
