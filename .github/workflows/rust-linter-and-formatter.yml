@@ -44,6 +44,6 @@ jobs:
           OUTPUT_DETAILS: "detailed"
           VALIDATE_RUST_2021: true
           VALIDATE_RUST_CLIPPY: true
-          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_ALL_CODEBASE: true
           # Remove this line
           # USE_FIND_ALGORITHM: true
