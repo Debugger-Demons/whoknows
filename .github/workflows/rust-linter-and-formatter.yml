@@ -35,6 +35,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-super-linter-
 
+              
       - name: Super-linter
         uses: super-linter/super-linter@v7.3.0
         env:
@@ -48,3 +49,4 @@ jobs:
           VALIDATE_ALL_CODEBASE: false
           # Add this to use the cache
           USE_FIND_ALGORITHM: true
+
