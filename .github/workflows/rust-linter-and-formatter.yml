@@ -35,11 +35,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-super-linter-
 
-              
       - name: Super-linter
         uses: super-linter/super-linter@v7.3.0
         env:
-          # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_ERRORS: false
           OUTPUT_FORMAT: "github"
@@ -47,6 +45,5 @@ jobs:
           VALIDATE_RUST_2021: true
           VALIDATE_RUST_CLIPPY: true
           VALIDATE_ALL_CODEBASE: false
-          # Add this to use the cache
-          USE_FIND_ALGORITHM: true
-
+          # Remove this line
+          # USE_FIND_ALGORITHM: true
