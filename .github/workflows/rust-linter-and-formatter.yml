@@ -60,14 +60,20 @@ jobs:
           GITHUB_COMMENT: false
           # Enable file creation for reviewdog to process
           CREATE_LOG_FILE: true
+          LOG_FILE_PATH: "super-linter-logs"
 
       - name: Run reviewdog
         if: always()
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          # Add debug output to see what files exist
+          echo "Checking for TAP files in the logs directory"
+          find $GITHUB_WORKSPACE/super-linter-logs -type f -name "*.tap" || echo "No TAP files found"
+          
           # Process the TAP format logs from super-linter and feed to reviewdog
-          find /tmp/lint/tap -name "*.tap" -type f | while read file; do
+          find $GITHUB_WORKSPACE/super-linter-logs -name "*.tap" -type f | while read file; do
+            echo "Processing $file"
             linter_name=$(basename "$file" .tap)
             cat "$file" | reviewdog -f=tap -name="${linter_name}" -reporter=github-pr-review
           done
