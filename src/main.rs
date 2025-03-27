@@ -1,7 +1,7 @@
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use actix_cors::Cors;
 
-const HOST_NAME: &str = "0.0.0.0";
+cont HOST_NAME: &str = "0.0.0.0";
 const PORT: u16 = 8080;
 
 #[get("/")]
@@ -18,8 +18,7 @@ async fn search() -> impl Responder {
 
 #[get("/weather")]
 async fn weather() -> impl Responder {
-    HttpResponse::Ok().body("Get weather")
-}
+    Ht
 
 #[get("/api/weather")]
 async fn get_weather() -> impl Responder {
