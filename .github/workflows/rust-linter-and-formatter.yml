@@ -3,19 +3,15 @@
 name: Rust Linter
 
 on:
-  # Run on Pull Requests targeting the main branch
   pull_request:
     branches:
-      - development # Or 'development', or your primary branch
-  # Allow manual triggering
+      - development  # Or 'development', or your primary branch
   workflow_dispatch:
 
 jobs:
   lint-rust:
     name: Lint Rust Code
     runs-on: ubuntu-latest
-
-    # Permissions needed for checking out code and posting PR reviews/checks
     permissions:
       contents: read        # To check out the code
       pull-requests: write  # To post review comments and create reviews
@@ -25,57 +21,49 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # Fetch enough history for linters that diff against the base branch
-          # Super-Linter often needs this unless VALIDATE_ALL_CODEBASE=true
-          fetch-depth: 0
+          fetch-depth: 0  # Fetch enough history for linters that diff against the base branch
 
-      # Optional: Cache super-linter internal cache if needed, can speed up subsequent runs
+      # Optional: Cache super-linter internal cache if needed to speed up subsequent runs
       # - name: Cache Super-Linter internal cache
       #   uses: actions/cache@v4
       #   with:
       #     path: ~/.cache/super-linter
-      #     key: ${{ runner.os }}-super-linter-${{ github.sha }} # Cache per commit
+      #     key: ${{ runner.os }}-super-linter-${{ github.sha }}  # Cache per commit
       #     restore-keys: |
       #       ${{ runner.os }}-super-linter-
 
       - name: Setup reviewdog
-        uses: reviewdog/action-setup@v1 # Pinning to v1 for stability
+        uses: reviewdog/action-setup@v1  # Pinning to v1 for stability
         with:
-          reviewdog_version: latest # Or pin to a specific version e.g., v0.17.3
+          reviewdog_version: latest  # Or pin to a specific version e.g., v0.17.3
 
-          - name: Run Super-Linter for Rust
-          uses: super-linter/super-linter@v7
-          continue-on-error: true
-          env:
-            # --- Basic Setup ---
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            RUN_LOCAL: false
-  
-            # --- Linter Activation (INCLUSION STRATEGY) ---
-            # Only set TRUE for the linters you want to run.
-            # Super-Linter will disable all others when you provide at least one 'true'.
-            VALIDATE_RUST_CLIPPY: true
-            VALIDATE_RUST_RUSTFMT: true
-            # DO NOT add VALIDATE_...: false lines here
-  
-            # --- Output Configuration for Reviewdog ---
-            OUTPUT_FORMAT: sarif
-            SARIF_FILE_NAME: results.sarif
-            OUTPUT_DETAILS: detailed
-            LOG_LEVEL: WARN
-            MULTI_STATUS: false
-            DISABLE_ERRORS: false
-            GITHUB_COMMENT: false # Let reviewdog handle comments/reviews
-  
-            # --- Context ---
-            # Set VALIDATE_ALL_CODEBASE based on whether you want to lint all files or just changed files
-            VALIDATE_ALL_CODEBASE: false # Lint changed files (requires fetch-depth:0 and DEFAULT_BRANCH)
-            # VALIDATE_ALL_CODEBASE: true # Or uncomment this to lint everything
-          DEFAULT_BRANCH: development # Or 'development' - Branch to compare against if VALIDATE_ALL_CODEBASE=false
+      - name: Run Super-Linter for Rust
+        uses: super-linter/super-linter@v7
+        continue-on-error: true
+        env:
+          # --- Basic Setup ---
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_LOCAL: false
 
+          # --- Linter Activation (INCLUSION STRATEGY) ---
+          VALIDATE_RUST_CLIPPY: true
+          VALIDATE_RUST_RUSTFMT: true
+
+          # --- Output Configuration for Reviewdog ---
+          OUTPUT_FORMAT: sarif
+          SARIF_FILE_NAME: results.sarif
+          OUTPUT_DETAILS: detailed
+          LOG_LEVEL: WARN
+          MULTI_STATUS: false
+          DISABLE_ERRORS: false
+          GITHUB_COMMENT: false  # Let reviewdog handle comments/reviews
+
+          # --- Context ---
+          VALIDATE_ALL_CODEBASE: false  # Lint changed files (requires fetch-depth: 0 and DEFAULT_BRANCH)
+          # VALIDATE_ALL_CODEBASE: true  # Uncomment to lint everything
+          DEFAULT_BRANCH: development  # Branch to compare against if VALIDATE_ALL_CODEBASE=false
 
       - name: Run reviewdog with SARIF Results
-        # Always run this step to report results, even if the previous step 'failed' (due to lint errors)
         if: always()
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -85,22 +73,9 @@ jobs:
           # Check if the SARIF file exists and is not empty before running reviewdog
           if [[ ! -s "results.sarif" ]]; then
             echo "results.sarif not found or is empty. Skipping reviewdog."
-            # Optionally exit with success if no file means no errors
             exit 0
-            # Or exit with failure if the file SHOULD have been generated
-            # exit 1
           fi
 
-          # -f=sarif: Input format is SARIF
-          # -name: Name for the Check Run displayed on GitHub
-          # -reporter=github-pr-review: Post results as a single review on the PR
-          #     Alternatives:
-          #       -reporter=github-pr-check: Post results as inline checks (can be noisy)
-          # -filter-mode=diff_context: Show results only in changed lines (requires fetch-depth > 1 or 0)
-          # -fail-level=warning: Fail the workflow step if any warning or error is found
-          #     Alternatives:
-          #       -fail-level=error: Fail only if errors are found
-          # -level=warning: Report warnings and errors (filter out notices)
           reviewdog -f=sarif \
             -name="rust-linter" \
             -reporter="github-pr-review" \
