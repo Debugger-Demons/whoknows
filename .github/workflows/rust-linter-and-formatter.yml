@@ -61,7 +61,7 @@ jobs:
 
           # --- Context ---
           VALIDATE_ALL_CODEBASE: false # Go back to linting changed files (requires fetch-depth: 0)
-          DEFAULT_BRANCH: main         # Ensure this matches your default branch
+          DEFAULT_BRANCH: development         # Ensure this matches your default branch
 
           # *** ADD THIS FILTER ***
           # Attempt to prevent Super-Linter from treating Cargo.toml as a file to lint directly
