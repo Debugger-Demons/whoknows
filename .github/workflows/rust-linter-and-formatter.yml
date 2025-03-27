@@ -5,85 +5,109 @@ name: Rust Linter
 on:
   pull_request:
     branches:
-      - development  # Or 'development', or your primary branch
+      - development # Make sure this matches your target branch
   workflow_dispatch:
 
 jobs:
   lint-rust:
     name: Lint Rust Code
     runs-on: ubuntu-latest
+
     permissions:
-      contents: read        # To check out the code
-      pull-requests: write  # To post review comments and create reviews
-      checks: write         # To create check runs (used by some reviewdog reporters)
+      contents: read
+      pull-requests: write
+      checks: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Fetch enough history for linters that diff against the base branch
+          # Fetch full history; might be needed later if we revert VALIDATE_ALL_CODEBASE
+          fetch-depth: 0
 
-      # Optional: Cache super-linter internal cache if needed to speed up subsequent runs
-      # - name: Cache Super-Linter internal cache
-      #   uses: actions/cache@v4
-      #   with:
-      #     path: ~/.cache/super-linter
-      #     key: ${{ runner.os }}-super-linter-${{ github.sha }}  # Cache per commit
-      #     restore-keys: |
-      #       ${{ runner.os }}-super-linter-
+      # *** STEP 1: Manual Linter Check ***
+      - name: DEBUG - Manually run Rust Linters
+        run: |
+          echo "### Running Rust checks manually from $(pwd)"
+          ls -la
+          rustc --version
+          cargo --version
+
+          echo "### Running cargo fmt --check"
+          # Run the command. If it fails (finds formatting issues), print a message but continue.
+          if ! cargo fmt --check; then
+            echo "NOTE: Manual 'cargo fmt --check' found issues."
+          fi
+
+          echo "### Running cargo clippy --all-targets -- -D warnings"
+          # Run the command. If it fails (finds clippy issues), print a message but continue.
+          if ! cargo clippy --all-targets -- -D warnings; then
+            echo "NOTE: Manual 'cargo clippy' found issues."
+          fi
+        # This step will continue even if linters find errors above
 
       - name: Setup reviewdog
-        uses: reviewdog/action-setup@v1  # Pinning to v1 for stability
+        uses: reviewdog/action-setup@v1
         with:
-          reviewdog_version: latest  # Or pin to a specific version e.g., v0.17.3
+          reviewdog_version: latest
 
-      - name: Run Super-Linter for Rust
+      # *** STEP 2: Run Super-Linter with Maximum Verbosity ***
+      - name: Run Super-Linter for Rust (DEBUG LOGGING)
         uses: super-linter/super-linter@v7
-        continue-on-error: true
+        continue-on-error: true # Keep true so reviewdog step always runs
         env:
           # --- Basic Setup ---
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_LOCAL: false
 
-          # --- Linter Activation (INCLUSION STRATEGY) ---
+          # --- Linter Activation ---
           VALIDATE_RUST_CLIPPY: true
           VALIDATE_RUST_RUSTFMT: true
-          # (DO NOT add VALIDATE_...: false lines here)
 
-          # --- Output Configuration for Reviewdog ---
+          # --- Output Configuration ---
           OUTPUT_FORMAT: sarif
           SARIF_FILE_NAME: results.sarif
           OUTPUT_DETAILS: detailed
-          LOG_LEVEL: WARN
+          # *** INCREASE LOG LEVEL ***
+          LOG_LEVEL: DEBUG # Crucial for seeing internal commands/output
           MULTI_STATUS: false
           DISABLE_ERRORS: false
           GITHUB_COMMENT: false
 
           # --- Context ---
-          VALIDATE_ALL_CODEBASE: true # Go back to linting changed files (requires fetch-depth: 0)
-          #DEFAULT_BRANCH: development         # Ensure this matches your default branch
+          VALIDATE_ALL_CODEBASE: true # Keep true to force full scan
 
-          # *** ADD THIS FILTER ***
-          # Attempt to prevent Super-Linter from treating Cargo.toml as a file to lint directly
-          FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$'
+          # --- Filter ---
+          FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$' # Keep filter that fixed previous error
 
+      # *** STEP 3: Reviewdog (Check SARIF) ***
       - name: Run reviewdog with SARIF Results
         if: always()
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "Running reviewdog with SARIF file: results.sarif"
+          echo "--- Debug: Listing files before reviewdog ---"
+          ls -l .
 
-          # Check if the SARIF file exists and is not empty before running reviewdog
-          if [[ ! -s "results.sarif" ]]; then
-            echo "results.sarif not found or is empty. Skipping reviewdog."
-            exit 0
+          echo "--- Debug: Checking results.sarif ---"
+          if [[ -f "results.sarif" ]]; then
+            echo "File results.sarif found."
+            echo "File size: $(wc -c < results.sarif) bytes"
+            echo "--- First 20 lines of results.sarif ---"
+            head -n 20 results.sarif
+            echo "--- End of first 20 lines ---"
+
+            # Now try running reviewdog
+            echo "--- Running reviewdog ---"
+            reviewdog -f=sarif \
+                      -name="rust-linter" \
+                      -reporter="github-pr-review" \
+                      -filter-mode="diff_context" \
+                      -fail-level="warning" \
+                      -level="warning" \
+                      results.sarif
+          else
+            echo "ERROR: results.sarif not found! Examine Super-Linter DEBUG logs."
+            # Exit 1 to clearly fail the workflow if the SARIF file is missing when errors were expected
+            exit 1
           fi
-
-          reviewdog -f=sarif \
-            -name="rust-linter" \
-            -reporter="github-pr-review" \
-            -filter-mode="diff_context" \
-            -fail-level="warning" \
-            -level="warning" \
-            results.sarif
