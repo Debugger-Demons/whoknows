@@ -5,7 +5,7 @@ name: Rust Linter
 on:
   pull_request:
     branches:
-      - development # Make sure this matches your target branch
+      - development
   workflow_dispatch:
 
 jobs:
@@ -14,101 +14,63 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
-      pull-requests: write
-      checks: write
+      contents: read        # To check out the code
+      pull-requests: write  # To post review comments and create reviews
+      checks: write         # To create check runs
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        # No fetch-depth needed unless reviewdog's diff_context *really* needs it,
+        # but clippy will report based on the code checked out. Start without it.
+        # with:
+        #   fetch-depth: 0
+
+      - name: Setup Rust Toolchain
+        uses: dtolnay/rust-toolchain@stable # Or specify your toolchain file/version
         with:
-          # Fetch full history; might be needed later if we revert VALIDATE_ALL_CODEBASE
-          fetch-depth: 0
+          components: clippy, rustfmt
 
-      # *** STEP 1: Manual Linter Check ***
-      - name: DEBUG - Manually run Rust Linters
-        run: |
-          echo "### Running Rust checks manually from $(pwd)"
-          ls -la
-          rustc --version
-          cargo --version
-
-          echo "### Running cargo fmt --check"
-          # Run the command. If it fails (finds formatting issues), print a message but continue.
-          if ! cargo fmt --check; then
-            echo "NOTE: Manual 'cargo fmt --check' found issues."
-          fi
-
-          echo "### Running cargo clippy --all-targets -- -D warnings"
-          # Run the command. If it fails (finds clippy issues), print a message but continue.
-          if ! cargo clippy --all-targets -- -D warnings; then
-            echo "NOTE: Manual 'cargo clippy' found issues."
-          fi
-        # This step will continue even if linters find errors above
+      - name: Install clippy-checkstyle-formatter
+        run: cargo install clippy-checkstyle-formatter
 
       - name: Setup reviewdog
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
 
-      - name: Run Super-Linter for Rust (DEBUG LOGGING)
-        uses: super-linter/super-linter@v7
-        continue-on-error: true
-        env:
-          # --- Basic Setup ---
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          RUN_LOCAL: false
+      - name: Run cargo fmt (Check only)
+        # This step will fail if formatting issues are found.
+        # Reviewdog won't add specific comments for fmt issues here, but the job failure indicates the problem.
+        run: cargo fmt --check
+        # Optional: Add continue-on-error: true if you only want Clippy failures to fail the job
 
-          # --- Linter Activation ---
-          VALIDATE_RUST_CLIPPY: true
-          VALIDATE_RUST_RUSTFMT: true
+      - name: Run cargo clippy and Format Output
+        # Run clippy, output JSON, pipe through formatter, save as Checkstyle XML
+        # Use || true to prevent the step failing immediately if clippy finds errors,
+        # allowing the results to be processed by reviewdog.
+        run: |
+          cargo clippy --all-targets --message-format=json | clippy-checkstyle-formatter > clippy-results.xml || true
 
-          # --- Output Configuration ---
-          OUTPUT_FORMAT: sarif
-          SARIF_FILE_NAME: results.sarif
-          OUTPUT_DETAILS: detailed
-          LOG_LEVEL: DEBUG # Keep DEBUG until confirmed working
-          MULTI_STATUS: false
-          DISABLE_ERRORS: false
-          GITHUB_COMMENT: false
-
-          # --- Context ---
-          VALIDATE_ALL_CODEBASE: true # Keep true for now
-          # *** ADD THIS LINE ***
-          RUST_DIRECTORY: . # Tell Rust linters the project is in the root checkout dir
-
-          # --- Filter ---
-          # Keep this removed/commented out
-          # FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$'
-
-      # *** STEP 3: Reviewdog (Check SARIF) ***
-      - name: Run reviewdog with SARIF Results
-        if: always()
+      - name: Run reviewdog for Clippy Results
+        # Only runs if the clippy step produced results
+        if: success() || failure() # Run regardless of clippy step outcome (due to || true)
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "--- Debug: Listing files before reviewdog ---"
-          ls -l .
-
-          echo "--- Debug: Checking results.sarif ---"
-          if [[ -f "results.sarif" ]]; then
-            echo "File results.sarif found."
-            echo "File size: $(wc -c < results.sarif) bytes"
-            echo "--- First 20 lines of results.sarif ---"
-            head -n 20 results.sarif
-            echo "--- End of first 20 lines ---"
-
-            # Now try running reviewdog
-            echo "--- Running reviewdog ---"
-            reviewdog -f=sarif \
-                      -name="rust-linter" \
-                      -reporter="github-pr-review" \
-                      -filter-mode="diff_context" \
-                      -fail-level="warning" \
-                      -level="warning" \
-                      results.sarif
-          else
-            echo "ERROR: results.sarif not found! Examine Super-Linter DEBUG logs."
-            # Exit 1 to clearly fail the workflow if the SARIF file is missing when errors were expected
-            exit 1
+          echo "--- Checking clippy-results.xml ---"
+          if [[ ! -s "clippy-results.xml" ]]; then
+            echo "clippy-results.xml not found or is empty. Skipping reviewdog for clippy."
+            # If fmt failed earlier, the job will still fail.
+            # If fmt passed and clippy found nothing, this is success.
+            exit 0
           fi
+
+          echo "--- Running reviewdog with clippy results ---"
+          # Use Checkstyle format, fail on warning/error, report as PR review
+          reviewdog -f=checkstyle \
+            -name="clippy" \
+            -reporter="github-pr-review" \
+            -fail-level="warning" \
+            -level="warning" \
+            clippy-results.xml
