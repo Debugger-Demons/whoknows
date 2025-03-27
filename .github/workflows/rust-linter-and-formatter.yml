@@ -22,20 +22,18 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # No fetch-depth needed initially since clippy runs on the whole project checkout.
-        # Add fetch-depth: 0 if reviewdog's diff_context reporting is inaccurate later.
+        # No fetch-depth needed initially unless reviewdog's diff_context is inaccurate.
 
       # Cache Cargo registry, index, and build target directory
-      # Key includes OS, Rust version (implicitly via lock file hash), and lock file hash
       - name: Cache Cargo Dependencies
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/bin/                # Cache installed tools like cargo-clippy-checkstyle
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
             target/                      # Cache build artifacts
+          # Key includes OS and lock file hash. Implicitly includes Rust version via lock file.
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -46,9 +44,7 @@ jobs:
         with:
           components: clippy, rustfmt
 
-      # Install the tool to convert clippy JSON output to Checkstyle XML
-      - name: Install cargo-clippy-checkstyle
-        run: cargo install cargo-clippy-checkstyle --locked
+      # Remove the problematic 'cargo install' step - we don't need a separate formatter
 
       # Install reviewdog for reporting
       - name: Setup reviewdog
@@ -59,45 +55,55 @@ jobs:
       # Run rustfmt check - fails job if formatting issues exist
       - name: Run cargo fmt (Check only)
         run: cargo fmt --check
-        # Optional: Add 'continue-on-error: true' below if you want the workflow
-        # to proceed to clippy even if formatting fails. The job will still
-        # show as failed overall if this step fails without continue-on-error.
+        # Optional: Add 'continue-on-error: true' if you only want Clippy to report issues
         # continue-on-error: true
 
-      # Run clippy, pipe JSON output to the formatter, save as Checkstyle XML
-      - name: Run cargo clippy and Format Output
+      # Run clippy, outputting JSON directly to a file named with a .sarif extension
+      - name: Run cargo clippy
         run: |
-          cargo clippy --all-targets --message-format=json | cargo clippy-checkstyle > clippy-results.xml || true
-        # The '|| true' ensures this step doesn't fail the job immediately if clippy finds issues.
-        # This allows the reviewdog step below to process the clippy-results.xml file.
-        # The overall job failure will be determined by the reviewdog step's fail-level.
+          cargo clippy --all-targets --message-format=json -- -D warnings > clippy-results.sarif || true
+        # The '|| true' ensures this step doesn't fail the job immediately if clippy finds issues,
+        # allowing reviewdog to process the results file.
+        # The '-D warnings' inside tells clippy itself to treat warnings as errors for its exit code,
+        # but '|| true' overrides the step's failure based on that exit code.
 
-      # Run reviewdog using the Checkstyle XML output from clippy
+      # Run reviewdog using the JSON (interpreted as SARIF) output from clippy
       - name: Run reviewdog for Clippy Results
         # Always run this step to process results or report missing results file
         if: always()
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "--- Checking clippy-results.xml ---"
-          if [[ ! -s "clippy-results.xml" ]]; then
-            echo "clippy-results.xml not found or is empty. Skipping reviewdog for clippy."
-            # If 'cargo fmt --check' failed earlier, the job will already be marked as failed.
-            # If fmt passed and clippy found no issues OR clippy crashed before outputting JSON,
-            # this step exits successfully. Check clippy logs above if errors were expected but no report generated.
-            # If you REQUIRE clippy to always produce a file (even empty), change 'exit 0' to 'exit 1' below.
-            exit 0
+          echo "--- Checking clippy-results.sarif ---"
+          if [[ ! -s "clippy-results.sarif" ]]; then
+            # Check if the previous 'cargo clippy' step actually failed unexpectedly (not just lint errors)
+            # Note: This requires the clippy step to have an id. Let's add it.
+            if [[ ${{ steps.clippy.outcome }} == 'failure' && $? != 0 ]]; then
+               echo "ERROR: 'Run cargo clippy' step failed unexpectedly. Check its logs."
+               exit 1 # Fail the job clearly if clippy itself crashed
+            else
+               echo "clippy-results.sarif not found or is empty. Skipping reviewdog for clippy."
+               # If 'cargo fmt --check' failed earlier, the job will already be marked as failed.
+               # If fmt passed and clippy found no issues, this is success.
+               exit 0
+            fi
           fi
 
-          echo "--- Running reviewdog with clippy results ---"
-          # -f=checkstyle: Input format is Checkstyle XML
+          echo "--- Running reviewdog with clippy results (SARIF format) ---"
+          # -f=sarif: Tell reviewdog to parse the input file as SARIF
           # -name="clippy": Name for the Check Run displayed on GitHub
           # -reporter="github-pr-review": Post results as a single review on the PR
+          # -filter-mode="diff_context": (Optional) Show only issues in changed lines - requires fetch-depth: 0 on checkout
           # -fail-level="warning": Fail the step (and job) if any warning or error is reported
           # -level="warning": Only report diagnostics of level warning or error
-          reviewdog -f=checkstyle \
+          reviewdog -f=sarif \
             -name="clippy" \
             -reporter="github-pr-review" \
             -fail-level="warning" \
             -level="warning" \
-            clippy-results.xml
+            clippy-results.sarif
+        # Add id to the clippy step for outcome checking
+      - name: Run cargo clippy # Add ID here
+        id: clippy # Assign an ID to this step
+        run: |
+          cargo clippy --all-targets --message-format=json -- -D warnings > clippy-results.sarif || true
