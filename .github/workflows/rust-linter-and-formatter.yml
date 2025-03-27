@@ -51,10 +51,9 @@ jobs:
         with:
           reviewdog_version: latest
 
-      # *** STEP 2: Run Super-Linter with Maximum Verbosity ***
       - name: Run Super-Linter for Rust (DEBUG LOGGING)
         uses: super-linter/super-linter@v7
-        continue-on-error: true # Keep true so reviewdog step always runs
+        continue-on-error: true
         env:
           # --- Basic Setup ---
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -68,17 +67,17 @@ jobs:
           OUTPUT_FORMAT: sarif
           SARIF_FILE_NAME: results.sarif
           OUTPUT_DETAILS: detailed
-          # *** INCREASE LOG LEVEL ***
-          LOG_LEVEL: DEBUG # Crucial for seeing internal commands/output
+          LOG_LEVEL: DEBUG # Keep DEBUG for now
           MULTI_STATUS: false
           DISABLE_ERRORS: false
           GITHUB_COMMENT: false
 
           # --- Context ---
-          VALIDATE_ALL_CODEBASE: true # Keep true to force full scan
+          VALIDATE_ALL_CODEBASE: true
 
           # --- Filter ---
-          FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$' # Keep filter that fixed previous error
+          # *** REMOVE OR COMMENT OUT THIS LINE ***
+          # FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$'
 
       # *** STEP 3: Reviewdog (Check SARIF) ***
       - name: Run reviewdog with SARIF Results
