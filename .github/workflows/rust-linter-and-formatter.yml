@@ -13,12 +13,13 @@ jobs:
     name: lint
     runs-on: ubuntu-latest
     permissions:
-      contents: read
       packages: read
       # To report GitHub Actions status checks
       statuses: write
-      checks: write
       pull-requests: write
+      checks: write         # Required for reviewdog's status checks
+      contents: read        # For code checkout
+      issues: write         # Needed for PR comments (add this!)
 
     steps:
       - name: Checkout code
