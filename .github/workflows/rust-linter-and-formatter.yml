@@ -13,20 +13,17 @@ jobs:
     name: Lint Rust Code
     runs-on: ubuntu-latest
 
-    # Permissions needed for checkout, PR comments/reviews, and status checks
     permissions:
-      contents: read        # To check out the code
-      pull-requests: write  # To post review comments and create reviews
-      checks: write         # To create check runs
+      contents: read
+      pull-requests: write
+      checks: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # fetch-depth: 0 may be needed if reviewdog's diff_context reporting seems off later
         # with:
-        #   fetch-depth: 0
+        #   fetch-depth: 0 # Add if reviewdog diff context needs it
 
-      # Cache Cargo dependencies (registry, index, target dir)
       - name: Cache Cargo Dependencies
         uses: actions/cache@v4
         with:
@@ -39,42 +36,29 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      # Setup Rust toolchain with clippy and rustfmt components
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
-      # NO formatter install needed!
-
-      # Install reviewdog
       - name: Setup reviewdog
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
 
-      # Run fmt check, continue even if it fails so clippy can run
       - name: Run cargo fmt (Check only)
         run: cargo fmt --check
-        continue-on-error: true # Allow clippy to run even if formatting fails
+        continue-on-error: true # Allow clippy to run even if fmt fails
 
-      # Run clippy with default human-readable output and pipe directly to reviewdog
+      # Run clippy, piping its default output directly into reviewdog's clippy parser
       - name: Run clippy with reviewdog
         env:
-          # Provide the token for reviewdog to post results
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Run clippy with default output.
-          # Use '-- -- -D warnings' to make clippy itself exit non-zero on warnings,
-          # although the pipe means the overall step success depends on reviewdog.
-          # Pipe clippy's stdout directly into reviewdog.
-          cargo clippy --all-targets -- -- -D warnings \
+          # Corrected: Only ONE '--' separator
+          cargo clippy --all-targets -- -D warnings \
             | reviewdog -f=clippy \
                 -name="clippy" \
                 -reporter="github-pr-review" \
                 -level="warning" \
                 -fail-level="warning"
-
-      # No separate reviewdog step is needed; it's integrated above.
-      # The 'Run clippy with reviewdog' step will fail if reviewdog finds issues
-      # based on its -fail-level setting, providing the correct job status.
