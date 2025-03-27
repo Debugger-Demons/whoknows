@@ -46,13 +46,15 @@ jobs:
         with:
           reviewdog_version: latest
 
+      # Run fmt check, add ID, allow continuation
       - name: Run cargo fmt (Check only)
+        id: fmt # Added ID
         run: cargo fmt --check
         continue-on-error: true # Allow clippy to run even if fmt fails
 
-      # Run clippy, saving BOTH stdout and stderr to a file
+      # Run clippy, save BOTH stdout and stderr to a file, ignore exit code here
       - name: Run cargo clippy and save output
-        id: clippy_run # Add ID
+        id: clippy_run # Added ID
         run: |
           # Redirect stdout (>) and stderr (2>&1) to the file
           # Use || true so this step doesn't fail just because clippy found errors
@@ -64,20 +66,20 @@ jobs:
         if: always()
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Pass the outcome of the fmt step as an env var
+          FMT_OUTCOME: ${{ steps.fmt.outcome }}
         run: |
           echo "--- Checking clippy_output.txt ---"
           ls -l clippy_output.txt # Show if file exists and its size
 
           if [[ ! -s "clippy_output.txt" ]]; then
             echo "clippy_output.txt not found or is empty."
-            # Check if the previous 'fmt' step failed
-            if [[ ${{ steps.fmt.outcome }} == 'failure' ]]; then
+            # Check the FMT_OUTCOME env var
+            if [[ "$FMT_OUTCOME" == 'failure' ]]; then
                  echo "Failing because cargo fmt failed earlier."
                  exit 1 # Ensure job fails if fmt failed and clippy produced no output
             else
-                 # If fmt passed and clippy output is empty/missing (unexpected crash?), maybe exit 1?
-                 # Or exit 0 if empty output implies no errors found. Let's assume 0 for now.
-                 echo "Skipping reviewdog analysis as clippy output is missing/empty."
+                 echo "Skipping reviewdog analysis as clippy output is missing/empty and fmt passed."
                  exit 0
             fi
           fi
@@ -89,9 +91,3 @@ jobs:
             -reporter="github-pr-review" \
             -level="warning" \
             -fail-level="warning" < clippy_output.txt # Read from file
-
-      # Add ID to fmt step for checking outcome
-      - name: Run cargo fmt (Check only)
-        id: fmt # Add ID
-        run: cargo fmt --check
-        continue-on-error: true
