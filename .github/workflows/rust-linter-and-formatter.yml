@@ -67,16 +67,18 @@ jobs:
           OUTPUT_FORMAT: sarif
           SARIF_FILE_NAME: results.sarif
           OUTPUT_DETAILS: detailed
-          LOG_LEVEL: DEBUG # Keep DEBUG for now
+          LOG_LEVEL: DEBUG # Keep DEBUG until confirmed working
           MULTI_STATUS: false
           DISABLE_ERRORS: false
           GITHUB_COMMENT: false
 
           # --- Context ---
-          VALIDATE_ALL_CODEBASE: true
+          VALIDATE_ALL_CODEBASE: true # Keep true for now
+          # *** ADD THIS LINE ***
+          RUST_DIRECTORY: . # Tell Rust linters the project is in the root checkout dir
 
           # --- Filter ---
-          # *** REMOVE OR COMMENT OUT THIS LINE ***
+          # Keep this removed/commented out
           # FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$'
 
       # *** STEP 3: Reviewdog (Check SARIF) ***
