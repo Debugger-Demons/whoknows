@@ -48,6 +48,7 @@ jobs:
           # --- Linter Activation (INCLUSION STRATEGY) ---
           VALIDATE_RUST_CLIPPY: true
           VALIDATE_RUST_RUSTFMT: true
+          # (DO NOT add VALIDATE_...: false lines here)
 
           # --- Output Configuration for Reviewdog ---
           OUTPUT_FORMAT: sarif
@@ -56,11 +57,15 @@ jobs:
           LOG_LEVEL: WARN
           MULTI_STATUS: false
           DISABLE_ERRORS: false
-          GITHUB_COMMENT: false  # Let reviewdog handle comments/reviews
+          GITHUB_COMMENT: false
 
-                    # Let's try VALIDATE_ALL_CODEBASE: true just in case the file filtering is involved
-          VALIDATE_ALL_CODEBASE: true # Try forcing validation of all files
-          # DEFAULT_BRANCH: main # Not needed if VALIDATE_ALL_CODEBASE=true
+          # --- Context ---
+          VALIDATE_ALL_CODEBASE: false # Go back to linting changed files (requires fetch-depth: 0)
+          DEFAULT_BRANCH: main         # Ensure this matches your default branch
+
+          # *** ADD THIS FILTER ***
+          # Attempt to prevent Super-Linter from treating Cargo.toml as a file to lint directly
+          FILTER_REGEX_EXCLUDE: '(^|/)Cargo\.toml$'
 
       - name: Run reviewdog with SARIF Results
         if: always()
