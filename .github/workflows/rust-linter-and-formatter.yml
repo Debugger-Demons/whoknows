@@ -73,7 +73,7 @@ jobs:
           GITHUB_COMMENT: false      # VERY IMPORTANT: Let reviewdog handle comments/reviews
 
           # --- Context for Changed File Detection ---
-          DEFAULT_BRANCH: main # Or 'development' - Branch to compare against if VALIDATE_ALL_CODEBASE=false
+          DEFAULT_BRANCH: development # Or 'development' - Branch to compare against if VALIDATE_ALL_CODEBASE=false
 
 
       - name: Run reviewdog with SARIF Results
