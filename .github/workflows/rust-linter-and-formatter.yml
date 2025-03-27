@@ -37,22 +37,28 @@ jobs:
         with:
           reviewdog_version: latest  # Or pin to a specific version e.g., v0.17.3
 
-      # *** NEW STEP: Manually run cargo clippy for debugging ***
-      - name: Debug - Manually run cargo clippy
-        run: |
-          echo "### Running cargo clippy manually from $(pwd)"
-          rustc --version
-          cargo --version
-          cargo clippy --all-targets -- -D warnings # Fail on warnings
-        # Optional: Add continue-on-error if you want the workflow to proceed even if this fails
-        # continue-on-error: true
-
       - name: Run Super-Linter for Rust
         uses: super-linter/super-linter@v7
         continue-on-error: true
         env:
-          # ... (rest of Super-Linter env vars as before)
-          # Let's try VALIDATE_ALL_CODEBASE: true just in case the file filtering is involved
+          # --- Basic Setup ---
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_LOCAL: false
+
+          # --- Linter Activation (INCLUSION STRATEGY) ---
+          VALIDATE_RUST_CLIPPY: true
+          VALIDATE_RUST_RUSTFMT: true
+
+          # --- Output Configuration for Reviewdog ---
+          OUTPUT_FORMAT: sarif
+          SARIF_FILE_NAME: results.sarif
+          OUTPUT_DETAILS: detailed
+          LOG_LEVEL: WARN
+          MULTI_STATUS: false
+          DISABLE_ERRORS: false
+          GITHUB_COMMENT: false  # Let reviewdog handle comments/reviews
+
+                    # Let's try VALIDATE_ALL_CODEBASE: true just in case the file filtering is involved
           VALIDATE_ALL_CODEBASE: true # Try forcing validation of all files
           # DEFAULT_BRANCH: main # Not needed if VALIDATE_ALL_CODEBASE=true
 
