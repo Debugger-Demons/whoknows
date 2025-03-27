@@ -43,36 +43,34 @@ jobs:
         with:
           reviewdog_version: latest # Or pin to a specific version e.g., v0.17.3
 
-      - name: Run Super-Linter for Rust
-        uses: super-linter/super-linter@v7 # Use the latest v7 release
-        # Make sure the linter step continues even if errors are found,
-        # so reviewdog can process the results.
-        continue-on-error: true
-        env:
-          # --- Basic Setup ---
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for Super-Linter to interact with GH API
-          RUN_LOCAL: false # Explicitly run in CI mode
-
-          # --- Linter Activation ---
-          VALIDATE_ALL_CODEBASE: false # Recommended: Let Super-Linter detect changed files based on fetch-depth
-          VALIDATE_RUST_CLIPPY: true   # Enable Clippy
-          VALIDATE_RUST_RUSTFMT: true  # Enable Rustfmt
-          # Disable other linters if you ONLY want Rust (optional, saves time)
-          VALIDATE_YAML: false
-          VALIDATE_JSON: false
-          VALIDATE_MARKDOWN: false
-          # ... disable others as needed
-
-          # --- Output Configuration for Reviewdog ---
-          OUTPUT_FORMAT: sarif       # Generate SARIF output for reviewdog
-          SARIF_FILE_NAME: results.sarif # Define the output file name
-          OUTPUT_DETAILS: detailed   # Include details in the output
-          LOG_LEVEL: WARN            # Report warnings and errors
-          MULTI_STATUS: false        # Create one status check, not one per linter
-          DISABLE_ERRORS: false      # Fail the linter run if errors are found (but continue-on-error lets workflow proceed)
-          GITHUB_COMMENT: false      # VERY IMPORTANT: Let reviewdog handle comments/reviews
-
-          # --- Context for Changed File Detection ---
+          - name: Run Super-Linter for Rust
+          uses: super-linter/super-linter@v7
+          continue-on-error: true
+          env:
+            # --- Basic Setup ---
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            RUN_LOCAL: false
+  
+            # --- Linter Activation (INCLUSION STRATEGY) ---
+            # Only set TRUE for the linters you want to run.
+            # Super-Linter will disable all others when you provide at least one 'true'.
+            VALIDATE_RUST_CLIPPY: true
+            VALIDATE_RUST_RUSTFMT: true
+            # DO NOT add VALIDATE_...: false lines here
+  
+            # --- Output Configuration for Reviewdog ---
+            OUTPUT_FORMAT: sarif
+            SARIF_FILE_NAME: results.sarif
+            OUTPUT_DETAILS: detailed
+            LOG_LEVEL: WARN
+            MULTI_STATUS: false
+            DISABLE_ERRORS: false
+            GITHUB_COMMENT: false # Let reviewdog handle comments/reviews
+  
+            # --- Context ---
+            # Set VALIDATE_ALL_CODEBASE based on whether you want to lint all files or just changed files
+            VALIDATE_ALL_CODEBASE: false # Lint changed files (requires fetch-depth:0 and DEFAULT_BRANCH)
+            # VALIDATE_ALL_CODEBASE: true # Or uncomment this to lint everything
           DEFAULT_BRANCH: development # Or 'development' - Branch to compare against if VALIDATE_ALL_CODEBASE=false
 
 
