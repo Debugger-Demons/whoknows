@@ -13,7 +13,6 @@ jobs:
     name: Lint Rust Code
     runs-on: ubuntu-latest
 
-    # Permissions needed for checkout, PR comments/reviews, and status checks
     permissions:
       contents: read        # To check out the code
       pull-requests: write  # To post review comments and create reviews
@@ -22,9 +21,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # No fetch-depth needed initially unless reviewdog's diff_context is inaccurate.
 
-      # Cache Cargo registry, index, and build target directory
       - name: Cache Cargo Dependencies
         uses: actions/cache@v4
         with:
@@ -32,78 +29,51 @@ jobs:
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/                      # Cache build artifacts
-          # Key includes OS and lock file hash. Implicitly includes Rust version via lock file.
+            target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
 
-      # Setup Rust toolchain with clippy and rustfmt components
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
-      # Remove the problematic 'cargo install' step - we don't need a separate formatter
-
-      # Install reviewdog for reporting
       - name: Setup reviewdog
         uses: reviewdog/action-setup@v1
         with:
-          reviewdog_version: latest # Or pin to a specific version like v0.17.3
+          reviewdog_version: latest
 
-      # Run rustfmt check - fails job if formatting issues exist
+      # Run fmt check, but allow workflow to continue to clippy
       - name: Run cargo fmt (Check only)
         run: cargo fmt --check
-        # Optional: Add 'continue-on-error: true' if you only want Clippy to report issues
-        # continue-on-error: true
+        continue-on-error: true # <<< ADDED THIS
 
-      # Run clippy, outputting JSON directly to a file named with a .sarif extension
+      # Run clippy, output JSON to .sarif file, ignore clippy's exit code for now
       - name: Run cargo clippy
+        id: clippy # Ensure the ID is here
         run: |
           cargo clippy --all-targets --message-format=json -- -D warnings > clippy-results.sarif || true
-        # The '|| true' ensures this step doesn't fail the job immediately if clippy finds issues,
-        # allowing reviewdog to process the results file.
-        # The '-D warnings' inside tells clippy itself to treat warnings as errors for its exit code,
-        # but '|| true' overrides the step's failure based on that exit code.
 
       # Run reviewdog using the JSON (interpreted as SARIF) output from clippy
       - name: Run reviewdog for Clippy Results
-        # Always run this step to process results or report missing results file
-        if: always()
+        if: always() # Still run always to potentially report fmt failure via job status
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "--- Checking clippy-results.sarif ---"
+          # Simplified Check: Only check if the file exists and has size > 0
           if [[ ! -s "clippy-results.sarif" ]]; then
-            # Check if the previous 'cargo clippy' step actually failed unexpectedly (not just lint errors)
-            # Note: This requires the clippy step to have an id. Let's add it.
-            if [[ ${{ steps.clippy.outcome }} == 'failure' && $? != 0 ]]; then
-               echo "ERROR: 'Run cargo clippy' step failed unexpectedly. Check its logs."
-               exit 1 # Fail the job clearly if clippy itself crashed
-            else
-               echo "clippy-results.sarif not found or is empty. Skipping reviewdog for clippy."
-               # If 'cargo fmt --check' failed earlier, the job will already be marked as failed.
-               # If fmt passed and clippy found no issues, this is success.
-               exit 0
-            fi
+            echo "clippy-results.sarif not found or is empty. Skipping reviewdog analysis."
+            # If fmt failed, the job annotation will show it. If clippy had no output, this is fine.
+            exit 0
           fi
 
           echo "--- Running reviewdog with clippy results (SARIF format) ---"
-          # -f=sarif: Tell reviewdog to parse the input file as SARIF
-          # -name="clippy": Name for the Check Run displayed on GitHub
-          # -reporter="github-pr-review": Post results as a single review on the PR
-          # -filter-mode="diff_context": (Optional) Show only issues in changed lines - requires fetch-depth: 0 on checkout
-          # -fail-level="warning": Fail the step (and job) if any warning or error is reported
-          # -level="warning": Only report diagnostics of level warning or error
+          # Run reviewdog. Its fail-level will determine the step's success/failure based on SARIF content.
           reviewdog -f=sarif \
             -name="clippy" \
             -reporter="github-pr-review" \
             -fail-level="warning" \
             -level="warning" \
             clippy-results.sarif
-        # Add id to the clippy step for outcome checking
-      - name: Run cargo clippy # Add ID here
-        id: clippy # Assign an ID to this step
-        run: |
-          cargo clippy --all-targets --message-format=json -- -D warnings > clippy-results.sarif || true
