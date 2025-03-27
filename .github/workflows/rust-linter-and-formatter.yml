@@ -50,13 +50,13 @@ jobs:
         run: cargo fmt --check
         continue-on-error: true # Allow clippy to run even if fmt fails
 
-      # Run clippy, piping its default output directly into reviewdog's clippy parser
+      # Run clippy, piping its stdout AND stderr into reviewdog's clippy parser
       - name: Run clippy with reviewdog
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Corrected: Only ONE '--' separator
-          cargo clippy --all-targets -- -D warnings \
+          # Corrected: Added '2>&1' to redirect stderr to stdout before the pipe
+          cargo clippy --all-targets -- -D warnings 2>&1 \
             | reviewdog -f=clippy \
                 -name="clippy" \
                 -reporter="github-pr-review" \
