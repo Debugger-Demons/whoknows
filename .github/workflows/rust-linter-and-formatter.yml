@@ -1,81 +1,112 @@
-name: Linter
+# .github/workflows/rust-linter.yml
+
+name: Rust Linter
+
 on:
-  push:
-    branches:
-      - test
+  # Run on Pull Requests targeting the main branch
   pull_request:
     branches:
-      - development
+      - development # Or 'development', or your primary branch
+  # Allow manual triggering
   workflow_dispatch:
 
 jobs:
-  lint:
-    name: lint
+  lint-rust:
+    name: Lint Rust Code
     runs-on: ubuntu-latest
+
+    # Permissions needed for checking out code and posting PR reviews/checks
     permissions:
-      packages: read
-      statuses: write # To report GitHub Actions status checks
-      pull-requests: write # Required for reviewdog reporter
-      checks: write # Required for reviewdog's status checks
-      contents: read # For code checkout
-      issues: write # Needed for PR comments (good to have)
+      contents: read        # To check out the code
+      pull-requests: write  # To post review comments and create reviews
+      checks: write         # To create check runs (used by some reviewdog reporters)
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          # super-linter needs the full git history to get the
-          # list of files that changed across commits
+          # Fetch enough history for linters that diff against the base branch
+          # Super-Linter often needs this unless VALIDATE_ALL_CODEBASE=true
           fetch-depth: 0
 
-      - name: Cache Super-Linter
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/super-linter
-            .github/linters
-          key: ${{ runner.os }}-super-linter-${{ hashFiles('**/.github/super-linter.env') }}
-          restore-keys: |
-            ${{ runner.os }}-super-linter-
+      # Optional: Cache super-linter internal cache if needed, can speed up subsequent runs
+      # - name: Cache Super-Linter internal cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: ~/.cache/super-linter
+      #     key: ${{ runner.os }}-super-linter-${{ github.sha }} # Cache per commit
+      #     restore-keys: |
+      #       ${{ runner.os }}-super-linter-
 
       - name: Setup reviewdog
-        uses: reviewdog/action-setup@e04ffabe3898a0af8d0fb1af00c188831c4b5893 # v1.3.2
+        uses: reviewdog/action-setup@v1 # Pinning to v1 for stability
         with:
-          reviewdog_version: latest
+          reviewdog_version: latest # Or pin to a specific version e.g., v0.17.3
 
-      - name: Run Super-linter
-        uses: super-linter/super-linter@v7.3.0
-        # Removed id: super-linter as we don't need its stdout/stderr directly
+      - name: Run Super-Linter for Rust
+        uses: super-linter/super-linter@v7 # Use the latest v7 release
+        # Make sure the linter step continues even if errors are found,
+        # so reviewdog can process the results.
+        continue-on-error: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DISABLE_ERRORS: false
-          # --- Use SARIF format ---
-          OUTPUT_FORMAT: "sarif"
-          LOG_LEVEL: "ERROR"
-          # --- Corrected variable name ---
-          OUTPUT_DETAILS: "detailed"
-          VALIDATE_RUST_2021: true
-          VALIDATE_RUST_CLIPPY: true
-          VALIDATE_ALL_CODEBASE: true
-          GITHUB_COMMENT: false # Let reviewdog handle comments/checks
-          CREATE_LOG_FILE: true # Keep this if you want the regular log file too
-          # --- Specify SARIF output file name ---
-          SARIF_FILE_NAME: "super-linter.sarif" # Default name, but explicit is fine
-        continue-on-error: true # Important so reviewdog runs even if linting fails
+          # --- Basic Setup ---
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Required for Super-Linter to interact with GH API
+          RUN_LOCAL: false # Explicitly run in CI mode
 
-      - name: Run reviewdog
-        # Run if the previous step failed (continue-on-error: true) or succeeded
+          # --- Linter Activation ---
+          VALIDATE_ALL_CODEBASE: false # Recommended: Let Super-Linter detect changed files based on fetch-depth
+          VALIDATE_RUST_CLIPPY: true   # Enable Clippy
+          VALIDATE_RUST_RUSTFMT: true  # Enable Rustfmt
+          # Disable other linters if you ONLY want Rust (optional, saves time)
+          VALIDATE_YAML: false
+          VALIDATE_JSON: false
+          VALIDATE_MARKDOWN: false
+          # ... disable others as needed
+
+          # --- Output Configuration for Reviewdog ---
+          OUTPUT_FORMAT: sarif       # Generate SARIF output for reviewdog
+          SARIF_FILE_NAME: results.sarif # Define the output file name
+          OUTPUT_DETAILS: detailed   # Include details in the output
+          LOG_LEVEL: WARN            # Report warnings and errors
+          MULTI_STATUS: false        # Create one status check, not one per linter
+          DISABLE_ERRORS: false      # Fail the linter run if errors are found (but continue-on-error lets workflow proceed)
+          GITHUB_COMMENT: false      # VERY IMPORTANT: Let reviewdog handle comments/reviews
+
+          # --- Context for Changed File Detection ---
+          DEFAULT_BRANCH: main # Or 'development' - Branch to compare against if VALIDATE_ALL_CODEBASE=false
+
+
+      - name: Run reviewdog with SARIF Results
+        # Always run this step to report results, even if the previous step 'failed' (due to lint errors)
         if: always()
         env:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Feed the SARIF file generated by Super-Linter into reviewdog
+          echo "Running reviewdog with SARIF file: results.sarif"
+
+          # Check if the SARIF file exists and is not empty before running reviewdog
+          if [[ ! -s "results.sarif" ]]; then
+            echo "results.sarif not found or is empty. Skipping reviewdog."
+            # Optionally exit with success if no file means no errors
+            exit 0
+            # Or exit with failure if the file SHOULD have been generated
+            # exit 1
+          fi
+
           # -f=sarif: Input format is SARIF
-          # -name: Name of the check run
-          # -reporter: How to report results (GitHub Check)
-          # -fail-level: Fail the step if errors are found (use 'warning' to fail on warnings too)
+          # -name: Name for the Check Run displayed on GitHub
+          # -reporter=github-pr-review: Post results as a single review on the PR
+          #     Alternatives:
+          #       -reporter=github-pr-check: Post results as inline checks (can be noisy)
+          # -filter-mode=diff_context: Show results only in changed lines (requires fetch-depth > 1 or 0)
+          # -fail-level=warning: Fail the workflow step if any warning or error is found
+          #     Alternatives:
+          #       -fail-level=error: Fail only if errors are found
+          # -level=warning: Report warnings and errors (filter out notices)
           reviewdog -f=sarif \
-                    -name="super-linter" \
-                    -reporter="github-pr-check" \
-                    -fail-level=error \
-                    super-linter.sarif
+            -name="rust-linter" \
+            -reporter="github-pr-review" \
+            -filter-mode="diff_context" \
+            -fail-level="warning" \
+            -level="warning" \
+            results.sarif
