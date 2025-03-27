@@ -13,6 +13,7 @@ jobs:
     name: Lint Rust Code
     runs-on: ubuntu-latest
 
+    # Permissions needed for checkout, PR comments/reviews, and status checks
     permissions:
       contents: read        # To check out the code
       pull-requests: write  # To post review comments and create reviews
@@ -21,18 +22,19 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # No fetch-depth needed initially unless reviewdog's diff_context is inaccurate.
+        # fetch-depth: 0 may be needed if reviewdog's diff_context reporting seems off later
+        # with:
+        #   fetch-depth: 0
 
-      # Cache Cargo registry, index, installed tools, and build target directory
+      # Cache Cargo dependencies (registry, index, target dir)
       - name: Cache Cargo Dependencies
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cargo/bin/                # Cache installed tools like clippy-formatter
             ~/.cargo/registry/index/
             ~/.cargo/registry/cache/
             ~/.cargo/git/db/
-            target/                      # Cache build artifacts
+            target/
           key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: |
             ${{ runner.os }}-cargo-
@@ -43,47 +45,36 @@ jobs:
         with:
           components: clippy, rustfmt
 
-      # Install the clippy-formatter tool
-      - name: Install clippy-formatter
-        run: cargo install clippy-formatter --locked
+      # NO formatter install needed!
 
-      # Install reviewdog for reporting
+      # Install reviewdog
       - name: Setup reviewdog
         uses: reviewdog/action-setup@v1
         with:
-          reviewdog_version: latest # Or pin to a specific version like v0.17.3
+          reviewdog_version: latest
 
-      # Run rustfmt check - fails job if formatting issues exist, but allow continuation
+      # Run fmt check, continue even if it fails so clippy can run
       - name: Run cargo fmt (Check only)
         run: cargo fmt --check
-        continue-on-error: true # Allow clippy to run even if fmt fails
+        continue-on-error: true # Allow clippy to run even if formatting fails
 
-      # Run clippy, pipe JSON output to clippy-formatter, save as Checkstyle XML
-      - name: Run cargo clippy and Format Output
-        id: clippy # Add ID
-        run: |
-          cargo clippy --all-targets --message-format=json -- -D warnings | clippy-formatter > clippy-results.xml || true
-        # '|| true' ensures this step doesn't fail the job immediately if clippy finds issues.
-
-      # Run reviewdog using the Checkstyle XML output from clippy
-      - name: Run reviewdog for Clippy Results
-        if: always() # Run always to process results or skip gracefully
+      # Run clippy with default human-readable output and pipe directly to reviewdog
+      - name: Run clippy with reviewdog
         env:
+          # Provide the token for reviewdog to post results
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "--- Checking clippy-results.xml ---"
-          # Simple check if file exists and has content
-          if [[ ! -s "clippy-results.xml" ]]; then
-            echo "clippy-results.xml not found or is empty. Skipping reviewdog analysis."
-            # If fmt failed, the job status reflects it. If clippy had no output, this is fine.
-            exit 0
-          fi
+          # Run clippy with default output.
+          # Use '-- -- -D warnings' to make clippy itself exit non-zero on warnings,
+          # although the pipe means the overall step success depends on reviewdog.
+          # Pipe clippy's stdout directly into reviewdog.
+          cargo clippy --all-targets -- -- -D warnings \
+            | reviewdog -f=clippy \
+                -name="clippy" \
+                -reporter="github-pr-review" \
+                -level="warning" \
+                -fail-level="warning"
 
-          echo "--- Running reviewdog with clippy results (Checkstyle format) ---"
-          # Use checkstyle format again
-          reviewdog -f=checkstyle \
-            -name="clippy" \
-            -reporter="github-pr-review" \
-            -fail-level="warning" \
-            -level="warning" \
-            clippy-results.xml
+      # No separate reviewdog step is needed; it's integrated above.
+      # The 'Run clippy with reviewdog' step will fail if reviewdog finds issues
+      # based on its -fail-level setting, providing the correct job status.
