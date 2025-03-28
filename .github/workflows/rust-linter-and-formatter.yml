@@ -24,70 +24,12 @@ jobs:
         # with:
         #   fetch-depth: 0 # Add if reviewdog diff context needs it
 
-      - name: Cache Cargo Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-cargo-
-
       - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
       - name: Setup reviewdog
-        uses: reviewdog/action-setup@v1
+        uses: reviewdog/action-setup@36cf6ffd9c1675636b28e186199f10d021380048
         with:
           reviewdog_version: latest
-
-      # Run fmt check, add ID, allow continuation
-      - name: Run cargo fmt (Check only)
-        id: fmt # Added ID
-        run: cargo fmt --check
-        continue-on-error: true # Allow clippy to run even if fmt fails
-
-      # Run clippy, save BOTH stdout and stderr to a file, ignore exit code here
-      - name: Run cargo clippy and save output
-        id: clippy_run # Added ID
-        run: |
-          # Redirect stdout (>) and stderr (2>&1) to the file
-          # Use || true so this step doesn't fail just because clippy found errors
-          cargo clippy --all-targets -- -D warnings > clippy_output.txt 2>&1 || true
-
-      # Run reviewdog using the saved clippy output file
-      - name: Run reviewdog for Clippy Results
-        # Always run to process file or handle fmt failure
-        if: always()
-        env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Pass the outcome of the fmt step as an env var
-          FMT_OUTCOME: ${{ steps.fmt.outcome }}
-        run: |
-          echo "--- Checking clippy_output.txt ---"
-          ls -l clippy_output.txt # Show if file exists and its size
-
-          if [[ ! -s "clippy_output.txt" ]]; then
-            echo "clippy_output.txt not found or is empty."
-            # Check the FMT_OUTCOME env var
-            if [[ "$FMT_OUTCOME" == 'failure' ]]; then
-                 echo "Failing because cargo fmt failed earlier."
-                 exit 1 # Ensure job fails if fmt failed and clippy produced no output
-            else
-                 echo "Skipping reviewdog analysis as clippy output is missing/empty and fmt passed."
-                 exit 0
-            fi
-          fi
-
-          echo "--- Running reviewdog with clippy results (clippy format) ---"
-          # Use input redirection (<) to feed the file to reviewdog
-          reviewdog -f=clippy \
-            -name="clippy" \
-            -reporter="github-pr-review" \
-            -level="warning" \
-            -fail-level="warning" < clippy_output.txt # Read from file
