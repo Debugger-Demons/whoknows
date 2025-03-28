@@ -8,28 +8,24 @@ on:
       - development  # Make sure this matches your target branch
   workflow_dispatch:   # Allows manual triggering
 
+# Make sure CI fails on all warnings, including Clippy lints
+env:
+  RUSTFLAGS: "-Dwarnings"
+
 jobs:
   lint-rust:
     name: Lint Rust Code
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      pull-requests: write
-      checks: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        # with:
-        #   fetch-depth: 0 # Add if reviewdog diff context needs it
-
-      - name: Setup Rust Toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy, rustfmt
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
 
       - name: Setup reviewdog
         uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
+
+      
