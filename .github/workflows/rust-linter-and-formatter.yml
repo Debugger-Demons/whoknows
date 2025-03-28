@@ -30,6 +30,6 @@ jobs:
           components: clippy, rustfmt
 
       - name: Setup reviewdog
-        uses: reviewdog/action-setup@36cf6ffd9c1675636b28e186199f10d021380048
+        uses: reviewdog/action-setup@v1
         with:
           reviewdog_version: latest
