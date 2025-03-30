@@ -6,7 +6,7 @@ services:
     build:
       context: ./backend
       args:
-        - APP_NAME=whoknows_rust_actix_backend_dev
+        - APP_NAME=whoknows_dev
         - RUST_LOG=${RUST_LOG}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
         - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
