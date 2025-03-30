@@ -46,7 +46,23 @@ function select_environment() {
     echo "Setting secrets for $ENV_NAME environment..."
 }
 
-DEFAULT_REPO="AlekOmOm/rust-actix-web_CD"
+# dynamically pull repo name from git config
+function get_repo_name() {
+    local repo_name
+    # https://github.com/Debugger-Demons/whoknows.git
+    #repo_name=$(git config --get remote.origin.url | sed -E 's|.*github\.com[:/]|github.com/|' | sed -E 's|\.git$||')
+    # above gives: github.com/Debugger-Demons/whoknows
+    # remove the github.com/ part to get: Debugger-Demons/whoknows
+    repo_name=$(git config --get remote.origin.url | sed -E 's|.*github\.com[:/]||' | sed -E 's|\.git$||')
+    # above gives: Debugger-Demons/whoknows
+    echo "$repo_name"
+}
+
+# Get the default repo name from git config
+# This assumes the script is run in a git repository
+
+
+DEFAULT_REPO="$(get_repo_name)"
 DEFAULT_SSH_USER="deploy"
 DEFAULT_SSH_KEY_FILE="~/.ssh/id_rsa"
 DEFAULT_SERVER_PORT="22"
