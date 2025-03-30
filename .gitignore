@@ -1,4 +1,3 @@
-
 # docker container
 whoknows/
 
@@ -18,6 +17,61 @@ debug/
 # Shell scripts logs/temp files
 *.sh.log
 *.sh.tmp
+
+# Environment variables
+.env
+.env.production
+.env.development
+backend/.env
+frontend/.env
+
+# Rust build artifacts
+backend/target/
+
+# Optional: Commit Cargo.lock for reproducible application builds
+# Cargo.lock
+
+# Database file (IMPORTANT!) - Adjust path if needed
+# This assumes whoknows.db is directly in the database directory locally
+# If it's only ever created inside the Docker volume, this might not be strictly necessary
+# but it's good practice to ignore potential local DB files.
+database/whoknows.db
+database/whoknows.db-journal # SQLite temporary files
+
+# SSH keys / Secrets
+deploy_key
+deploy_key.pub
+*.pem
+deployment/scripts/deploy_key* # Covers keys within scripts dir too
+
+# OS/IDE specific
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Frontend build artifacts & dependencies
+frontend/node_modules/
+frontend/dist/ # Vite's default output directory
+# frontend/build/ # Only if you configure Vite/another tool to output here
+
+# Log files
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+.github/workflows/cd-DESKTOP-19QVLUP.yml
+backend/src/main-DESKTOP-19QVLUP.rs
+frontend/index-DESKTOP-19QVLUP.html
+frontend/vite.config-DESKTOP-19QVLUP.js
+frontend/src/App-DESKTOP-19QVLUP.jsx
+backend/Cargo-DESKTOP-19QVLUP.toml
+backend/Cargo-DESKTOP-19QVLUP.lock
+*-DESKTOP-19QVLUP*
+
 
 
 #######################################################################################
@@ -261,7 +315,6 @@ celerybeat.pid
 whoknows.db
 
 # Environments
-.env
 .venv
 env/
 venv/
