@@ -123,14 +123,7 @@ jobs:
 
           dos2unix ${{ env.ENV_FILE }}
 
-          echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> ${{ env.ENV_FILE }}
-          echo "IMAGE_TAG_FRONTEND=${{ needs.build-push.outputs.frontend_image_sha }}" >> ${{ env.ENV_FILE }}
-
-          # Override image tags specifically
-          sed -i '/^IMAGE_TAG_BACKEND=/d' ${{ env.ENV_FILE }}
-          sed -i '/^IMAGE_TAG_FRONTEND=/d' ${{ env.ENV_FILE }}
-
-          # Append the image tags
+          # Add image tags to .env file
           echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> ${{ env.ENV_FILE }}
           echo "IMAGE_TAG_FRONTEND=${{ needs.build-push.outputs.frontend_image_sha }}" >> ${{ env.ENV_FILE }}
 
