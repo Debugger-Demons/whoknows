@@ -61,7 +61,6 @@ async fn register() -> impl Responder {
 async fn config() -> impl Responder {
     let db_url = env::var("DATABASE_URL").unwrap_or_else(|_| "Not Set".to_string());
     let port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "Not Set".to_string());
-    let port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "Not Set".to_string());
     let environment = env::var("RUST_LOG").unwrap_or_else(|_| "Not Set".to_string());
     let build_version = env::var("BUILD_VERSION").unwrap_or_else(|_| "dev".to_string());
     
