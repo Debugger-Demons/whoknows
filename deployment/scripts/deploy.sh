@@ -26,6 +26,25 @@ docker compose pull || { echo "Failed to pull images"; exit 1; }
 echo "[$(date)] Starting containers"
 docker compose -f docker-compose.yml --env-file .env up -d --remove-orphans
 
+# ------------- image tags ------------- ##
+
+# backup to .env.bak
+if [ -f .env ]; then
+  cp .env .env.bak
+fi
+
+# add new image tags to .env
+if [ -f image_tags.env ]; then
+  # Remove existing image tags
+  grep -v '^IMAGE_TAG_' .env > .env.new
+  # Add new image tags
+  cat image_tags.env >> .env.new
+  # Replace .env atomically
+  mv .env.new .env
+  rm image_tags.env
+fi
+
+
 # ------------- health check ------------- ##
 
 # Wait for backend to become healthy
