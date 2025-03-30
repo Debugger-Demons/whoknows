@@ -114,6 +114,8 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      # ------------------------------------------
+
       - name: Install dos2unix
         run: sudo apt-get update && sudo apt-get install -y dos2unix
 
