@@ -3,9 +3,9 @@ name: dev - Continuous Deployment
 
 on:
   push:
-    branches: [dev] # on Push
+    branches: [development] # on Push
   pull_request:
-    branches: [dev] # on PR
+    branches: [development] # on PR
 
 env:
   # ---------------------------------------------
