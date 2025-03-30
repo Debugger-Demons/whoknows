@@ -2,8 +2,8 @@
 name: dev - Continuous Deployment
 
 on:
-  push: # current branch: cd
-    branches: [cd]
+  push:
+    branches: [cd] # <-- adjust for current branch to test
   pull_request:
     branches: [cd]
   workflow_dispatch: # manual trigger
