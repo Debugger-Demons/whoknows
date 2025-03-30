@@ -1,11 +1,11 @@
-# backend/Dockerfile for Rust Actix Web Backend
+# backend/Dockerfile
 # ---- Stage 1: Builder ----
     FROM rust:1.81 AS builder
 
-    # Define build arguments with defaults from .env files
-    ARG APP_NAME=whoknows_rust_actix_backend
-    ARG RUST_LOG=info
-    ARG COMPOSE_PROJECT_NAME=whoknows
+    # Define build arguments with values from .env files
+    ARG APP_NAME
+    ARG RUST_LOG
+    ARG COMPOSE_PROJECT_NAME
     
     # Install build dependencies
     RUN apt-get update && apt-get install -y --no-install-recommends libssl-dev pkg-config \
@@ -24,24 +24,21 @@
         && echo 'fn main() {println!("Building dependencies...")}' > src/main.rs \
         && cargo build --release \
         && rm -rf src \
-        && rm -f target/release/deps/${APP_NAME}*
+        && rm -f target/release/deps/*
     
-    # Copy the actual source code
+    # Copy source and build
     COPY src ./src
-    
-    # Build the application
     RUN cargo build --release
     
-    # --------------------------
     # ---- Stage 2: Runtime ----
     FROM debian:bookworm-slim
     
-    # Runtime arguments with defaults
-    ARG BACKEND_INTERNAL_PORT=8080
-    ARG RUST_LOG=info
-    ARG COMPOSE_PROJECT_NAME=whoknows
+    # Accept runtime args without defaults
+    ARG BACKEND_INTERNAL_PORT
+    ARG RUST_LOG
+    ARG COMPOSE_PROJECT_NAME
     
-    # Set environment variables for runtime
+    # Set runtime environment
     ENV BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
     ENV RUST_LOG=${RUST_LOG}
     ENV COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
@@ -51,6 +48,10 @@
         && rm -rf /var/lib/apt/lists/*
     
     WORKDIR /app
+    
+    # Create data directory
+    RUN mkdir -p /app/data
+    
     
     # 'backend' -- the binary created and named by Cargo.toml - this is the default name
     ## ./Cargo.toml
@@ -62,5 +63,4 @@
     
     EXPOSE ${BACKEND_INTERNAL_PORT}
     
-    # Start the application
     CMD ["./backend"]
