@@ -1,0 +1,198 @@
+# cd.dev.yml
+name: dev - Continuous Deployment
+
+on:
+  push:
+    branches: [dev] # on Push
+  pull_request:
+    branches: [dev] # on PR
+
+env:
+  # ---------------------------------------------
+  # ------------ Environment Variables ----------
+  #
+  GHCR_REGISTRY: ghcr.io
+  IMAGE_BASENAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
+  # Secrets:
+  GHCR_PAT_OR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
+  SERVER_USER: ${{ secrets.DEV_SERVER_USER }}
+  SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }}
+  SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }}
+  # SSH:
+  SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+  ENV_FILE_CONTENT: ${{ secrets.DEV_ENV_FILE }}
+  # Commands:
+  SSH_CMD: ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.DEV_SERVER_USER }}@${{ secrets.DEV_SERVER_HOST }}
+  SCP_CMD: scp -i ~/.ssh/id_rsa -P ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no
+  # paths:
+  ENV_FILE: .env.development # production or development
+  DEPLOY_DIR: ./deployment/rust-actix-web_cd
+  FRONTEND_PATH: ./frontend
+  NGINX_FILE_PATH: ./frontend/nginx.conf
+  BACKEND_PATH: ./backend
+  DOCKER_COMPOSE_FILE: ./docker-compose.dev.yml # prod or dev
+  DEPLOY_SCRIPT: ./deployment/scripts/deploy.sh
+  DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
+
+jobs:
+  #
+  # ---------------------------------------------
+  # ----------------- build-push ----------------
+  #
+  build-push:
+    name: Build & Push Docker Images
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      backend_image_sha: ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend:${{ steps.image_tags.outputs.tag_sha }}
+      frontend_image_sha: ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend:${{ steps.image_tags.outputs.tag_sha }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GHCR_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ env.GHCR_PAT_OR_TOKEN }}
+
+        # ---------------------------------------------
+
+      - name: Lowercase Image Base Name
+        id: lowercaser
+        run: echo "image_base=$(echo ${{ env.IMAGE_BASENAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Define Image Tags
+        id: image_tags
+        run: |
+          TAG_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+          echo "tag_sha=${TAG_SHA}" >> $GITHUB_OUTPUT
+          echo "tag_latest=latest" >> $GITHUB_OUTPUT
+
+        # ---------------------------------------------
+
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.BACKEND_PATH }}
+          file: ${{ env.BACKEND_PATH }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend:${{ steps.image_tags.outputs.tag_latest }}
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend:${{ steps.image_tags.outputs.tag_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.FRONTEND_PATH }}
+          file: ${{ env.FRONTEND_PATH }}/Dockerfile
+          push: true
+          tags: |
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend:${{ steps.image_tags.outputs.tag_latest }}
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend:${{ steps.image_tags.outputs.tag_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # ---------------------------------------------
+  # ----------------- deploy --------------------
+
+  deploy:
+    name: Deploy to Server
+    needs: build-push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Install dos2unix
+        run: sudo apt-get update && sudo apt-get install -y dos2unix
+
+      - name: Create .env file
+        run: |
+          echo "${{ env.ENV_FILE_CONTENT }}" > ${{ env.ENV_FILE }}
+
+          dos2unix ${{ env.ENV_FILE }}
+
+          echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> ${{ env.ENV_FILE }}
+          echo "IMAGE_TAG_FRONTEND=${{ needs.build-push.outputs.frontend_image_sha }}" >> ${{ env.ENV_FILE }}
+
+          # Override image tags specifically
+          sed -i '/^IMAGE_TAG_BACKEND=/d' ${{ env.ENV_FILE }}
+          sed -i '/^IMAGE_TAG_FRONTEND=/d' ${{ env.ENV_FILE }}
+
+          # Append the image tags
+          echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> ${{ env.ENV_FILE }}
+          echo "IMAGE_TAG_FRONTEND=${{ needs.build-push.outputs.frontend_image_sha }}" >> ${{ env.ENV_FILE }}
+
+        # ------------------------------------------
+
+      - name: Transfer files to server
+        run: |
+          # SERVER_DEST_BASE
+          SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
+
+          # mkdir
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}" 
+
+          # scp directly to final names
+          ${{ env.SCP_CMD }} ${{ env.DOCKER_COMPOSE_FILE }} ${SERVER_DEST_BASE}/docker-compose.yml
+          ${{ env.SCP_CMD }} ${{ env.ENV_FILE }} ${SERVER_DEST_BASE}/.env
+          ${{ env.SCP_CMD }} ${{ env.NGINX_FILE_PATH }} ${SERVER_DEST_BASE}/nginx.conf
+          ${{ env.SCP_CMD }} ${{ env.DEPLOY_SCRIPT }} ${SERVER_DEST_BASE}/deploy.sh
+          ${{ env.SCP_CMD }} ${{ env.DOCKER_LOGIN_SCRIPT }} ${SERVER_DEST_BASE}/docker-login.sh
+
+              # dir: 
+                # ~/deployment/rust-actix-web_cd/
+                  # ├── docker-compose.yml
+                  # ├── .env
+                  # ├── deploy.sh
+                  # ├── docker-login.sh
+                  # └── nginx.conf
+
+        # ------------------------------------------
+
+      - name: Execute Deployment on Server
+        run: |
+          DEPLOY_DIR="${{ env.DEPLOY_DIR }}"
+          ENV_FILE="${{ env.ENV_FILE }}"
+          DOCKER_COMPOSE_FILE="${{ env.DOCKER_COMPOSE_FILE }}"
+          NGINX_FILE_PATH="${{ env.NGINX_FILE_PATH }}"
+          DEPLOY_SCRIPT="${{ env.DEPLOY_SCRIPT }}"
+          DOCKER_LOGIN_SCRIPT="${{ env.DOCKER_LOGIN_SCRIPT }}"
+          GHCR_PAT_OR_TOKEN="${{ env.GHCR_PAT_OR_TOKEN }}"
+          GHCR_REGISTRY="${{ env.GHCR_REGISTRY }}"
+          GITHUB_ACTOR="${{ github.actor }}"
+
+          ${{ env.SSH_CMD }} << EOF
+            set -e 
+            cd ~/${DEPLOY_DIR}
+            
+            # --- Login, Deploy, Logout ---
+            chmod +x ./docker-login.sh
+            ./docker-login.sh "${GHCR_PAT_OR_TOKEN}" "${GHCR_REGISTRY}" "${GITHUB_ACTOR}"
+            
+            echo "Running deployment script (deploy.sh)..."
+            chmod +x ./deploy.sh
+            ./deploy.sh
+
+            echo "Logging out from GHCR..."
+            docker logout ${GHCR_REGISTRY}
+          EOF
