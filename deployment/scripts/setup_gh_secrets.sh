@@ -37,7 +37,10 @@ function select_environment() {
         ENV_NAME="production"
     fi
 
-    DEFAULT_ENV_FILE="${PROJECT_ROOT}/.env.${ENV_NAME}"
+    # Set absolute path for internal use
+    DEFAULT_ENV_FILE_ABS="${PROJECT_ROOT}/.env.${ENV_NAME}"
+    # Set display path relative to project root for user-friendly prompts
+    DEFAULT_ENV_FILE_DISPLAY=".env.${ENV_NAME}"
     
     echo "Setting secrets for $ENV_NAME environment..."
 }
@@ -90,8 +93,20 @@ function get_secret_values() {
     SERVER_PORT=${SERVER_PORT:-$DEFAULT_SERVER_PORT}
     read -p "Enter the path to the PRIVATE SSH key file [${DEFAULT_SSH_KEY_FILE}]: " SSH_KEY_FILE
     SSH_KEY_FILE=${SSH_KEY_FILE:-$DEFAULT_SSH_KEY_FILE}
-    read -p "Enter the path to the ${ENV_NAME} .env file [${DEFAULT_ENV_FILE}]: " ENV_FILE_PATH
-    ENV_FILE_PATH=${ENV_FILE_PATH:-$DEFAULT_ENV_FILE}
+    read -p "Enter the path to the ${ENV_NAME} .env file [${DEFAULT_ENV_FILE_DISPLAY}]: " ENV_FILE_PATH_INPUT
+    
+    # If user entered nothing, use the default absolute path
+    if [[ -z "$ENV_FILE_PATH_INPUT" ]]; then
+        ENV_FILE_PATH="$DEFAULT_ENV_FILE_ABS"
+    else
+        # If user entered a relative path, convert it relative to project root
+        if [[ "$ENV_FILE_PATH_INPUT" != /* && "$ENV_FILE_PATH_INPUT" != ~/* ]]; then
+            ENV_FILE_PATH="${PROJECT_ROOT}/${ENV_FILE_PATH_INPUT}"
+        else
+            # User entered absolute path
+            ENV_FILE_PATH="$ENV_FILE_PATH_INPUT"
+        fi
+    fi
     read -s -p "Enter your GitHub PAT with read:packages scope (GHCR_PAT_OR_TOKEN): " GHCR_PAT_OR_TOKEN
     echo # Add newline after hidden input
 
@@ -159,6 +174,15 @@ function set_secrets() {
     fi
 }
 
+function display_env_file_path() {
+    # Display the file path in a user-friendly format
+    if [[ "$ENV_FILE_PATH" == "$PROJECT_ROOT"/* ]]; then
+        echo "${ENV_FILE_PATH#$PROJECT_ROOT/}"
+    else
+        echo "$ENV_FILE_PATH"
+    fi
+}
+
 # Display summary and confirm
 function confirm_settings() {
     echo "---------------------------------"
@@ -168,7 +192,7 @@ function confirm_settings() {
     echo "SERVER_USER:       $SERVER_USER"
     echo "SERVER_PORT:       $SERVER_PORT"
     echo "SSH_PRIVATE_KEY:   (from file $SSH_KEY_FILE)"
-    echo "ENV_FILE:          (from file $ENV_FILE_PATH)"
+    echo "ENV_FILE:          (from file "$(display_env_file_path)")"
     echo "GHCR_PAT_OR_TOKEN: (hidden)"
     echo "---------------------------------"
     read -p "Proceed? (y/N): " confirm
