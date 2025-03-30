@@ -2,10 +2,11 @@
 name: dev - Continuous Deployment
 
 on:
-  push:
-    branches: [feat/CD-delivery-workflow] # on Push
+  push: # current branch: feat/CD-delivery-workflow
+    branches: [feat/CD-delivery-workflow] # on push
   pull_request:
     branches: [feat/CD-delivery-workflow] # on PR
+  workflow_dispatch: # manual trigger
 
 env:
   # ---------------------------------------------
