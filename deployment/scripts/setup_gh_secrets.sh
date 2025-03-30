@@ -49,12 +49,8 @@ function select_environment() {
 # dynamically pull repo name from git config
 function get_repo_name() {
     local repo_name
-    # https://github.com/Debugger-Demons/whoknows.git
-    #repo_name=$(git config --get remote.origin.url | sed -E 's|.*github\.com[:/]|github.com/|' | sed -E 's|\.git$||')
-    # above gives: github.com/Debugger-Demons/whoknows
-    # remove the github.com/ part to get: Debugger-Demons/whoknows
     repo_name=$(git config --get remote.origin.url | sed -E 's|.*github\.com[:/]||' | sed -E 's|\.git$||')
-    # above gives: Debugger-Demons/whoknows
+    # above gives fx: Debugger-Demons/whoknows
     echo "$repo_name"
 }
 
