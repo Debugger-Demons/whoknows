@@ -26,7 +26,7 @@ env:
   SCP_CMD: scp -i ~/.ssh/id_rsa -P ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no
   # paths:
   ENV_FILE: .env.development # production or development
-  DEPLOY_DIR: ./deployment/rust-actix-web_cd
+  DEPLOY_DIR: ./deployment/whoknows
   FRONTEND_PATH: ./frontend
   NGINX_FILE_PATH: ./frontend/nginx.conf
   BACKEND_PATH: ./backend
@@ -160,7 +160,7 @@ jobs:
           ${{ env.SCP_CMD }} ${{ env.DOCKER_LOGIN_SCRIPT }} ${SERVER_DEST_BASE}/docker-login.sh
 
               # dir: 
-                # ~/deployment/rust-actix-web_cd/
+                # ~/deployment/whoknows/
                   # ├── docker-compose.yml
                   # ├── .env
                   # ├── deploy.sh
