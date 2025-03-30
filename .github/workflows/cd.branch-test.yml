@@ -12,7 +12,7 @@ env:
   # ---------------------------------------------
   # ------------ Environment Variables ----------
   #
-  # utitilizing .env.development file   for testing branch deployments
+  # utilizing   .env.development  for env var for Testing Branch deployments
   GHCR_REGISTRY: ghcr.io
   IMAGE_BASENAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
   # Secrets:
