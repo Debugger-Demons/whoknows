@@ -15,11 +15,11 @@ if ! gh auth status &>/dev/null; then
     exit 1
 fi
 
-# --- End Configuration ---
-BASE_ENV_FILE_PATH="../../"
-
-DEFAULT_ENV_FILE="$BASE_ENV_FILE_PATH.env.production"
-
+# --- Find project root directory ---
+# Get the directory where the script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Determine project root relative to script location
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # Set environment variables
 function select_environment() {
@@ -32,39 +32,28 @@ function select_environment() {
     if [ "$ENV_CHOICE" == "2" ]; then
         ENV_PREFIX="DEV"
         ENV_NAME="development"
-        
     else
         ENV_PREFIX="PROD"
         ENV_NAME="production"
     fi
 
-    DEFAULT_ENV_FILE="$BASE_ENV_FILE_PATH.env.$ENV_NAME"
-    ENV_FILE=".env.$ENV_NAME"
+    DEFAULT_ENV_FILE="${PROJECT_ROOT}/.env.${ENV_NAME}"
     
-  
-
     echo "Setting secrets for $ENV_NAME environment..."
 }
 
 # dynamically pull repo name from git config
 function get_repo_name() {
     local repo_name
-    repo_name=$(git config --get remote.origin.url | sed -E 's|.*github\.com[:/]||' | sed -E 's|\.git$||')
-    # above gives fx: Debugger-Demons/whoknows
+    # Make sure we're getting git info from project root
+    repo_name=$(cd "${PROJECT_ROOT}" && git config --get remote.origin.url | sed -E 's|.*github\.com[:/]||' | sed -E 's|\.git$||')
     echo "$repo_name"
 }
-
-# Get the default repo name from git config
-# This assumes the script is run in a git repository
-
 
 DEFAULT_REPO="$(get_repo_name)"
 DEFAULT_SSH_USER="deploy"
 DEFAULT_SSH_KEY_FILE="~/.ssh/id_rsa"
 DEFAULT_SERVER_PORT="22"
-
-
-
 
 # Collect and validate repo info
 function get_repo_info() {
@@ -92,7 +81,6 @@ function convert_path() {
     echo "$path"
 }
 
-
 # Collect and validate secret values
 function get_secret_values() {
     read -p "Enter the Server Host/IP address (SERVER_HOST): " SERVER_HOST
@@ -102,7 +90,7 @@ function get_secret_values() {
     SERVER_PORT=${SERVER_PORT:-$DEFAULT_SERVER_PORT}
     read -p "Enter the path to the PRIVATE SSH key file [${DEFAULT_SSH_KEY_FILE}]: " SSH_KEY_FILE
     SSH_KEY_FILE=${SSH_KEY_FILE:-$DEFAULT_SSH_KEY_FILE}
-    read -p "Enter the path to the ${ENV_NAME} .env file from project root [${ENV_FILE}]: " ENV_FILE_PATH
+    read -p "Enter the path to the ${ENV_NAME} .env file [${DEFAULT_ENV_FILE}]: " ENV_FILE_PATH
     ENV_FILE_PATH=${ENV_FILE_PATH:-$DEFAULT_ENV_FILE}
     read -s -p "Enter your GitHub PAT with read:packages scope (GHCR_PAT_OR_TOKEN): " GHCR_PAT_OR_TOKEN
     echo # Add newline after hidden input
@@ -180,7 +168,7 @@ function confirm_settings() {
     echo "SERVER_USER:       $SERVER_USER"
     echo "SERVER_PORT:       $SERVER_PORT"
     echo "SSH_PRIVATE_KEY:   (from file $SSH_KEY_FILE)"
-    echo "ENV_FILE:          (from file .env$ENV_NAME)"
+    echo "ENV_FILE:          (from file $ENV_FILE_PATH)"
     echo "GHCR_PAT_OR_TOKEN: (hidden)"
     echo "---------------------------------"
     read -p "Proceed? (y/N): " confirm
