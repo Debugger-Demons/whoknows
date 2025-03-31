@@ -193,3 +193,5 @@ jobs:
             echo "Logging out from GHCR..."
             docker logout ${GHCR_REGISTRY}
           EOF
+
+          
