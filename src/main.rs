@@ -9,7 +9,7 @@ async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world2!")
 }
  
-Hi hello find me catch me hahahhhahah;;;;
+// (Removed or commented out)
 
 #[get("/search")]
 async fn search() -> impl Responder {
