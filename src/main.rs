@@ -18,7 +18,7 @@ async fn search() -> impl Responder {
 
 #[get("/weather")]
 async fn weather() -> impl Responder {
-    Ht
+    HttpResponse::Ok().body("Get weather")
 
 #[get("/api/weather")]
 async fn get_weather() -> impl Responder {
