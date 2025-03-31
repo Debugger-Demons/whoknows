@@ -1,0 +1,54 @@
+# docker-compose.dev.yml
+services:
+  backend:
+    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_backend_dev
+    image: ${IMAGE_TAG_BACKEND}
+    build:
+      context: ./backend
+      args:
+        - APP_NAME=whoknows_dev
+        - RUST_LOG=${RUST_LOG}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+        - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
+    restart: unless-stopped
+    environment:
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+      - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
+      - RUST_LOG=${RUST_LOG}
+      - DATABASE_URL=${DATABASE_URL}
+    volumes:
+      - db_data:/app/data
+    expose:
+      - "${BACKEND_INTERNAL_PORT}"
+    networks:
+      - app-network
+
+  frontend:
+    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_frontend_dev
+    image: ${IMAGE_TAG_FRONTEND}
+    build:
+      context: ./frontend
+      args:
+        - NODE_ENV=${NODE_ENV:-production}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+        - FRONTEND_INTERNAL_PORT=${FRONTEND_INTERNAL_PORT}
+        - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
+    restart: always
+    ports:
+      - "${HOST_PORT_FRONTEND:-8080}:${FRONTEND_INTERNAL_PORT:-91}"
+    environment:
+      - FRONTEND_INTERNAL_PORT=${FRONTEND_INTERNAL_PORT:-91}
+      - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT:-92}
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+    name: ${COMPOSE_PROJECT_NAME}_db_data_dev
+
+networks:
+  app-network:
+    name: ${COMPOSE_PROJECT_NAME}_network_dev
+    driver: bridge
