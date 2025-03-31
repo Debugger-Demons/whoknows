@@ -1,7 +1,7 @@
 use actix_web::{get, post, App, HttpResponse, HttpServer, Responder};
 use actix_cors::Cors;
 
-cont HOST_NAME: &str = "0.0.0.0";
+const HOST_NAME: &str = "0.0.0.0";
 const PORT: u16 = 8080;
 
 #[get("/")]
