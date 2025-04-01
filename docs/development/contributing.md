@@ -1,5 +1,10 @@
-
 # Contributing to Whoknows - Rust ActixWeb
+
+other docs
+
+- [gh-cli](./gh-cli/index.gh-cli.md)
+- [kanban - issues documentation](./kanban/issues_docs/docker_implementation_issue.md)
+- [make](./makefile/MAKEFILE.md)
 
 ## Quick Start
 
@@ -20,6 +25,7 @@
 ## Development Standards
 
 ### Git Practices
+
 - Write clear commit messages describing why not what
 - Keep commits focused and logical
 - Use default branch (development) for feature development and testing
@@ -27,14 +33,15 @@
 - Don't use main, it is protected and solely for releases (CI/CD) -- i.e. its a production branch
 
 ### Code Standards
+
 - Follow Rust style guide (use clippy)
 - Add tests for new features
 - Run Clippy (cargo clippy) and fix warnings before committing
 - Update documentation
 - Ensure CI checks pass
 
-
 ### PR Guidelines
+
 - Use PR template
 - Keep changes focused
 - Add useful description
@@ -42,9 +49,10 @@
 - Request review from relevant team members
 
 ### Never Commit (all mentioned are in .gitignore)
+
 - IDE settings (.idea, .vscode)
 - OS files (.DS_Store)
-- Build artifacts (__pycache__)
+- Build artifacts (**pycache**)
 - Environment files (.env)
 - Dependency directories (node_modules)
 
