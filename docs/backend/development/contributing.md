@@ -1,6 +1,21 @@
 
 # Contributing to Whoknows - Rust ActixWeb
 
+toc: 
+- [Quick Start](#quick-start)
+- [Branch Naming](#branch-naming)
+- [Development Standards](#development-standards)
+  - [Git Practices](#git-practices)
+  - [Code Standards](#code-standards)
+  - [PR Guidelines](#pr-guidelines)
+  - [Never Commit](#never-commit-all-mentioned-are-in-gitignore)
+- [Review Process](#review-process)
+- [Getting Help](#getting-help)
+
+## tech stack
+
+- [mermaid-cli](docs/development/setup/mermaid.md)
+
 ## Quick Start
 
 1. Fork the repository (external) or create a branch (team member)
