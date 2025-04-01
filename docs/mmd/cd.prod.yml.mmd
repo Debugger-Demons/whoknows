@@ -1,0 +1,63 @@
+---
+config:
+  layout: elk
+  look: handDrawn
+  theme: neutral
+---
+graph TB
+    subgraph "Setup Phase"
+        A[Developer Configures Environment]
+        B[Setup GitHub Secrets]
+        C[Create .env.production]
+    end
+    
+    subgraph "GitHub Actions Workflow"
+        D[Push to main branch]
+        E[Trigger cd.prod.yml]
+        
+        subgraph "build-push Job"
+            F[Check out code]
+            G[Set up Docker Buildx]
+            H[Log in to GHCR]
+            I[Build & push backend image]
+            J[Build & push frontend image]
+        end
+        
+        subgraph "deploy Job"
+            K[Set up SSH keys]
+            L[Create .env with image tags]
+            M[Transfer files to server]
+            N[Execute deploy.sh on server]
+        end
+    end
+    
+    subgraph "Server Deployment"
+        O[Docker login to GHCR]
+        P[Pull container images]
+        Q[Start containers via docker-compose]
+        R[Health check]
+        
+        R -->|Success| S[Cleanup old images]
+        R -->|Failure| T[Rollback to previous state]
+    end
+    
+    subgraph "Running Application"
+        U[Frontend container]
+        V[Backend container]
+        W[Persistent Volume]
+    end
+    
+    A --> B
+    A --> C
+    B --> E
+    C --> E
+    D --> E
+    E --> F
+    F --> G --> H --> I --> J
+    J --> K
+    K --> L --> M --> N
+    N --> O --> P --> Q --> R
+    R --> U
+    R --> V
+    V --> W
+    U <--> V
