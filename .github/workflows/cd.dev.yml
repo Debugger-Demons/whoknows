@@ -117,8 +117,6 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-          ${{ env.SSH_PRIVATE_KEY}} > ~/.ssh/id_rsa
-
           echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
 
           chmod 600 ~/.ssh/id_rsa
