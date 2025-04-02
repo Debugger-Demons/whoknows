@@ -2,10 +2,9 @@
 name: dev - Continuous Deployment
 
 on:
-  push:
-    branches: [development] # on Push
   pull_request:
-    branches: [development] # on PR
+    types: [closed] # on PR closed (i.e. merged)
+    branches: [development]
 
 env:
   # ---------------------------------------------
@@ -41,6 +40,7 @@ jobs:
   #
   build-push:
     name: Build & Push Docker Images
+    if: github.event.pull_request.merged == true # Only run if the PR is merged
     runs-on: ubuntu-latest
     permissions:
       contents: read # permission to read the repository contents
@@ -107,6 +107,7 @@ jobs:
 
   deploy:
     name: Deploy to Server
+    if: github.event.pull_request.merged == true
     needs: build-push
     runs-on: ubuntu-latest
 
@@ -117,9 +118,7 @@ jobs:
       - name: Set up SSH key
         run: |
           mkdir -p ~/.ssh
-
           echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
 
