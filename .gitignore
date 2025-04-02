@@ -26,6 +26,7 @@ frontend/.env
 
 # ai prompt
 ai-primpt-content/
+ai-primpt-content/*
 
 # Rust build artifacts
 backend/target/
