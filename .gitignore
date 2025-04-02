@@ -346,3 +346,5 @@ dmypy.json
 cython_debug/
 #
 secret.txt
+ai-prompt-content/
+ai-prompt-content/cd.branch-test.yml
