@@ -1,5 +1,5 @@
 # cd.dev.yml
-name: dev - Continuous Deployment
+name: branch-test - Continuous Deployment
 
 on:
   push:
