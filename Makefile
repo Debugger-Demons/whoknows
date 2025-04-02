@@ -28,11 +28,10 @@ env-update:
 
 # Create a pull request with the updated env secrets
 # -> This assumes you have a branch already created for the changes
-pr-create: update-env-secrets
+pr-create: env-update
 	@echo "Creating pull request..."
 	@gh pr create
 	@echo "Pull request created successfully!"
-
 # === GitHub Issue Creation ===
 
 # --- Main Issue Creation Target ---
