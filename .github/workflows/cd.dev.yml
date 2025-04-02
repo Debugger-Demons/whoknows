@@ -34,6 +34,9 @@ env:
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
 jobs:
+  validate-config:
+    uses: ./.github/workflows/validate.env_and_secrets.yml
+
   #
   # ---------------------------------------------
   # ----------------- build-push ----------------
