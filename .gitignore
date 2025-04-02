@@ -346,3 +346,4 @@ dmypy.json
 cython_debug/
 #
 ai-prompt-content/
+docs/issues/
