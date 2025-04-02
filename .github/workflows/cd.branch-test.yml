@@ -3,7 +3,7 @@ name: test branch - Continuous Deployment
 
 on:
   push:
-    branches: [test] # <-- adjust for current branch to test
+    branches: [branch/testing-workflows] # <-- adjust for current branch to test
   workflow_dispatch: # manual trigger
 
 env:
@@ -35,6 +35,9 @@ env:
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
 jobs:
+  validate-config:
+    uses: ./.github/workflows/validate.env_and_secrets.yml
+
   #
   # ---------------------------------------------
   # ----------------- build-push ----------------
