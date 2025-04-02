@@ -24,6 +24,9 @@ debug/
 backend/.env
 frontend/.env
 
+# ai prompt
+ai-prompt-content/
+
 # Rust build artifacts
 backend/target/
 
@@ -347,4 +350,3 @@ cython_debug/
 #
 secret.txt
 ai-prompt-content/
-ai-prompt-content/cd.branch-test.yml
