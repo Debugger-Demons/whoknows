@@ -36,6 +36,13 @@ env:
 jobs:
   validate-config:
     uses: ./.github/workflows/validate.env_and_secrets.yml
+    secrets:
+      PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
+      DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
+      PROD_SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
+      DEV_SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+      PROD_GHCR_PAT_OR_TOKEN: ${{ secrets.PROD_GHCR_PAT_OR_TOKEN }}
+      DEV_GHCR_PAT_OR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
 
   #
   # ---------------------------------------------
