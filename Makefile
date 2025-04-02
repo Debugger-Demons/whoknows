@@ -9,8 +9,8 @@ update-env-secrets:
 # Alternative approach using the -f flag to set individual env vars as secrets
 update-env-vars:
 	@echo "Updating individual environment variables as secrets..."
-	@gh secret set -f .env.production
-	@gh secret set -f .env.development
+	@gh secret set PROD_ENV_FILE < .env.production
+	@gh secret set DEV_ENV_FILE < .env.development
 	@echo "Environment variables updated successfully!"
 
 # Create a pull request with the updated env secrets
