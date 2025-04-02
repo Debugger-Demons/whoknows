@@ -4,8 +4,6 @@ name: test branch - Continuous Deployment
 on:
   push:
     branches: [test] # <-- adjust for current branch to test
-  pull_request:
-    branches: [test]
   workflow_dispatch: # manual trigger
 
 env:
@@ -193,5 +191,3 @@ jobs:
             echo "Logging out from GHCR..."
             docker logout ${GHCR_REGISTRY}
           EOF
-
-          
