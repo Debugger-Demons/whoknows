@@ -4,8 +4,6 @@ name: test branch - Continuous Deployment
 on:
   push:
     branches: [test] # <-- adjust for current branch to test
-  pull_request:
-    branches: [test]
   workflow_dispatch: # manual trigger
 
 env:
@@ -120,7 +118,6 @@ jobs:
         run: |
           mkdir -p ~/.ssh
           echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
 

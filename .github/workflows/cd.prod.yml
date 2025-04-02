@@ -2,10 +2,9 @@
 name: CI/CD Pipeline
 
 on:
-  push:
-    branches: [main] # on Push
   pull_request:
-    branches: [main] # on PR
+    types: [closed]
+    branches: [main]
 
 env:
   GHCR_REGISTRY: ghcr.io
@@ -34,6 +33,7 @@ env:
 jobs:
   build-push:
     name: Build & Push Docker Images
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -100,6 +100,7 @@ jobs:
 
   deploy:
     name: Deploy to Server
+    if: github.event.pull_request.merged == true
     needs: build-push
     runs-on: ubuntu-latest
 

@@ -1,20 +1,10 @@
-
 # Contributing to Whoknows - Rust ActixWeb
 
-toc: 
-- [Quick Start](#quick-start)
-- [Branch Naming](#branch-naming)
-- [Development Standards](#development-standards)
-  - [Git Practices](#git-practices)
-  - [Code Standards](#code-standards)
-  - [PR Guidelines](#pr-guidelines)
-  - [Never Commit](#never-commit-all-mentioned-are-in-gitignore)
-- [Review Process](#review-process)
-- [Getting Help](#getting-help)
+other docs
 
-## tech stack
-
-- [mermaid-cli](docs/development/setup/mermaid.md)
+- [gh-cli](./gh-cli/index.gh-cli.md)
+- [kanban - issues documentation](./kanban/issues_docs/docker_implementation_issue.md)
+- [make](./makefile/MAKEFILE.md)
 
 ## Quick Start
 
@@ -35,6 +25,7 @@ toc:
 ## Development Standards
 
 ### Git Practices
+
 - Write clear commit messages describing why not what
 - Keep commits focused and logical
 - Use default branch (development) for feature development and testing
@@ -42,14 +33,15 @@ toc:
 - Don't use main, it is protected and solely for releases (CI/CD) -- i.e. its a production branch
 
 ### Code Standards
+
 - Follow Rust style guide (use clippy)
 - Add tests for new features
 - Run Clippy (cargo clippy) and fix warnings before committing
 - Update documentation
 - Ensure CI checks pass
 
-
 ### PR Guidelines
+
 - Use PR template
 - Keep changes focused
 - Add useful description
@@ -57,9 +49,10 @@ toc:
 - Request review from relevant team members
 
 ### Never Commit (all mentioned are in .gitignore)
+
 - IDE settings (.idea, .vscode)
 - OS files (.DS_Store)
-- Build artifacts (__pycache__)
+- Build artifacts (**pycache**)
 - Environment files (.env)
 - Dependency directories (node_modules)
 
