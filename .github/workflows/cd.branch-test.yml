@@ -50,7 +50,6 @@ jobs:
   #
   build-push:
     name: Build & Push Docker Images
-    if: github.event.pull_request.merged == true # Only run if the PR is merged
     runs-on: ubuntu-latest
     permissions:
       contents: read # permission to read the repository contents
