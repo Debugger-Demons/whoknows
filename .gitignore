@@ -24,6 +24,9 @@ debug/
 backend/.env
 frontend/.env
 
+# ai prompt
+ai-primpt-content/
+
 # Rust build artifacts
 backend/target/
 
