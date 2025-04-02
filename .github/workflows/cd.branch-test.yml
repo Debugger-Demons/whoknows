@@ -116,7 +116,6 @@ jobs:
 
   deploy:
     name: Deploy to Server
-    if: github.event.pull_request.merged == true
     needs: build-push
     runs-on: ubuntu-latest
 
