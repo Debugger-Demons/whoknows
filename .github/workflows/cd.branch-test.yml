@@ -1,10 +1,10 @@
-# cd.dev.yml
+# cd.branch-test.yml
 name: branch-test - Continuous Deployment
 
 on:
   push:
-    branches: [branch/testing-workflows] # <-- adjust for current branch to test
-  workflow_dispatch: # manual trigger
+    branches: [feat/validate-env_and_secrets-workflow] # <-- adjust for current branch to test
+  workflow_dispatch:
 
 env:
   # ---------------------------------------------
