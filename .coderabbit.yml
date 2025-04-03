@@ -1,2 +1,4 @@
-base_branches:
- - development
+reviews:
+  auto_review:
+    base_branches:
+    - development
