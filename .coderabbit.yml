@@ -1,4 +1,5 @@
 reviews:
+  review-status: false
   auto_review:
     base_branches:
     - development
