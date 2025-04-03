@@ -1,6 +1,6 @@
 # Monitoring tools
 
-This page contains the tools we are using for monitoring our appliciation,
+This page contains the tools we are using for monitoring our application,
 and how we are using them.
 
 ## Postman
