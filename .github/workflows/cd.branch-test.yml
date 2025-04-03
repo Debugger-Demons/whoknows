@@ -152,7 +152,7 @@ jobs:
         run: |
           SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
 
-          echo "DEPLOYMENT_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" > VERSION
+          echo "DEPLOYMENT_TIME=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" > VERSION
           echo "GIT_COMMIT=${{ github.sha }}" >> VERSION
           echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> VERSION
           echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> VERSION
