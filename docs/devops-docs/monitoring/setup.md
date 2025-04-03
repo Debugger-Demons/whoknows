@@ -5,7 +5,7 @@ and how we are using them.
 
 ## Postman
 
-We are using postman as our API platform to check our whether our endpoints works as intended,
+We are using postman as our API platform to verify that our endpoints work as intended,
 and also their health status.
 
 ### Collection
