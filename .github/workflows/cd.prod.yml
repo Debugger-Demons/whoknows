@@ -31,6 +31,9 @@ env:
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
 jobs:
+  validate-config:
+    uses: ./.github/workflows/validate.env_and_secrets.yml
+
   build-push:
     name: Build & Push Docker Images
     if: github.event.pull_request.merged == true

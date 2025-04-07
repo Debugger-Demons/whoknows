@@ -26,15 +26,6 @@ frontend/.env
 
 # ai prompt
 ai-prompt-content/
-ai-prompt-content/*
-#
-ai-prompt-content/.env.production.txt
-ai-prompt-content/cd.prod.yml.txt
-ai-prompt-content/deploy.sh.txt
-ai-prompt-content/docker-compose.prod.yml.txt
-ai-prompt-content/setup_gh_secrets.sh.txt
-
-
 
 # Rust build artifacts
 backend/target/
@@ -356,3 +347,6 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+#
+secret.txt
+ai-prompt-content/
