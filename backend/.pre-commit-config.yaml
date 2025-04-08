@@ -1,0 +1,26 @@
+repos:
+  - repo: https://github.com/doublify/pre-commit-rust
+    rev: master  # or whatever version you're using
+    hooks:
+      - id: fmt
+        args: ["--manifest-path", "backend/Cargo.toml", "--"]
+      - id: cargo-check
+        args: ["--manifest-path", "backend/Cargo.toml"]
+
+
+#-   repo: https://github.com/rust-lang/rust-clippy
+#    rev: master  # or use the latest tag if you want
+ #   hooks:
+ #   -   id: clippy
+ #       name: Clippy (Rust linter)
+  #      language_version: system
+  #      files: \.rs$
+
+
+#- repo: https://github.com/rustsec/cargo-audit
+#  rev: v0.15.1  # latest stable version
+ # hooks:
+  #  - id: cargo-audit
+  #    name: Cargo Audit (Dependency security check)
+  #    language_version: system
+  #    files: Cargo.toml

@@ -1,6 +1,6 @@
 // backend/src/main.rs
-use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use actix_cors::Cors;
+use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 use serde::Serialize;
 use std::env;
 use std::time::{SystemTime, UNIX_EPOCH};
@@ -63,7 +63,7 @@ async fn config() -> impl Responder {
     let port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "Not Set".to_string());
     let environment = env::var("RUST_LOG").unwrap_or_else(|_| "Not Set".to_string());
     let build_version = env::var("BUILD_VERSION").unwrap_or_else(|_| "dev".to_string());
-    
+
     web::Json(ConfigResponse {
         db_url,
         port,
@@ -78,9 +78,9 @@ async fn health() -> impl Responder {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs();
-    
+
     let version = env::var("BUILD_VERSION").unwrap_or_else(|_| "dev".to_string());
-    
+
     HttpResponse::Ok().json(HealthResponse {
         status: "ok".to_string(),
         version,
@@ -98,7 +98,7 @@ async fn main() -> std::io::Result<()> {
     let port = port_str
         .parse::<u16>()
         .expect("BACKEND_INTERNAL_PORT must be a valid port number");
-    
+
     println!("Server starting at http://{}:{}", HOST_NAME, port);
 
     // Start the server
@@ -107,7 +107,7 @@ async fn main() -> std::io::Result<()> {
             .allow_any_origin()
             .allow_any_method()
             .allow_any_header();
-            
+
         App::new()
             .wrap(cors)
             .service(hello)
