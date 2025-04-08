@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/doublify/pre-commit-rust
-    rev: master  # or use the latest tag if you want
+    rev: v1.0 # or use the latest tag if you want
     hooks:
       - id: fmt
         args: ["--manifest-path", "backend/Cargo.toml", "--"]
