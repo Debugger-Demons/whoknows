@@ -1,25 +1,26 @@
 repos:
-# - repo: https://github.com/rust-lang/rustfmt
- # rev: v1.4.37  # or the latest stable version
-  #hooks:
-  #  - id: rustfmt
-     # name: Rustfmt (Rust code formatter)
-      #language_version: system
-      #files: \.rs$
-
--   repo: https://github.com/rust-lang/rust-clippy
+  - repo: https://github.com/doublify/pre-commit-rust
     rev: master  # or use the latest tag if you want
     hooks:
-    -   id: clippy
-        name: Clippy (Rust linter)
-        language_version: system
-        files: \.rs$
+      - id: fmt
+        args: ["--manifest-path", "backend/Cargo.toml", "--"]
+      - id: cargo-check
+        args: ["--manifest-path", "backend/Cargo.toml"]
 
 
-- repo: https://github.com/rustsec/cargo-audit
-  rev: v0.15.1  # latest stable version
-  hooks:
-    - id: cargo-audit
-      name: Cargo Audit (Dependency security check)
-      language_version: system
-      files: Cargo.toml
+#-   repo: https://github.com/rust-lang/rust-clippy
+#    rev: master  # or use the latest tag if you want
+ #   hooks:
+ #   -   id: clippy
+ #       name: Clippy (Rust linter)
+  #      language_version: system
+  #      files: \.rs$
+
+
+#- repo: https://github.com/rustsec/cargo-audit
+#  rev: v0.15.1  # latest stable version
+ # hooks:
+  #  - id: cargo-audit
+  #    name: Cargo Audit (Dependency security check)
+  #    language_version: system
+  #    files: Cargo.toml
