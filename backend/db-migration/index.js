@@ -1,5 +1,5 @@
 import knex from "knex";
-import knexConfig from "./knexfile.js";
+import knexConfig from "./knexfile.cjs";
 const db = knex(knexConfig);
 db.raw("SELECT 1+1 AS result")
   .then((result) => {
