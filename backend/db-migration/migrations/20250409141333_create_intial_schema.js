@@ -2,7 +2,7 @@
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.up = function (knex) {
+export function up (knex) {
   return knex.schema
     .createTable("users", function (table) {
       table.increments("id");
@@ -29,7 +29,7 @@ exports.up = function (knex) {
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
  */
-exports.down = function (knex) {
+export function down(knex) {
   return knex.schema.dropTableIfExists("pages").then(() => {
     return knex.schema.dropTableIfExists("users");
   });
