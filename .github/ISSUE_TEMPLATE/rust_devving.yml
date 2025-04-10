@@ -1,5 +1,5 @@
 # Development Task Template
-# .github/ISSUE_TEMPLATE/development.yml
+# .github/ISSUE_TEMPLATE/rust_devving.yml
 name: Development Task
 description: Create a new development task for the WhoKnows project
 title: "[DEV]: "
@@ -9,7 +9,7 @@ body:
     attributes:
       value: |
         Thanks for creating a development issue! Please fill out the information below.
-  
+
   - type: textarea
     id: overview
     attributes:
@@ -26,9 +26,9 @@ body:
       description: Current state, target state, and dependencies
       value: |
         **Current State:**
-        
+
         **Target State:**
-        
+
         **Dependencies:**
     validations:
       required: true
@@ -51,8 +51,7 @@ body:
       description: Related documentation, reference implementations, or architecture diagrams
       value: |
         **Related Documentation:**
-        
-        **Reference Implementations:**
-        
-        **Architecture Diagrams:**
 
+        **Reference Implementations:**
+
+        **Architecture Diagrams:**
