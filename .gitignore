@@ -22,6 +22,8 @@ debug/
 .env.production
 .env.development
 backend/.env
+backend/db-migration/node_modules/
+backend/db-migration/node_modules
 frontend/.env
 
 # ai prompt
