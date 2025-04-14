@@ -2,9 +2,11 @@ repos:
   - repo: https://github.com/doublify/pre-commit-rust
     rev: v1.0 # or use the latest tag if you want
     hooks:
-      - id: fmt
-        args: ["--manifest-path", "backend/Cargo.toml", "--"]
-      - id: cargo-check
+ #     - id: fmt
+  #      args: ["--manifest-path", "backend/Cargo.toml", "--"]
+ #     - id: cargo-check
+#        args: ["--manifest-path", "backend/Cargo.toml"]
+      - id: clippy 
         args: ["--manifest-path", "backend/Cargo.toml"]
 
 

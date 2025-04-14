@@ -12,6 +12,12 @@ struct HealthResponse {
     timestamp: u64,
 }
 
+fn example() {
+    let x = 5 ; // Extra spaces
+    let y = 10; // No spaces around `=`
+    println!("Hello, world!");
+}
+
 #[derive(Serialize)]
 struct ConfigResponse {
     db_url: String,
