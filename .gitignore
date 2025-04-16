@@ -1,6 +1,9 @@
 # docker container
 whoknows/
 
+# cursor
+.cursor
+
 # Rust
 /target/
 target/
