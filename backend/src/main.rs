@@ -217,8 +217,20 @@ async fn post_login(
 }
 
 #[get("/api/logout")]
-async fn get_logout() -> impl Responder {
-    HttpResponse::Ok().body("Logout placeholder")
+async fn get_logout(session: Session) -> impl Responder { // Inject the Session object
+    log::info!("Logout request received.");
+
+    // Clear the session data.
+    // purge() invalidates the session state contained in the cookie.
+    session.purge();
+    log::info!("Session purged.");
+
+    // Send a flash message indicating successful logout.
+    FlashMessage::info("You were logged out").send();
+
+    // Return a simple success response.
+    // Clients might redirect based on this or just update UI state.
+    HttpResponse::Ok().json(serde_json::json!({"message": "Logout successful"}))
 }
 
 #[post("/api/register")]
