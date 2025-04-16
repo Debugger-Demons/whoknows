@@ -12,7 +12,6 @@ struct HealthResponse {
     timestamp: u64,
 }
 
-
 #[derive(Serialize)]
 struct ConfigResponse {
     db_url: String,
