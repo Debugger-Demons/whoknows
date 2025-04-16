@@ -9,12 +9,3 @@ repos:
      - id: clippy 
        args: ["--manifest-path", "backend/Cargo.toml"]
 
-
-
- # - repo: https://github.com/rustsec/cargo-audit
-  #  rev: main  # this specifies the version
-   # hooks:
-   #   - id: cargo-audit
-   #     name: Cargo Audit (Dependency security check)
-    #    language_version: system
-    #    files: Cargo.toml
