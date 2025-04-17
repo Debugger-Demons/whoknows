@@ -94,6 +94,13 @@ jobs:
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/deployment/'
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/'
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'pwd' # Confirm starting directory if path were relative
+
+      - name: debug - ls -l /home/deployer/deployment/rust-actix-web_cd
+        run: ssh -i ~/.ssh/id_rsa ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -l /home/deployer/deployment/rust-actix-web_cd"
+
+      - name: debug - mkdir
+        run: mkdir -p /home/runner/work/whoknows/whoknows/data
+
       #-------------------- Database Transfer --------------------
       - name: Copy whoknows.db from deploy server
         run: |
