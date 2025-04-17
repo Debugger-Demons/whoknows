@@ -500,3 +500,4 @@ dist
 # End of https://www.toptal.com/developers/gitignore/api/node
 backend/.env.local.backend
 frontend/.env.local.frontend
+backend/db-migration/whoknows.sql
