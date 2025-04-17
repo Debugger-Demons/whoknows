@@ -3,7 +3,7 @@ name: branch-test - Continuous Deployment
 
 on:
   push:
-    branches: [feat/validate-env_and_secrets-workflow] # <-- adjust for current branch to test
+    branches: [python-to-rust] # <-- adjust for current branch to test
   workflow_dispatch:
 
 env:
