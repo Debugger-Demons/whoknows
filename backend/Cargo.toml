@@ -20,7 +20,7 @@ actix-web-flash-messages = { version = "0.5", features = ["cookies"] }
 
 
 # Example: SQLite driver (sqlx)
-sqlx = { version = "0.8", features = [ "runtime-tokio-rustls", "sqlite", "macros", "migrate", "chrono", "offline" ] }
+sqlx = { version = "0.8", features = [ "runtime-tokio-rustls", "sqlite", "macros", "migrate", "chrono" ] }
 hex = "0.4.3"
 
 [dev-dependencies]

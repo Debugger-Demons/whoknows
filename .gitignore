@@ -502,3 +502,4 @@ backend/.env.local.backend
 frontend/.env.local.frontend
 backend/db-migration/whoknows.sql
 backend/.env.local.backend
+backend/meta.json
