@@ -76,7 +76,7 @@ jobs:
       - name: Copy whoknows.db from deploy server
         run: |
           mkdir -p ${{ env.BACKEND_PATH }}/data  # Create data directory in the build context
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }} "scp ${{ secrets.DB_PATH }} ${{ env.BACKEND_PATH }}/data/whoknows.db"
+          ${{ env.SSH_CMD }} "scp ${{ secrets.DB_PATH }} ${{ env.BACKEND_PATH }}/data/whoknows.db"
 
         # ---------------------------------------------
 
