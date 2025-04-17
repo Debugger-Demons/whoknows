@@ -97,8 +97,9 @@ jobs:
       #-------------------- Database Transfer --------------------
       - name: Copy whoknows.db from deploy server
         run: |
-
+          ls /home/runner/work/whoknows/whoknows/
           mkdir -p /home/runner/work/whoknows/whoknows/data  # Create data directory in the build context
+          ls /home/runner/work/whoknows/whoknows/
           scp -i ~/.ssh/id_rsa -P ${{ env.SERVER_PORT }} ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/deployer/deployment/rust-actix-web_cd/whoknows.db /home/runner/work/whoknows/whoknows/data
           ls ${{ env.BACKEND_PATH }}/data
 
