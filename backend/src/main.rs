@@ -399,6 +399,8 @@ async fn get_weather() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    dotenv::dotenv().ok();
+
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
     let port_str = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "8080".to_string());
@@ -408,7 +410,6 @@ async fn main() -> std::io::Result<()> {
 
     log::info!("Server starting at http://{}:{}", HOST_NAME, port);
 
-    dotenv::dotenv().ok();
     let database_url =
         env::var("DATABASE_URL").expect("DATABASE_URL must be set in environment or .env file");
 

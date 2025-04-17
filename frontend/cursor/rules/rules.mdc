@@ -1,9 +1,0 @@
----
-description: 
-globs: 
-alwaysApply: true
----
-# Project Rules
-
-- **Requirements Adherence:** All development must align strictly with the technical requirements and technology stack outlined in the @requirements.md file.
-- **Focus on Backend:** Prioritize backend implementation according to @requirements.md unless frontend specifics are explicitly requested.
