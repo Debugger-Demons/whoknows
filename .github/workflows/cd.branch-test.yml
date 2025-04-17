@@ -98,6 +98,45 @@ jobs:
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/'
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'pwd' # Confirm starting directory if path were relative
 
+      - name: Setup deployment environment and copy DB # Renamed for clarity
+        run: |
+          echo "--- Setting up deployment environment ---"
+          LOCAL_DATA_DIR="${{ env.BACKEND_PATH }}/data" # Use workflow variable for local path base
+          REMOTE_DB_PATH="/home/${{ env.SERVER_USER }}/deployment/rust-actix-web_cd/whoknows.db"
+          REMOTE_DB_DIR=$(dirname "$REMOTE_DB_PATH") # Get the remote directory path
+
+          # Create required local directories
+          echo "Creating local directory: $LOCAL_DATA_DIR"
+          # Use workflow variable BACKEND_PATH consistently for local context
+          mkdir -p "$LOCAL_DATA_DIR"
+
+          # Define consistent SSH/SCP options
+          # Added ConnectTimeout for robustness
+          SSH_OPTS="-i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15"
+          SCP_OPTS="-i ~/.ssh/id_rsa -P ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no -o ConnectTimeout=15"
+
+          # --- DEBUG: Check remote path and permissions via SSH ---
+          echo "Verifying remote path components for user ${{ env.SERVER_USER }}..."
+          ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -ld /home/${{ env.SERVER_USER }}/" || echo "Failed to list user home dir permissions"
+          ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -ld /home/${{ env.SERVER_USER }}/deployment/" || echo "Failed to list deployment dir permissions"
+          ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -ld ${REMOTE_DB_DIR}/" || echo "Failed to list DB directory permissions"
+          ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -la ${REMOTE_DB_PATH}" || echo "Failed to list specific DB file"
+          echo "--- Finished remote path verification ---"
+
+          # Ensure remote *deployment* directory exists (for later deployment steps)
+          # This uses the DEPLOY_DIR variable relative path correctly
+          echo "Ensuring remote deployment target directory exists: ${{ env.DEPLOY_DIR }}"
+          ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+
+          # Attempt to Copy database from remote server to local build context
+          echo "Attempting to copy DB from ${REMOTE_DB_PATH} to $LOCAL_DATA_DIR"
+          # Added -v for verbose SCP output
+          scp -v $SCP_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${REMOTE_DB_PATH} "${LOCAL_DATA_DIR}/"
+
+          # Verify file was copied locally
+          echo "Contents of local directory $LOCAL_DATA_DIR after SCP attempt:"
+          ls -la "$LOCAL_DATA_DIR/"
+
       - name: Setup deployment environment
         run: |
           # Create required local directories
@@ -111,7 +150,7 @@ jobs:
           ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
 
           # Copy database from remote server to local build context
-          scp $SCP_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/${{ env.SERVER_USER }}/deployment/rust-actix-web_cd/whoknows.db /home/runner/work/whoknows/whoknows/data/
+          scp -v $SCP_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/${{ env.SERVER_USER }}/deployment/rust-actix-web_cd/whoknows.db /home/runner/work/whoknows/whoknows/data/
 
           # Verify file was copied
           ls -la /home/runner/work/whoknows/whoknows/data/
