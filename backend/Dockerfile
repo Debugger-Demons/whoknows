@@ -23,6 +23,7 @@ RUN mkdir src \
 
 # Copy source and build
 COPY src ./src
+COPY ./data/whoknows.db /app/whoknows.db 
 RUN cargo build --release
 
 # ---- Stage 2: Runtime ----

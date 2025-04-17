@@ -65,6 +65,24 @@ jobs:
           password: ${{ env.GHCR_PAT_OR_TOKEN }}
 
         # ---------------------------------------------
+        # pre-conditions:
+        # - in runner
+        # - server has x.db
+        # - runner has ssh access to deploy server
+        # - path to DB (DB_PATH gh secret)
+        # -
+        # steps of flow
+        # - ssh into deployer server
+        # - scp x.db from deployer server to runner server
+        # - get absolute path of
+
+      #-------------------- Database Transfer --------------------
+      - name: Copy whoknows.db from deploy server
+        run: |
+          mkdir -p ${{ env.BACKEND_PATH }}/data  # Create data directory in the build context
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa ${{ secrets.DEPLOY_SERVER_USER }}@${{ secrets.DEPLOY_SERVER_HOST }} "scp ${{ secrets.DB_PATH }} ${{ env.BACKEND_PATH }}/data/whoknows.db"
+
+        # ---------------------------------------------
 
       - name: Lowercase Image Base Name
         id: lowercaser

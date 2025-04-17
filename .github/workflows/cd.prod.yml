@@ -59,6 +59,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ env.GHCR_PAT_OR_TOKEN }}
 
+      #-------------------- Database Transfer --------------------
+      - name: Copy whoknows.db from deploy server
+        run: |
+          mkdir -p ${{ env.BACKEND_PATH }}/data  # Create data directory in the build context
+          ${{ env.SSH_CMD }} "scp ${{ secrets.DB_PATH }} ${{ env.BACKEND_PATH }}/data/whoknows.db"
+
         # ---------------------------------------------
 
       - name: Lowercase Image Base Name
