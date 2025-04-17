@@ -1,0 +1,25 @@
+whoknows/
+├── frontend/    <--------- current location
+│   ├── Cargo.toml
+│   ├── Cargo.lock
+│   ├── Dockerfile
+│   ├── src/
+│   │   └── main.rs
+│   └── static/
+│       ├── css/
+│       │   └── style.css
+│       ├── images/
+│       │   └── monkgroup.png
+│       ├── js/
+│       │   ├── api.js
+│       │   ├── search.js
+│       │   ├── login.js
+│       │   └── register.js
+│       └── html/
+│           ├── search.html
+│           ├── about.html
+│           ├── login.html
+│           └── register.html
+├── backend/
+│   └── ... (your backend container code)
+└── docker-compose.yml
