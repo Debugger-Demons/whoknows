@@ -80,6 +80,22 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      #-------------------- Debug: Check Remote Path --------------------
+      - name: Verify remote file existence and permissions via SSH
+        run: |
+          echo "Attempting to SSH into ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} on port ${{ env.SERVER_PORT }}"
+          # Ensure SSH key is set up correctly first (assuming a previous step does this)
+          # Example: Ensure correct permissions if you manually placed the key
+          # mkdir -p ~/.ssh
+          # echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          # chmod 600 ~/.ssh/id_rsa
+          # ssh-keyscan -p ${{ env.SERVER_PORT }} ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts # Add host key if needed
+
+          ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/deployment/rust-actix-web_cd/'
+          ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/deployment/'
+          ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/'
+          ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'pwd' # Confirm starting directory if path were relative
+
       #-------------------- Database Transfer --------------------
       - name: Copy whoknows.db from deploy server
         run: |
