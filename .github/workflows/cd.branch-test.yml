@@ -72,6 +72,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ env.GHCR_PAT_OR_TOKEN }}
 
+      - name: Set up SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ env.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
+
       #-------------------- Database Transfer --------------------
       - name: Copy whoknows.db from deploy server
         run: |
