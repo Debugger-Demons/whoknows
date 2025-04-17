@@ -1,4 +1,5 @@
 .env.local.frontend
+.env.local.backend
 !.env.local.frontend.template
 target/
 Cargo.lock

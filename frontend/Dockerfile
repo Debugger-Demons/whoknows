@@ -31,8 +31,8 @@ FROM rust:1.81-slim AS dev
 WORKDIR /usr/src/app
 # Install native dependencies (e.g., SSL libs) for development
 RUN apt-get update && apt-get install -y \
-    pkg-config \
-    libssl-dev \
+  pkg-config \
+  libssl-dev \
   && rm -rf /var/lib/apt/lists/*
 # Copy everything (source, static, config)
 COPY . .
@@ -47,8 +47,8 @@ CMD ["cargo", "make", "dev"]
 FROM debian:bookworm-slim AS production
 
 RUN apt-get update && apt-get install -y \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+  ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 

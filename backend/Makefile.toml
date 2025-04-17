@@ -7,3 +7,12 @@ category = "custom local Development"
 command = "dotenv" 
 args = ["-f", ".env.local.backend", "run", "--", "cargo", "watch", "-s", "cargo run"]
 description = "Run 'cargo run' with hot-reloading, loading vars from .env.local.backend."
+
+# -> docker task 
+[tasks.dev-docker]
+category = "custom local Development"
+command = "python"
+args = [
+    "scripts/dev_docker.py"
+]
+description = "Builds the Docker image and runs it detached, loading vars from .env.local.backend and mapping host port 8080."
