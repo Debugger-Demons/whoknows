@@ -1,6 +1,7 @@
 """Loads environment variables from .env.local.frontend for Makefile tasks."""
 import os
 import dotenv
+# pre-condition: pip install python-dotenv
 
 env_path = os.path.join(os.path.dirname(__file__), '../.env.local.frontend')
 

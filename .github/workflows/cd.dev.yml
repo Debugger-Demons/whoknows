@@ -17,6 +17,7 @@ env:
   SERVER_USER: ${{ secrets.DEV_SERVER_USER }} # deployer
   SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }} # IP or domain
   SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }} # 22 ssh port, 10222
+  DATABASE_URL: ${{ secrets.DB_PATH}}
   # SSH:
   SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }} # private key for SSH access
   ENV_FILE_CONTENT: ${{ secrets.DEV_ENV_FILE }} # .env file loaded content
@@ -34,9 +35,6 @@ env:
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
 jobs:
-  validate-config:
-    uses: ./.github/workflows/validate.env_and_secrets.yml
-
   #
   # ---------------------------------------------
   # ----------------- build-push ----------------
@@ -194,6 +192,7 @@ jobs:
           GHCR_PAT_OR_TOKEN="${{ env.GHCR_PAT_OR_TOKEN }}"
           GHCR_REGISTRY="${{ env.GHCR_REGISTRY }}"
           GITHUB_ACTOR="${{ github.actor }}"
+          DATABASE_URL="${{ env.DATABASE_URL}}"
 
           ${{ env.SSH_CMD }} << EOF
             set -e 
