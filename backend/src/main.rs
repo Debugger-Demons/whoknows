@@ -217,7 +217,8 @@ async fn post_login(
 }
 
 #[get("/api/logout")]
-async fn get_logout(session: Session) -> impl Responder { // Inject the Session object
+async fn get_logout(session: Session) -> impl Responder {
+    // Inject the Session object
     log::info!("Logout request received.");
 
     // Clear the session data.
@@ -487,7 +488,7 @@ async fn main() -> std::io::Result<()> {
             CookieSessionStore::default(),
             session_secret_key.clone(), // Clone the key
         )
-        .cookie_secure(false) // Set true for HTTPS
+        .cookie_secure(true) // Set true for HTTPS
         .cookie_same_site(SameSite::Lax) // Use SameSite here
         .cookie_http_only(true)
         .build();
