@@ -80,6 +80,9 @@ jobs:
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -p ${{ env.SERVER_PORT }} -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      - name: Install dos2unix
+        run: sudo apt-get update && sudo apt-get install -y dos2unix
+
       #-------------------- Debug: Check Remote Path --------------------
       #- name: Verify remote file existence and permissions via SSH
       #run: |
@@ -104,7 +107,7 @@ jobs:
       #-------------------- Database Transfer --------------------
       - name: Copy whoknows.db from deploy server
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "ls -l /home/deployer/deployment/rust-actix-web_cd"
+
           ls /home/runner/work/whoknows/whoknows/
           mkdir -p /home/runner/work/whoknows/whoknows/data  # Create data directory in the build context
           ls /home/runner/work/whoknows/whoknows/
