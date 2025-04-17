@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Who Knows? - Sign Up</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/styles.css" />
+  <script src="/static/js/api.js"></script>
+</head>
+
+<body>
+  <div class="page">
+    <div class="navigation">
+      <nav>
+        <h1><a id="nav-logo" href="/search.html">¿Who Knows?</a></h1>
+        <a id="nav-login" href="/login.html">Log in</a>
+        <a id="nav-register" href="/register.html">Register</a>
+      </nav>
+    </div>
+    <div class="body">
+      <h2>Sign Up</h2>
+      <div id="error-message" class="error">
+        <strong>Error:</strong> <span id="error-content"></span>
+      </div>
+      <form id="register-form">
+        <dl>
+          <dt>Username:</dt>
+          <dd><input title="username" placeholder="username" type="text" name="username" size="30" /></dd>
+          <dt>E-Mail:</dt>
+          <dd><input title="email" placeholder="email" type="text" name="email" size="30" /></dd>
+          <dt>Password:</dt>
+          <dd><input title="password" placeholder="password" type="password" name="password" size="30" /></dd>
+          <dt>Password <small>(repeat)</small>:</dt>
+          <dd><input title="passwordRepeat" placeholder="passwordRepeat" type="password" name="password2" size="30" />
+          </dd>
+        </dl>
+
+        <div class="actions"><input type="submit" value="Sign Up" /></div>
+      </form>
+
+      <script src="/static/js/register.js"></script>
+    </div>
+    <div class="footer">
+      <span>¿Who Knows? &copy; 2009</span>
+      <a href="/about.html">About</a>
+    </div>
+  </div>
+
+  <!-- validation -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@latest/dist/purify.min.js"></script>
+  <script src="/static/js/validation.js"></script>
+</body>
+
+</html>

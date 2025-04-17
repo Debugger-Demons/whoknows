@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>¿Who Knows? - Sign In</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/styles.css" />
+  <script src="/static/js/api.js"></script>
+</head>
+
+<body>
+  <div class="page">
+    <div class="navigation">
+      <nav>
+        <h1><a id="nav-logo" href="/search.html">¿Who Knows?</a></h1>
+        <a id="nav-login" href="/login.html">Log in</a>
+        <a id="nav-register" href="/register.html">Register</a>
+      </nav>
+    </div>
+    <div class="body">
+      <h2>Log In</h2>
+      <div id="error-message" class="error" style="display: none">
+        <strong>Error:</strong> <span id="error-content"></span>
+      </div>
+      <form id="login-form">
+        <dl>
+          <dt>Username:</dt>
+          <dd>
+            <input placeholder="username" type="text" name="username" size="30" />
+          </dd>
+          <dt>Password:</dt>
+          <dd>
+            <input placeholder="password" type="password" name="password" size="30" />
+          </dd>
+        </dl>
+
+        <div class="actions"><input type="submit" value="Log In" /></div>
+      </form>
+
+      <script src="/static/js/login.js"></script>
+    </div>
+    <div class="footer">
+      <span>¿Who Knows? &copy; 2009</span>
+      <a href="/about.html">About</a>
+    </div>
+  </div>
+
+  <!-- validation -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@latest/dist/purify.min.js"></script>
+  <script src="/static/js/validation.js"></script>
+</body>
+
+</html>
