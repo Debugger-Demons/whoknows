@@ -98,13 +98,23 @@ jobs:
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/'
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'pwd' # Confirm starting directory if path were relative
 
-      - name: debug 1
+      - name: Setup deployment environment
         run: |
-          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}"
-          SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
+          # Create required local directories
+          mkdir -p /home/runner/work/whoknows/whoknows/data
 
-          scp -i ~/.ssh/id_rsa deployer@34.32.54.82:/home/deployer/deployment/rust-actix-web_cd/whoknows.db '/home/runner/work/whoknows/whoknows/data'
-          scp -i ~/.ssh/id_rsa ${SERVER_DEST_BASE} '/home/runner/work/whoknows/whoknows/data'
+          # Use consistent SSH/SCP options for all connections
+          SSH_OPTS="-i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no"
+          SCP_OPTS="-i ~/.ssh/id_rsa -P ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no"
+
+          # Ensure remote directory exists
+          ssh $SSH_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+
+          # Copy database from remote server to local build context
+          scp $SCP_OPTS ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/${{ env.SERVER_USER }}/deployment/rust-actix-web_cd/whoknows.db /home/runner/work/whoknows/whoknows/data/
+
+          # Verify file was copied
+          ls -la /home/runner/work/whoknows/whoknows/data/
 
       - name: debug 2
         run: |
