@@ -8,7 +8,6 @@ debug/
 **/*.rs.bk
 *.pdb
 
-
 # Backup files
 *.bak
 *.backup
@@ -75,8 +74,6 @@ frontend/src/App-DESKTOP-19QVLUP.jsx
 backend/Cargo-DESKTOP-19QVLUP.toml
 backend/Cargo-DESKTOP-19QVLUP.lock
 *-DESKTOP-19QVLUP*
-
-
 
 #######################################################################################
 #### ------------------------- template .gitignore below ------------------------- ####
@@ -189,7 +186,6 @@ fabric.properties
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/intellij+all,visualstudiocode
-
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -353,8 +349,7 @@ cython_debug/
 secret.txt
 ai-prompt-content/
 
-
-## Node .gitignore 
+## Node .gitignore
 
 # Created by https://www.toptal.com/developers/gitignore/api/node
 # Edit at https://www.toptal.com/developers/gitignore?templates=node
@@ -500,3 +495,5 @@ dist
 .svelte-kit
 
 # End of https://www.toptal.com/developers/gitignore/api/node
+frontend/.env.local.frontend
+frontend/.cursor/rules/rules.mdc
