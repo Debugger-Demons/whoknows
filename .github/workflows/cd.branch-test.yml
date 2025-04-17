@@ -86,7 +86,7 @@ jobs:
 
           ls ${{ env.BACKEND_PATH }}
           mkdir -p ${{ env.BACKEND_PATH }}/data  # Create data directory in the build context
-          scp -i ~/.ssh/id_rsa ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/deployer/deployment/rust-actix-web_cd/whoknows.db '${{ env.BACKEND_PATH }}/data'
+          scp -i ~/.ssh/id_rsa -P ${{ env.SERVER_PORT }} ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/deployer/deployment/rust-actix-web_cd/whoknows.db '${{ env.BACKEND_PATH }}/data'
           ls ${{ env.BACKEND_PATH }}/data
 
         # ---------------------------------------------
