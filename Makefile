@@ -14,7 +14,23 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 # === Phony Targets ===
 # Declare targets that don't represent files
 .PHONY: help update-env-secrets update-env-vars pr-create i-create \
-	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation
+	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
+	build-frontend run-frontend stop-frontend
+
+# === Frontend Management ===
+build-frontend:
+	@echo "Building frontend Docker image..."
+	docker build -t whoknows.frontend --build-arg FRONTEND_INTERNAL_PORT=91 --build-arg BACKEND_INTERNAL_PORT=92 --build-arg COMPOSE_PROJECT_NAME=whoknows --build-arg NODE_ENV=production ./frontend
+
+run-frontend: build-frontend
+	@echo "Running frontend container..."
+	docker run -d --name whoknows_frontend_test -p 8080:91 -e FRONTEND_INTERNAL_PORT=91 -e BACKEND_INTERNAL_PORT=92 -e COMPOSE_PROJECT_NAME=whoknows -e NODE_ENV=production whoknows.frontend
+	@echo "Frontend is now running at http://localhost:8080"
+
+stop-frontend:
+	@echo "Stopping frontend container..."
+	docker stop whoknows_frontend_test || true
+	docker rm whoknows_frontend_test || true
 
 # === Environment Secret Management ===
 
@@ -93,6 +109,12 @@ i-create-documentation:
 help:
 	@echo "--------------------------------------------------------"
 	@echo "Available commands:"
+	@echo ""
+	@echo "---- Frontend Management ----"
+	@echo ""
+	@echo "  make build-frontend       - Build the frontend Docker image"
+	@echo "  make run-frontend         - Build and run the frontend container"
+	@echo "  make stop-frontend        - Stop and remove the frontend container"
 	@echo ""
 	@echo "---- Environment & PR Management ----"
 	@echo ""
