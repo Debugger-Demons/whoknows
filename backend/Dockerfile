@@ -14,10 +14,13 @@ COPY Cargo.toml ./
 COPY Cargo.lock* ./
 RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 
+RUN export DATABASE_URL=/home/deployer/deployment/rust-actix-web_cd/whoknows.db
+
 # Build dependencies
 RUN mkdir src \
     && echo 'fn main() {println!("Building dependencies...")}' > src/main.rs \
-    && cargo build --release \
+    && cargo sqlx prepare \
+    && cargo build --release --features sqlx/offline \
     && rm -rf src \
     && rm -f target/release/deps/*
 
