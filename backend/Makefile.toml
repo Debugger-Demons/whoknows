@@ -5,5 +5,5 @@ category = "custom local Development"
 # Use dotenv-cli to load env vars before running cargo watch
 # Assumes dotenv-cli is installed: `cargo install dotenv-cli`
 command = "dotenv" 
-args = ["-f", ".env.local.backend", "run", "--", "cargo", "watch", "-w", "static", "-s", "cargo run"]
+args = ["-f", ".env.local.backend", "run", "--", "cargo", "watch", "-s", "cargo run"]
 description = "Run 'cargo run' with hot-reloading, loading vars from .env.local.backend."
