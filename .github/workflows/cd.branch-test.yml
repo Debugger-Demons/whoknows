@@ -97,6 +97,7 @@ jobs:
       #-------------------- Database Transfer --------------------
       - name: Copy whoknows.db from deploy server
         run: |
+          ls -a /home/runner/work/whoknows/whoknows/
           ls /home/runner/work/whoknows/whoknows/
           mkdir -p /home/runner/work/whoknows/whoknows/data  # Create data directory in the build context
           ls /home/runner/work/whoknows/whoknows/
