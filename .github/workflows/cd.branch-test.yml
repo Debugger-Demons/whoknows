@@ -84,7 +84,7 @@ jobs:
       - name: Copy whoknows.db from deploy server
         run: |
           mkdir -p ${{ env.BACKEND_PATH }}/data  # Create data directory in the build context
-          ${{ env.SSH_CMD }} "scp ${{ secrets.DB_PATH }} ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.LOCAL_DB_PATH }}"
+          scp -i ~/.ssh/id_rsa ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:/home/deployer/deployment/rust-actix-web_cd/whoknows.db '${{ env.BACKEND_PATH }}/data'
 
         # ---------------------------------------------
 
