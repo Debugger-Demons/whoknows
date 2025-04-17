@@ -98,8 +98,25 @@ jobs:
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'ls -la /home/deployer/'
       #ssh -i ~/.ssh/id_rsa -p ${{ env.SERVER_PORT }} -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} 'pwd' # Confirm starting directory if path were relative
 
-      - name: debug - ls -l /home/deployer/deployment/rust-actix-web_cd
-        run: ${{ env.SSH_CMD }} "ls -l /home/deployer/deployment/rust-actix-web_cd"
+      - name: debug 1
+        run: |
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+          SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
+
+          scp -i ~/.ssh/id_rsa deployer@34.32.54.82:/home/deployer/deployment/rust-actix-web_cd/whoknows.db '/home/runner/work/whoknows/whoknows/data'
+          scp -i ~/.ssh/id_rsa ${SERVER_DEST_BASE} '/home/runner/work/whoknows/whoknows/data'
+
+      - name: debug 2
+        run: |
+          # mkdir
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}" 
+
+          # scp directly to final names
+          ${{ env.SCP_CMD }} ${{ env.DOCKER_COMPOSE_FILE }} ${SERVER_DEST_BASE}/docker-compose.yml
+
+          ${{ env.SSH_CMD }} "ls -l /home/deployer/deployment/rust-actix-web_cd"
+
+          ${{ env.SCP_CMD }} ${{ env.DOCKER_LOGIN_SCRIPT }} ${SERVER_DEST_BASE}/docker-login.sh
 
       - name: debug - mkdir
         run: mkdir -p /home/runner/work/whoknows/whoknows/data
