@@ -37,7 +37,7 @@ cmds = {
 
 def cmd_build_run_combined():
    """ combined docker build && docker run """
-   return f"{cmds["build"]} && {cmds['run']}"
+   return f"{cmds['build']} && {cmds['run']}"
 
 def run_dev_docker():
    """ executing the dev-docker commands for building and running container with env variables """
