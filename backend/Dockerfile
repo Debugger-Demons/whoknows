@@ -35,8 +35,6 @@ WORKDIR /app
 # RUN mkdir -p /app/data
 
 COPY --from=builder /app/target/debug/backend .
-RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
-
 
 RUN chmod +x ./backend
 
