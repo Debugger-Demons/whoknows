@@ -16,8 +16,9 @@ services:
       - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
       - RUST_LOG=${RUST_LOG}
       - DATABASE_URL=${DATABASE_URL}
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
     volumes:
-      - db_data:/app/data
+      - /home/deploy/deployment/app/data:/app/data
     expose:
       - "${BACKEND_INTERNAL_PORT}"
     networks:
