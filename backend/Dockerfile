@@ -34,7 +34,7 @@ WORKDIR /app
 # Create data directory
 # RUN mkdir -p /app/data
 
-COPY --from=builder /app/target/release/backend .
+COPY --from=builder /app/target/debug/backend .
 RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 
 
