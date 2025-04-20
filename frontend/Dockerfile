@@ -30,7 +30,7 @@ RUN touch src/main.rs && cargo build --release
 # -------------------------
 # Dev stage: full Rust toolchain + source for local development
 FROM rust:1.81-slim AS dev
-WORKDIR /usr/src/app
+WORKDIR /usr/src/app 
 # Install native dependencies (e.g., SSL libs) for development
 RUN apt-get update && apt-get install -y \
   pkg-config \
