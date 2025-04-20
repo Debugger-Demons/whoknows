@@ -17,7 +17,6 @@ FROM rust:1.81-slim AS builder
 WORKDIR /usr/src/app
 
 COPY Cargo.toml ./
-RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 COPY Cargo.lock ./
 
 # Create empty src/main.rs to build dependencies
