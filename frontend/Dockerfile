@@ -65,3 +65,4 @@ EXPOSE 8080
 # Command to run the application
 ## since frontend.exe is executable it just needs temrinal command: './frontend'
 CMD ["./frontend"]
+ 
