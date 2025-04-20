@@ -32,7 +32,7 @@ env:
   DOCKER_COMPOSE_FILE: ./docker-compose.dev.yml # prod or dev
   DEPLOY_SCRIPT: ./deployment/scripts/deploy.sh
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
-  
+
 
 jobs:
   validate-config:
@@ -174,7 +174,6 @@ jobs:
           # scp directly to final names
           ${{ env.SCP_CMD }} ${{ env.DOCKER_COMPOSE_FILE }} ${SERVER_DEST_BASE}/docker-compose.yml
           ${{ env.SCP_CMD }} ${{ env.ENV_FILE }} ${SERVER_DEST_BASE}/.env
-          ${{ env.SCP_CMD }} ${{ env.NGINX_FILE_PATH }} ${SERVER_DEST_BASE}/nginx.conf
           ${{ env.SCP_CMD }} ${{ env.DEPLOY_SCRIPT }} ${SERVER_DEST_BASE}/deploy.sh
           ${{ env.SCP_CMD }} ${{ env.DOCKER_LOGIN_SCRIPT }} ${SERVER_DEST_BASE}/docker-login.sh
 
@@ -194,7 +193,6 @@ jobs:
           DEPLOY_DIR="${{ env.DEPLOY_DIR }}"
           ENV_FILE="${{ env.ENV_FILE }}"
           DOCKER_COMPOSE_FILE="${{ env.DOCKER_COMPOSE_FILE }}"
-          NGINX_FILE_PATH="${{ env.NGINX_FILE_PATH }}"
           DEPLOY_SCRIPT="${{ env.DEPLOY_SCRIPT }}"
           DOCKER_LOGIN_SCRIPT="${{ env.DOCKER_LOGIN_SCRIPT }}"
           GHCR_PAT_OR_TOKEN="${{ env.GHCR_PAT_OR_TOKEN }}"
