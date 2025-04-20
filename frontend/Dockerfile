@@ -16,9 +16,9 @@ FROM rust:1.81-slim AS builder
 # this path is relative to the Dockerfile location
 WORKDIR /usr/src/app
 
+RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 COPY Cargo.toml ./
 COPY Cargo.lock ./
-RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 
 # Create empty src/main.rs to build dependencies
 RUN mkdir -p src && echo "fn main() {}" > src/main.rs
