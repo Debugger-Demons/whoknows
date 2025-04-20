@@ -3,7 +3,7 @@ name: branch-test - Continuous Deployment
 
 on:
   push:
-    branches: [python-to-rust] # <-- adjust for current branch to test
+    branches: [fix/db-volume] # <-- adjust for current branch to test
   workflow_dispatch:
 
 env:
@@ -32,7 +32,6 @@ env:
   DOCKER_COMPOSE_FILE: ./docker-compose.dev.yml # prod or dev
   DEPLOY_SCRIPT: ./deployment/scripts/deploy.sh
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
-
 
 jobs:
   validate-config:
