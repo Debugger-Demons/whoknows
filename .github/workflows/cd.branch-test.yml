@@ -32,6 +32,7 @@ env:
   DOCKER_COMPOSE_FILE: ./docker-compose.dev.yml # prod or dev
   DEPLOY_SCRIPT: ./deployment/scripts/deploy.sh
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
+  
 
 jobs:
   validate-config:

@@ -17,6 +17,7 @@ RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 
 # Copy source and build
 COPY src ./src
+COPY .sqlx ./.sqlx
 
 RUN cargo build --release
 
