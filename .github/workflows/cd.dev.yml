@@ -40,11 +40,12 @@ jobs:
   #
   validate-config:
     uses: ./.github/workflows/validate.env_and_secrets.yml
+    with:
+      environment: development
     secrets:
       DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
       DEV_SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
       DEV_GHCR_PAT_OR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
-      environment: development
 
   #
   # ---------------------------------------------
