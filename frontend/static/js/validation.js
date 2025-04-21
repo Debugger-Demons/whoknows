@@ -4,4 +4,7 @@ const sanitize = (text) => {
   return div.textContent || div.innerText || "";
 };
 
-const sanitizedInput = DOMPurify.sanitize(input);
+// Define a utility function to sanitize inputs using DOMPurify
+const sanitizeInput = (input) => {
+  return DOMPurify.sanitize(input);
+};
