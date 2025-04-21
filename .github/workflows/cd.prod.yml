@@ -33,11 +33,12 @@ env:
 jobs:
   validate-config:
     uses: ./.github/workflows/validate.env_and_secrets.yml
+    with:
+      environment: production
     secrets:
       PROD_ENV_FILE: ${{ secrets.PROD_ENV_FILE }}
       PROD_SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
       PROD_GHCR_PAT_OR_TOKEN: ${{ secrets.PROD_GHCR_PAT_OR_TOKEN }}
-      environment: production
 
   build-push:
     needs: validate-config
