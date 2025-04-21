@@ -3,7 +3,7 @@
  */
 class ApiClient {
   constructor() {
-    this.backendUrl = window.BACKEND_URL || "http://localhost:8081";
+    this.backendUrl = window.BACKEND_URL || "http://backend:92";
     this.init();
   }
 
