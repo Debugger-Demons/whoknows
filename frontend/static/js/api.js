@@ -3,10 +3,20 @@
  */
 class ApiClient {
   constructor() {
-    // Get backend URL from environment variable or use default
-    // In a real app, this would be configured properly
-    // .env file
     this.backendUrl = window.BACKEND_URL || "http://localhost:8081";
+    this.init();
+  }
+
+  async init() {
+    try {
+      const response = await fetch("/api/config");
+      if (response.ok) {
+        const config = await response.json();
+        this.backendUrl = config.BACKEND_URL;
+      }
+    } catch (error) {
+      console.error("Failed to load config:", error);
+    }
   }
 
   /**
