@@ -1,5 +1,3 @@
-const sanitized = input.replace(/<\/?[^>]+(>|$)/g, "");
-
 const sanitize = (text) => {
   const div = document.createElement("div");
   div.innerHTML = text;

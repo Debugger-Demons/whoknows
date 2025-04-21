@@ -3,29 +3,7 @@
  */
 class ApiClient {
   constructor() {
-    this.backendUrl = window.BACKEND_URL || "http://backend:92";
-    this.init();
-  }
-
-  /**
-   * Initialize the API client
-   *
-   * in Docker container, the backend is accessible at http://backend:92
-   * in local development, the backend is accessible at http://localhost:xxxx
-   *
-   * the fetch call to /api/config will return the correct backend URL of the backend container
-   * - it is called when the page is loaded
-   */
-  async init() {
-    try {
-      const response = await fetch("/api/config");
-      if (response.ok) {
-        const config = await response.json();
-        this.backendUrl = config.BACKEND_URL;
-      }
-    } catch (error) {
-      console.error("Failed to load config:", error);
-    }
+    // No longer need backendUrl or init
   }
 
   /**
@@ -36,7 +14,7 @@ class ApiClient {
    */
   async search(query, language = "en") {
     try {
-      const url = `${this.backendUrl}/api/search?q=${encodeURIComponent(
+      const url = `/api/search?q=${encodeURIComponent(
         query
       )}&language=${language}`;
       const response = await fetch(url);
@@ -60,7 +38,7 @@ class ApiClient {
    */
   async login(username, password) {
     try {
-      const url = `${this.backendUrl}/api/login`;
+      const url = `/api/login`;
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -89,7 +67,7 @@ class ApiClient {
    */
   async register(userData) {
     try {
-      const url = `${this.backendUrl}/api/register`;
+      const url = `/api/register`;
       const formData = new URLSearchParams();
 
       for (const [key, value] of Object.entries(userData)) {
