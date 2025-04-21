@@ -1,12 +1,12 @@
 use actix_files as files;
 use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::{get, http, middleware, web, App, Error, HttpResponse, HttpServer, Responder};
+use actix_web::body::{EitherBody, MessageBody};
 use awc::Client;
-use futures::future::{ok, Either, Ready};
-use log::info;
+use futures::future::{self, Either, LocalBoxFuture, Ready};
+use log::{info, error};
 use std::env;
 use std::fs;
-use std::rc::Rc;
 use std::task::{Context, Poll};
 
 #[get("/api/health")]
@@ -54,18 +54,18 @@ impl ApiProxy {
 
 impl<S, B> Transform<S, ServiceRequest> for ApiProxy
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,
-    B: 'static,
+    B: MessageBody + 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
     type Transform = ApiProxyMiddleware<S>;
     type InitError = ();
     type Future = Ready<Result<Self::Transform, Self::InitError>>;
 
     fn new_transform(&self, service: S) -> Self::Future {
-        ok(ApiProxyMiddleware {
+        future::ok(ApiProxyMiddleware {
             service,
             client: self.client.clone(),
             backend_url: self.backend_url.clone(),
@@ -81,13 +81,13 @@ struct ApiProxyMiddleware<S> {
 
 impl<S, B> Service<ServiceRequest> for ApiProxyMiddleware<S>
 where
-    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error> + 'static,
     S::Future: 'static,
-    B: 'static,
+    B: MessageBody + 'static,
 {
-    type Response = ServiceResponse<B>;
+    type Response = ServiceResponse<EitherBody<B>>;
     type Error = Error;
-    type Future = Either<S::Future, Ready<Result<ServiceResponse<B>, Error>>>;
+    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
 
     forward_ready!(service);
 
@@ -100,26 +100,87 @@ where
             let client = self.client.clone();
             let backend_url = self.backend_url.clone();
             let path = req.path().to_string();
+            let query = req.query_string().to_string();
             let method = req.method().clone();
-
-            // Create backend URL
-            let backend_req_url = format!("{}{}", backend_url, path);
-
-            // For simplicity in this example, we'll just respond with a message
-            // In a real implementation, you would forward the request to the backend
-            // and return the response
-            let response = HttpResponse::Ok()
-                .content_type("application/json")
-                .body(format!(
-                    "{{\"message\": \"Would proxy to: {}\"}}",
-                    backend_req_url
-                ));
-
-            return Either::Right(ok(req.into_response(response)));
+            let headers = req.headers().clone();
+            
+            // Get request body if present
+            let (request, payload) = req.into_parts();
+            
+            // Create backend URL with query params if present
+            let backend_req_url = if query.is_empty() {
+                format!("{}{}", backend_url, path)
+            } else {
+                format!("{}{}?{}", backend_url, path, query)
+            };
+            
+            info!("Proxying request to backend: {}", backend_req_url);
+            
+            // Create a boxed future for the proxy request
+            Box::pin(async move {
+                // Create a client request
+                let mut client_req = client
+                    .request(method, &backend_req_url)
+                    .no_decompress();
+                    
+                // Copy headers from original request
+                for (header_name, header_value) in headers.iter().filter(|(h, _)| 
+                    // Skip headers that might cause issues
+                    *h != http::header::HOST 
+                    && *h != http::header::CONNECTION
+                    && *h != http::header::CONTENT_LENGTH
+                ) {
+                    client_req = client_req.insert_header((header_name.clone(), header_value.clone()));
+                }
+                
+                // Send the request with the stream payload
+                let backend_response = client_req
+                    .send_stream(payload)
+                    .await;
+                
+                match backend_response {
+                    Ok(mut res) => {
+                        // Create a response for the client based on the backend response
+                        let mut client_resp = HttpResponse::build(res.status());
+                        
+                        // Copy headers from backend response
+                        for (header_name, header_value) in res.headers().iter().filter(|(h, _)| 
+                            *h != http::header::CONNECTION
+                            && *h != http::header::CONTENT_LENGTH
+                        ) {
+                            client_resp.insert_header((header_name.clone(), header_value.clone()));
+                        }
+                        
+                        // Get the response body
+                        let bytes = res.body().await?;
+                        
+                        // Create the ServiceResponse with EitherBody
+                        Ok(ServiceResponse::new(
+                            request, 
+                            client_resp.body(bytes).map_into_right_body())
+                        )
+                    },
+                    Err(e) => {
+                        error!("Backend request error: {}", e);
+                        let error_response = HttpResponse::ServiceUnavailable()
+                            .content_type("application/json")
+                            .body(format!("{{\"error\": \"Backend service unavailable: {}\"}}", e))
+                            .map_into_right_body();
+                        
+                        Ok(ServiceResponse::new(request, error_response))
+                    }
+                }
+            })
+        } else {
+            // Pass other requests to the next service
+            let res = self.service.call(req);
+            
+            Box::pin(async move {
+                let res = res.await?;
+                // Convert to EitherBody
+                Ok(res.map_into_left_body())
+            })
         }
-
-        // Pass other requests to the next service
-        Either::Left(self.service.call(req))
     }
 }
 
