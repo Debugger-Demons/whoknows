@@ -7,6 +7,15 @@ class ApiClient {
     this.init();
   }
 
+  /**
+   * Initialize the API client
+   *
+   * in Docker container, the backend is accessible at http://backend:92
+   * in local development, the backend is accessible at http://localhost:xxxx
+   *
+   * the fetch call to /api/config will return the correct backend URL of the backend container
+   * - it is called when the page is loaded
+   */
   async init() {
     try {
       const response = await fetch("/api/config");

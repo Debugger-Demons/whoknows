@@ -21,6 +21,17 @@ async fn get_config() -> HttpResponse {
     }))
 }
 
+#[get("/static/js/api_config.js")]
+async fn api_config() -> HttpResponse {
+    let backend_port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "92".to_string());
+
+    let js_content = format!("window.BACKEND_URL = 'http://backend:{}';\n", backend_port);
+
+    HttpResponse::Ok()
+        .content_type("application/javascript")
+        .body(js_content)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv::dotenv().ok();
@@ -41,6 +52,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::default())
             .service(health_check)
+            .service(get_config)
+            .service(api_config)
             // Serve static files from the 'static' directory
             .service(files::Files::new("/static", "./static").show_files_listing())
             // Serve HTML files from the root directory
