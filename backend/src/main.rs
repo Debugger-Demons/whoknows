@@ -408,6 +408,7 @@ async fn main() -> std::io::Result<()> {
         .parse::<u16>()
         .expect("BACKEND_INTERNAL_PORT must be a valid port number");
 
+    println!("Server starting at http://{}:{}", HOST_NAME, port);
     log::info!("Server starting at http://{}:{}", HOST_NAME, port);
 
     let database_url =
@@ -428,7 +429,6 @@ async fn main() -> std::io::Result<()> {
         }
     };
 
-    // --- Load Session Key ---
     // --- Load Session Key ---
     let session_secret_key_hex =
         env::var("SESSION_SECRET_KEY").expect("SESSION_SECRET_KEY must be set...");
