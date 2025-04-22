@@ -1,8 +1,8 @@
 // backend/src/main.rs
-
 // --- Essential Actix and Web Imports ---
 use actix_cors::Cors;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
+
 use std::env;
 
 // --- Serialization/Deserialization ---
@@ -125,6 +125,7 @@ async fn get_about() -> impl Responder {
 
 #[get("/config")]
 async fn config() -> impl Responder {
+
     let db_url = env::var(DATABASE_URL_KEY).unwrap_or_else(|_| "Not Set".to_string());
     let port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "Not Set".to_string());
     let environment = env::var(RUST_LOG_KEY).unwrap_or_else(|_| "Not Set".to_string());
