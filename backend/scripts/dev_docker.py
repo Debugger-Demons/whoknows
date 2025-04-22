@@ -4,13 +4,15 @@
    running: 
    'docker build -t ${COMPOSE_PROJECT_NAME} . 
       && docker run --rm -d 
-         --env-file .env.local.frontend 
+         --env-file  ${ENV_FILE}
          -p ${FRONTEND_INTERNAL_PORT}:${FRONTEND_EXTERNAL_PORT} 
          ${COMPOSE_PROJECT_NAME}'
 """
 import sys
 import subprocess
 import makefile_env_loader
+
+ENV_FILE = ".env"
 
 PROJECT_NAME = makefile_env_loader.get_project_name()
 CONTAINER_NAME = f"{PROJECT_NAME}"
@@ -24,11 +26,11 @@ def get_build_cmd(project_name_prm="whoknows.frontend.test") -> str | None:
 def get_run_cmd(backend_port_prm="8080", image_name="whoknows.backend.test") -> str | None:
    """ 
    docker run --rm -d 
-         --env-file .env.local.backend 
+         --env-file ${ENV_FILE} 
          -p ${BACKEND_INTERNAL_PORT}:${BACKEND_EXTERNAL_PORT} 
          ${COMPOSE_PROJECT_NAME} 
    """
-   return f"docker run --rm -d --env-file .env.local.backend -p {backend_port_prm}:{backend_port_prm} {image_name}"
+   return f"docker run --rm -d --env-file {ENV_FILE} -p {backend_port_prm}:{backend_port_prm} {image_name}"
 
 cmds = {
    "build": get_build_cmd(PROJECT_NAME),

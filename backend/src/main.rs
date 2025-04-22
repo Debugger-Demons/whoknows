@@ -33,6 +33,13 @@ use argon2::{
 // --- Hex Decoding for Key ---
 use hex; // Import the hex crate
 
+// Define constants for environment variable names
+const DATABASE_URL_KEY: &str = "DATABASE_URL";
+const BACKEND_INTERNAL_PORT_KEY: &str = "BACKEND_INTERNAL_PORT";
+const RUST_LOG_KEY: &str = "RUST_LOG";
+const BUILD_VERSION_KEY: &str = "BUILD_VERSION";
+const SESSION_SECRET_KEY_KEY: &str = "SESSION_SECRET_KEY";
+
 // --- Struct Definitions ---
 
 #[derive(Deserialize, Debug)]
@@ -43,11 +50,11 @@ struct SearchQuery {
 
 #[derive(Serialize, FromRow, Debug, Clone)]
 struct Page {
-    title: String,
-    url: String,
-    language: String,
+    title: Option<String>,
+    url: Option<String>,
+    language: Option<String>,
     last_updated: Option<NaiveDateTime>,
-    content: String,
+    content: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, FromRow, Debug, Clone)]
@@ -118,10 +125,10 @@ async fn get_about() -> impl Responder {
 
 #[get("/config")]
 async fn config() -> impl Responder {
-    let db_url = env::var("DATABASE_URL").unwrap_or_else(|_| "Not Set".to_string());
-    let port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "Not Set".to_string());
-    let environment = env::var("RUST_LOG").unwrap_or_else(|_| "Not Set".to_string());
-    let build_version = env::var("BUILD_VERSION").unwrap_or_else(|_| "dev".to_string());
+    let db_url = env::var(DATABASE_URL_KEY).unwrap_or_else(|_| "Not Set".to_string());
+    let port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "Not Set".to_string());
+    let environment = env::var(RUST_LOG_KEY).unwrap_or_else(|_| "Not Set".to_string());
+    let build_version = env::var(BUILD_VERSION_KEY).unwrap_or_else(|_| "dev".to_string());
 
     web::Json(ConfigResponse {
         db_url,
@@ -372,16 +379,14 @@ async fn get_search(pool: web::Data<SqlitePool>, query: web::Query<SearchQuery>)
     .fetch_all(pool.get_ref())
     .await
     {
-                 Ok(records) => {
-            let pages: Vec<Page> = records.into_iter().map(|rec| {
-                    Page {
-                        title: rec.title.expect("Database schema violation: title should be NOT NULL"),
-                        url: rec.url,
-                        language: rec.language,
-                        last_updated: rec.last_updated,
-                        content: rec.content,
-                    }
-                }).collect();
+        Ok(records) => {
+            let pages: Vec<Page> = records.into_iter().map(|rec| { Page {
+                title:       rec.title,
+                url:         Some(rec.url),
+                language:    Some(rec.language),
+                last_updated: rec.last_updated,
+                content:     Some(rec.content),
+            }}).collect();
 
             HttpResponse::Ok().json(serde_json::json!({ "search_results": pages }))
         },
@@ -403,15 +408,16 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let port_str = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "8080".to_string());
+    let port_str = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "8080".to_string());
     let port = port_str
         .parse::<u16>()
         .expect("BACKEND_INTERNAL_PORT must be a valid port number");
 
+    println!("Server starting at http://{}:{}", HOST_NAME, port);
     log::info!("Server starting at http://{}:{}", HOST_NAME, port);
 
     let database_url =
-        env::var("DATABASE_URL").expect("DATABASE_URL must be set in environment or .env file");
+        env::var(DATABASE_URL_KEY).expect("DATABASE_URL must be set in environment or .env file");
 
     let pool = match SqlitePoolOptions::new()
         .max_connections(5)
@@ -429,15 +435,14 @@ async fn main() -> std::io::Result<()> {
     };
 
     // --- Load Session Key ---
-    // --- Load Session Key ---
     let session_secret_key_hex =
-        env::var("SESSION_SECRET_KEY").expect("SESSION_SECRET_KEY must be set...");
+        env::var(SESSION_SECRET_KEY_KEY).expect("SESSION_SECRET_KEY must be set...");
 
-    println!(
-        "Read SESSION_SECRET_KEY (length {}): {}",
-        session_secret_key_hex.len(),
-        session_secret_key_hex
-    );
+    // println!(
+    //     "Read SESSION_SECRET_KEY (length {}): {}",
+    //     session_secret_key_hex.len(),
+    //     session_secret_key_hex.chars().take(10).collect::<String>()
+    // );
 
     let decoded_key_bytes = match hex::decode(&session_secret_key_hex) {
         Ok(bytes) => {

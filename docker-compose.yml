@@ -2,11 +2,13 @@
 services:
   backend:
     container_name: whoknows.local.backend
+    env_file:
+      - .env
     image: ${IMAGE_TAG_BACKEND_LOCAL}
     build:
       context: ./backend
       args:
-        - APP_NAME=whoknows_dev
+        - APP_NAME=whoknows_local_compose
         - RUST_LOG=${RUST_LOG}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
         - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
@@ -16,8 +18,10 @@ services:
       - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
       - RUST_LOG=${RUST_LOG}
       - DATABASE_URL=${DATABASE_URL}
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
+      - DATA_DIR=${DATA_DIR}
     volumes:
-      - db_data:/app/data
+      - ./database:/app/data
     expose:
       - "${BACKEND_INTERNAL_PORT}"
     networks:

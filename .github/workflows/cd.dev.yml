@@ -35,6 +35,18 @@ env:
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
 jobs:
+  # ---------------------------------------------
+  # ----------------- validate-config ------------
+  #
+  validate-config:
+    uses: ./.github/workflows/validate.env_and_secrets.yml
+    with:
+      environment: development
+    secrets:
+      DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
+      DEV_SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+      DEV_GHCR_PAT_OR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
+
   #
   # ---------------------------------------------
   # ----------------- build-push ----------------
@@ -150,6 +162,9 @@ jobs:
           echo "GIT_BRANCH=${GITHUB_REF#refs/heads/}" >> VERSION
           echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> VERSION
           echo "IMAGE_TAG_FRONTEND=${{ needs.build-push.outputs.frontend_image_sha }}" >> VERSION
+
+          # ensure dir exists
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}"
 
           # Transfer to server
           ${{ env.SCP_CMD }} VERSION ${SERVER_DEST_BASE}/VERSION

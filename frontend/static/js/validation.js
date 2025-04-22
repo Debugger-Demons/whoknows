@@ -1,4 +1,4 @@
-const sanitized = input.replace(/<\/?[^>]+(>|$)/g, "");
+/* DOMPurify is loaded via script tag in HTML files */
 
 const sanitize = (text) => {
   const div = document.createElement("div");
@@ -6,4 +6,11 @@ const sanitize = (text) => {
   return div.textContent || div.innerText || "";
 };
 
-const sanitizedInput = DOMPurify.sanitize(input);
+// Define a utility function to sanitize inputs using DOMPurify
+const sanitizeInput = (input) => {
+  if (typeof DOMPurify === "undefined") {
+    console.error("DOMPurify is not defined");
+    return sanitize(input);
+  }
+  return DOMPurify.sanitize(input);
+};

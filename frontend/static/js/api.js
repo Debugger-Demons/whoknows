@@ -1,14 +1,23 @@
 /**
- * API client for the Who Knows backend
+ * @description API client for Frontend to communicate with Backend
+ *
+ * @url http://<Container-Service-Name>:${BACKEND_INTERNAL_PORT}
+ * @url fx. http://backend:92
+ *
+ * @note CSRF token is included in all requests
+ * - benefit:
+ *   - prevents CSRF attacks
+ *   - prevents XSS attacks (csrf token helps prevent XSS attacks by validating the request origin)
+ *   - prevents SQL injection attacks
+ *   - prevents file upload attacks
+ *   - prevents remote code execution attacks
+ *   - prevents cross-site request forgery attacks
+ *   - prevents clickjacking attacks
+ * - CSRF token is fetched from the meta tag in the HTML file
+ * - CSRF token is sent in the header of all requests
+ * - CSRF token is sent in the body of POST requests
  */
 class ApiClient {
-  constructor() {
-    // Get backend URL from environment variable or use default
-    // In a real app, this would be configured properly
-    // .env file
-    this.backendUrl = window.BACKEND_URL || "http://localhost:8081";
-  }
-
   /**
    * Perform a search query
    * @param {string} query - The search query
@@ -17,10 +26,25 @@ class ApiClient {
    */
   async search(query, language = "en") {
     try {
-      const url = `${this.backendUrl}/api/search?q=${encodeURIComponent(
+      const url = `/api/search?q=${encodeURIComponent(
         query
       )}&language=${language}`;
-      const response = await fetch(url);
+      const csrfToken = this.getCSRFToken();
+
+      /**
+       * @description Fetch the search results from the backend
+       * @param {string} url - The URL to fetch the search results from
+       * @returns {Promise<Object>} - Promise resolving to search results
+       *
+       * @note fetch() finds network to Backend container
+       * - backend cotainer is found by service name in docker-compose.yml
+       */
+      const response = await fetch(url, {
+        headers: {
+          "X-CSRF-TOKEN": csrfToken,
+        },
+        credentials: "include", // cookies are included in requests
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -41,15 +65,18 @@ class ApiClient {
    */
   async login(username, password) {
     try {
-      const url = `${this.backendUrl}/api/login`;
+      const url = `/api/login`;
+      const csrfToken = this.getCSRFToken();
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRF-TOKEN": csrfToken,
         },
         body: `username=${encodeURIComponent(
           username
         )}&password=${encodeURIComponent(password)}`,
+        credentials: "include", // Send cookies with the request
       });
 
       if (!response.ok) {
@@ -64,13 +91,41 @@ class ApiClient {
   }
 
   /**
+   * Logout a user
+   * @returns {Promise<Object>} - Promise resolving to logout result
+   */
+  async logout() {
+    try {
+      const url = `/api/logout`;
+      const csrfToken = this.getCSRFToken();
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "X-CSRF-TOKEN": csrfToken,
+        },
+        credentials: "include", // cookies are included in requests
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Logout error:", error);
+      return { success: false, error: "Logout failed" };
+    }
+  }
+
+  /**
    * Register a new user
    * @param {Object} userData - User registration data
    * @returns {Promise<Object>} - Promise resolving to registration result
    */
   async register(userData) {
     try {
-      const url = `${this.backendUrl}/api/register`;
+      const url = `/api/register`;
+      const csrfToken = this.getCSRFToken();
       const formData = new URLSearchParams();
 
       for (const [key, value] of Object.entries(userData)) {
@@ -81,8 +136,10 @@ class ApiClient {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRF-TOKEN": csrfToken,
         },
         body: formData,
+        credentials: "include", // cookies are included in requests
       });
 
       if (!response.ok) {
@@ -94,6 +151,14 @@ class ApiClient {
       console.error("Registration error:", error);
       return { success: false, error: "Registration failed" };
     }
+  }
+
+  getCSRFToken() {
+    const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
+    const csrfToken = csrfTokenElement
+      ? csrfTokenElement.getAttribute("content")
+      : "";
+    return csrfToken;
   }
 }
 
