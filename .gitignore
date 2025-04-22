@@ -3,6 +3,7 @@ whoknows/
 
 # cursor
 .cursor
+/context
 
 # Rust
 /target/
@@ -21,12 +22,7 @@ debug/
 
 # Environment variables
 .env
-.env.production
-.env.development
-backend/.env
-backend/db-migration/node_modules/
-backend/db-migration/node_modules
-frontend/.env
+.env.*
 
 # ai prompt
 ai-prompt-content/

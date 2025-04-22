@@ -178,6 +178,7 @@ async fn post_login(
                     }
                     FlashMessage::info("You were logged in!").send();
                     HttpResponse::Ok().json(serde_json::json!({
+                        "success": true,
                         "message": "Login successful",
                         "user": {
                             "id": user_id,
@@ -341,6 +342,7 @@ async fn post_register(
             if result.rows_affected() == 1 {
                 log::info!("User '{}' registered successfully.", username);
                 HttpResponse::Created().json(serde_json::json!({
+                    "success": true,
                     "message": "User registered successfully"
                 }))
             } else {
