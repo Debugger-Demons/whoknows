@@ -1,3 +1,5 @@
+/* DOMPurify is loaded via script tag in HTML files */
+
 const sanitize = (text) => {
   const div = document.createElement("div");
   div.innerHTML = text;
