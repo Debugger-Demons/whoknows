@@ -17,6 +17,28 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
 	build-frontend run-frontend stop-frontend
 
+# === Compose Management ===
+run-compose: 
+	@echo "Running compose..."
+	python ./scripts/check_env.py
+	docker compose up -d
+
+stop-compose:
+	@echo "Stopping compose..."
+	docker compose down
+
+clean-compose:
+	@echo "Cleaning compose..."
+	docker stop whoknows.local.backend 
+	docker stop whoknows.local.frontend
+	docker rm whoknows.local.backend
+	docker rm whoknows.local.frontend
+	docker rmi whoknows.local.backend
+	docker rmi whoknows.local.frontend
+	@echo "Compose cleaned up!"
+
+
+
 # === Frontend Management ===
 build-frontend:
 	@echo "Building frontend Docker image..."
@@ -31,6 +53,23 @@ stop-frontend:
 	@echo "Stopping frontend container..."
 	docker stop whoknows_frontend_test || true
 	docker rm whoknows_frontend_test || true
+
+# === Backend Management ===
+build-backend:
+	@echo "Building backend Docker image..."
+	docker build -t whoknows.backend --build-arg BACKEND_INTERNAL_PORT=92 --build-arg COMPOSE_PROJECT_NAME=whoknows --build-arg NODE_ENV=production ./backend
+
+run-backend: build-backend
+	@echo "Running backend container..."
+	docker run -d --name whoknows_backend_test -p 92:92 -e BACKEND_INTERNAL_PORT=92 -e COMPOSE_PROJECT_NAME=whoknows -e NODE_ENV=production whoknows.backend
+	@echo "Backend is now running at http://localhost:92"
+
+stop-backend:
+	@echo "Stopping backend container..."
+	docker stop whoknows_backend_test || true
+	docker rm whoknows_backend_test || true
+
+
 
 # === Environment Secret Management ===
 
@@ -109,6 +148,13 @@ i-create-documentation:
 help:
 	@echo "--------------------------------------------------------"
 	@echo "Available commands:"
+	@echo ""
+
+	@echo "---- Compose Management ----"
+	@echo ""
+	@echo "  make run-compose         - Run the compose"
+	@echo "  make stop-compose        - Stop the compose"
+	@echo "  make clean-compose       - Clean the compose"
 	@echo ""
 	@echo "---- Frontend Management ----"
 	@echo ""
