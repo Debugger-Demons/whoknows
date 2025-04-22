@@ -2,12 +2,14 @@ use actix_files as files;
 use actix_web::dev::{forward_ready, Service, ServiceRequest, ServiceResponse, Transform};
 use actix_web::{get, http, middleware, web, App, Error, HttpResponse, HttpServer, Responder};
 use actix_web::body::{EitherBody, MessageBody};
+use actix_cors::Cors;
 use awc::Client;
 use futures::future::{self, Either, LocalBoxFuture, Ready};
 use log::{info, error};
 use std::env;
 use std::fs;
 use std::task::{Context, Poll};
+
 
 #[get("/api/health")]
 async fn health_check() -> HttpResponse {
@@ -207,6 +209,21 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(middleware::Logger::default())
             .wrap(ApiProxy::new(backend_url.clone()))
+            .wrap(Cors::default()
+                    // Read your frontend URL(s) from config or env, never use `allow_any_origin` in prod
+                    .allowed_origin(&std::env::var("FRONTEND_URL")
+                        .unwrap_or_else(|_| "http://localhost:8080".into()))
+                    .allowed_methods(vec!["GET", "POST"])
+                    .allowed_headers(vec![
+                        http::header::AUTHORIZATION,
+                        http::header::ACCEPT,
+                    ])
+                    .allowed_header(http::header::CONTENT_TYPE)
+                    .expose_headers(&[http::header::CONTENT_DISPOSITION])
+                    // Enable credentials only if needed (cookies / auth)
+                    .supports_credentials()
+                    .max_age(3600)
+            )
             .service(health_check)
             .service(get_config)
             .service(api_config)
