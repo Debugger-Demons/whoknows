@@ -3,6 +3,7 @@ whoknows/
 
 # cursor
 .cursor
+/context
 frontend/context/
 
 # Rust
@@ -23,6 +24,7 @@ debug/
 # Environment variables
 .env
 .env.*
+
 !.env.template
 !backend/.env.template
 !backend/.env.local.backend.template
