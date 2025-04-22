@@ -50,29 +50,6 @@ struct Page {
     content: String,
 }
 
--Page {
--    title: rec.title.expect("Database schema violation: title should be NOT NULL"),
--    url: rec.url,
--    language: rec.language,
--    last_updated: rec.last_updated,
--    content: rec.content,
--}
-+Page {
-+    title: rec
-+        .title
-+        .expect("DB invariant violated: pages.title is NULL"),
-+    url: rec
-+        .url
-+        .expect("DB invariant violated: pages.url is NULL"),
-+    language: rec
-+        .language
-+        .expect("DB invariant violated: pages.language is NULL"),
-+    last_updated: rec.last_updated,
-+    content: rec
-+        .content
-+        .expect("DB invariant violated: pages.content is NULL"),
-+}
-
 #[derive(Serialize, Deserialize, FromRow, Debug, Clone)]
 struct User {
     id: i64,
