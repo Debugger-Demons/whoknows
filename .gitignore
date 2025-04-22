@@ -25,6 +25,14 @@ debug/
 .env
 .env.*
 
+backend/.env.local.backend
+frontend/.env.local.frontend
+
+backend/.env.local.backend
+backend/meta.json
+backend/db-migration/whoknows.sql
+
+## templates included in git
 !.env.template
 !backend/.env.template
 !backend/.env.local.backend.template
@@ -504,10 +512,3 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
-
-# End of https://www.toptal.com/developers/gitignore/api/node
-backend/.env.local.backend
-frontend/.env.local.frontend
-backend/db-migration/whoknows.sql
-backend/.env.local.backend
-backend/meta.json
