@@ -1,0 +1,37 @@
+# Makefile.toml
+
+# -> cargo make dev
+[tasks.dev] # 'dev' -> cargo make dev 
+category = "custom local Development"
+# Use dotenv-cli to load env vars before running cargo watch
+# Assumes dotenv-cli is installed: `cargo install dotenv-cli`
+command = "dotenv" 
+args = ["-f", ".env.local.frontend", "run", "--", "cargo", "watch", "-w", "static", "-s", "cargo run"]
+description = "Run 'cargo run' with hot-reloading, loading vars from .env.local.frontend."
+
+
+# -> docker task 
+[tasks.dev-docker]
+category = "custom local Development"
+command = "python"
+args = [
+    "scripts/dev_docker.py"
+]
+description = "Builds the Docker image and runs it detached, loading vars from .env.local.backend and mapping host port 8080."
+
+# Task to stop the detached container
+[tasks.stop-docker]
+category = "custom local Development"
+command = "cmd"
+args = ["/c", "docker ps -q --filter ancestor=whoknows | xargs -r docker stop"]
+description = "Stops the running dev-docker container."
+
+
+# print custom tasks 
+[tasks.help] # 'help' -> cargo make help
+category = "custom local Development"
+command = "echo"
+args = [
+    "Available tasks: dev, dev-docker, stop-docker"
+]
+description = "Prints available tasks: dev, dev-docker, stop-docker"

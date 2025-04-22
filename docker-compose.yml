@@ -1,12 +1,14 @@
 # docker-compose.dev.yml
 services:
   backend:
-    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_backend_dev
-    image: ${IMAGE_TAG_BACKEND}
+    container_name: whoknows.local.backend
+    env_file:
+      - .env
+    image: ${IMAGE_TAG_BACKEND_LOCAL}
     build:
       context: ./backend
       args:
-        - APP_NAME=whoknows_dev
+        - APP_NAME=whoknows_local_compose
         - RUST_LOG=${RUST_LOG}
         - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
         - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
@@ -18,15 +20,15 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
     volumes:
-      - /home/deployer/deployment/app/data:/app/data
+      - ./database:/app/data
     expose:
       - "${BACKEND_INTERNAL_PORT}"
     networks:
       - app-network
 
   frontend:
-    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_frontend_dev
-    image: ${IMAGE_TAG_FRONTEND}
+    container_name: whoknows.local.frontend
+    image: ${IMAGE_TAG_FRONTEND_LOCAL}
     build:
       context: ./frontend
       args:
