@@ -16,6 +16,15 @@ class ApiClient {
       const url = `/api/search?q=${encodeURIComponent(
         query
       )}&language=${language}`;
+
+      /**
+       * @description Fetch the search results from the backend
+       * @param {string} url - The URL to fetch the search results from
+       * @returns {Promise<Object>} - Promise resolving to search results
+       *
+       * @note fetch() finds network to Backend container
+       * - backend cotainer is found by service name in docker-compose.yml
+       */
       const response = await fetch(url);
 
       if (!response.ok) {
@@ -123,3 +132,6 @@ class ApiClient {
 
 // Create a global API client instance
 const api = new ApiClient();
+
+// Export the ApiClient instance
+export default api;
