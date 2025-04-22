@@ -21,12 +21,17 @@ debug/
 
 # Environment variables
 .env
-.env.production
-.env.development
-backend/.env
+.env.*
+!.env.template
+!backend/.env.template
+!backend/.env.local.backend.template
+!frontend/.env.template
+!frontend/.env.local.frontend.template
+!backend/db-migration/.env.template
+
+# node_modules
 backend/db-migration/node_modules/
 backend/db-migration/node_modules
-frontend/.env
 
 # ai prompt
 ai-prompt-content/
