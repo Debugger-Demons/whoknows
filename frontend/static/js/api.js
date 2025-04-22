@@ -74,12 +74,17 @@ class ApiClient {
         formData.append(key, value);
       }
 
+      const csrfToken = document
+        .querySelector('meta[name="csrf-token"]')
+        .getAttribute("content");
       const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
+          "X-CSRF-TOKEN": csrfToken,
         },
         body: formData,
+        credentials: "include", // cookies are included in requests
       });
 
       if (!response.ok) {
