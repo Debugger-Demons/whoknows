@@ -1,11 +1,10 @@
 /**
- * API client for the Who Knows backend
+ * @description API client for Frontend to communicate with Backend
+ *
+ * @url http://<Container-Service-Name>:${BACKEND_INTERNAL_PORT}
+ * @url fx. http://backend:92
  */
 class ApiClient {
-  constructor() {
-    // No longer need backendUrl or init
-  }
-
   /**
    * Perform a search query
    * @param {string} query - The search query
@@ -57,6 +56,29 @@ class ApiClient {
     } catch (error) {
       console.error("Login error:", error);
       return { success: false, error: "Login failed" };
+    }
+  }
+
+  /**
+   * Logout a user
+   * @returns {Promise<Object>} - Promise resolving to logout result
+   */
+  async logout() {
+    try {
+      const url = `/api/logout`;
+      const response = await fetch(url, {
+        method: "POST",
+        credentials: "include", // cookies are included in requests
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Logout error:", error);
+      return { success: false, error: "Logout failed" };
     }
   }
 
