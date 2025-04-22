@@ -436,7 +436,7 @@ async fn main() -> std::io::Result<()> {
     println!(
         "Read SESSION_SECRET_KEY (length {}): {}",
         session_secret_key_hex.len(),
-        session_secret_key_hex
+        session_secret_key_hex.chars().take(10).collect::<String>()
     );
 
     let decoded_key_bytes = match hex::decode(&session_secret_key_hex) {
