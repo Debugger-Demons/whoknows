@@ -3,7 +3,7 @@ name: branch-test - Continuous Deployment
 
 on:
   push:
-    branches: [fix/db-volume] # <-- adjust for current branch to test
+    branches: [python-to-rust] # <-- adjust for current branch to test
   workflow_dispatch:
 
 env:
@@ -14,12 +14,12 @@ env:
   IMAGE_BASENAME: ${{ github.repository_owner }}/${{ github.event.repository.name }}
   # Secrets:
   GHCR_PAT_OR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
-  SERVER_USER: ${{ secrets.DEV_SERVER_USER }} # deployer
-  SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }} # IP or domain
-  SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }} # 22 ssh port, 10222
+  SERVER_USER: ${{ secrets.DEV_SERVER_USER }}
+  SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }}
+  SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }}
   # SSH:
-  SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }} # private key for SSH access
-  ENV_FILE_CONTENT: ${{ secrets.DEV_ENV_FILE }} # .env file loaded content
+  SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+  ENV_FILE_CONTENT: ${{ secrets.DEV_ENV_FILE }}
   # Commands:
   SSH_CMD: ssh -i ~/.ssh/id_rsa -p ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no ${{ secrets.DEV_SERVER_USER }}@${{ secrets.DEV_SERVER_HOST }}
   SCP_CMD: scp -i ~/.ssh/id_rsa -P ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no
