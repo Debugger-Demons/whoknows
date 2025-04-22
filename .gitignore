@@ -3,6 +3,7 @@ whoknows/
 
 # cursor
 .cursor
+frontend/context/
 
 # Rust
 /target/
