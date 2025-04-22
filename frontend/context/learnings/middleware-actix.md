@@ -325,7 +325,7 @@ App::new()
     })
 ```
 
-## Creating Custom Middleware Comparison
+## Creating Custom Middleware
 
 ### Express.js
 
@@ -501,7 +501,7 @@ App::new()
 
 ## Code Comparisons
 
-### Middleware Comparison {#middleware-comparison}
+### Middleware Comparison
 
 | Actix Web | Express.js |
 | --------- | ---------- |
@@ -587,7 +587,7 @@ app.get("/", (req, res) => {
 });
 ```
 
-### Request Comparison {#request-comparison}
+### Request Comparison
 
 | Actix Web | Express.js |
 | --------- | ---------- |
@@ -643,7 +643,7 @@ app.get("/users/:id", (req, res) => {
 });
 ```
 
-### Response Comparison {#response-comparison}
+### Response Comparison
 
 | Actix Web | Express.js |
 | --------- | ---------- |
@@ -732,7 +732,7 @@ app.get("/response-examples", (req, res) => {
 });
 ```
 
-### Next Comparison {#next-comparison}
+### Next Comparison
 
 | Actix Web | Express.js |
 | --------- | ---------- |
@@ -805,7 +805,7 @@ app.use(middleware2);
 app.use(errorMiddleware);
 ```
 
-### Execution Order Comparison {#execution-order-comparison}
+### Execution Order Comparison
 
 | Actix Web | Express.js |
 | --------- | ---------- |
