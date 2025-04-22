@@ -398,21 +398,14 @@ async fn get_search(pool: web::Data<SqlitePool>, query: web::Query<SearchQuery>)
                  Ok(records) => {
             let pages: Vec<Page> = records.into_iter().map(|rec| {
                     Page {
-                        title: rec
-                            .title
-                            .expect("DB invariant violated: pages.title is NULL"),
-                        url: rec
-                            .url
-                            .expect("DB invariant violated: pages.url is NULL"),
-                        language: rec
-                            .language
-                            .expect("DB invariant violated: pages.language is NULL"),
+                        title: rec.title.expect("Database schema violation: title should be NOT NULL"),
+                        url: rec.url.expect("Database schema violation: url should be NOT NULL"),
+                        language: rec.language.expect("Database schema violation: language should be NOT NULL"),
                         last_updated: rec.last_updated,
-                        content: rec
-                            .content
-                            .expect("DB invariant violated: pages.content is NULL"),
+                        content: rec.content.expect("Database schema violation: content should be NOT NULL"),
                     }
                 }).collect();
+
             HttpResponse::Ok().json(serde_json::json!({ "search_results": pages }))
         },
         Err(e) => {
