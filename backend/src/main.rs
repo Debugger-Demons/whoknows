@@ -50,6 +50,29 @@ struct Page {
     content: String,
 }
 
+-Page {
+-    title: rec.title.expect("Database schema violation: title should be NOT NULL"),
+-    url: rec.url,
+-    language: rec.language,
+-    last_updated: rec.last_updated,
+-    content: rec.content,
+-}
++Page {
++    title: rec
++        .title
++        .expect("DB invariant violated: pages.title is NULL"),
++    url: rec
++        .url
++        .expect("DB invariant violated: pages.url is NULL"),
++    language: rec
++        .language
++        .expect("DB invariant violated: pages.language is NULL"),
++    last_updated: rec.last_updated,
++    content: rec
++        .content
++        .expect("DB invariant violated: pages.content is NULL"),
++}
+
 #[derive(Serialize, Deserialize, FromRow, Debug, Clone)]
 struct User {
     id: i64,
@@ -375,14 +398,21 @@ async fn get_search(pool: web::Data<SqlitePool>, query: web::Query<SearchQuery>)
                  Ok(records) => {
             let pages: Vec<Page> = records.into_iter().map(|rec| {
                     Page {
-                        title: rec.title.expect("Database schema violation: title should be NOT NULL"),
-                        url: rec.url,
-                        language: rec.language,
+                        title: rec
+                            .title
+                            .expect("DB invariant violated: pages.title is NULL"),
+                        url: rec
+                            .url
+                            .expect("DB invariant violated: pages.url is NULL"),
+                        language: rec
+                            .language
+                            .expect("DB invariant violated: pages.language is NULL"),
                         last_updated: rec.last_updated,
-                        content: rec.content,
+                        content: rec
+                            .content
+                            .expect("DB invariant violated: pages.content is NULL"),
                     }
                 }).collect();
-
             HttpResponse::Ok().json(serde_json::json!({ "search_results": pages }))
         },
         Err(e) => {
@@ -433,11 +463,11 @@ async fn main() -> std::io::Result<()> {
     let session_secret_key_hex =
         env::var("SESSION_SECRET_KEY").expect("SESSION_SECRET_KEY must be set...");
 
-    println!(
-        "Read SESSION_SECRET_KEY (length {}): {}",
-        session_secret_key_hex.len(),
-        session_secret_key_hex.chars().take(10).collect::<String>()
-    );
+    // println!(
+    //     "Read SESSION_SECRET_KEY (length {}): {}",
+    //     session_secret_key_hex.len(),
+    //     session_secret_key_hex.chars().take(10).collect::<String>()
+    // );
 
     let decoded_key_bytes = match hex::decode(&session_secret_key_hex) {
         Ok(bytes) => {
