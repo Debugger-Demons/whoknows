@@ -14,6 +14,3 @@ const sanitizeInput = (input) => {
   }
   return DOMPurify.sanitize(input);
 };
-
-// Export the sanitizeInput function
-export { sanitizeInput };
