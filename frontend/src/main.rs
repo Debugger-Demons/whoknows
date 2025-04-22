@@ -10,6 +10,10 @@ use std::env;
 use std::fs;
 use std::task::{Context, Poll};
 
+// Define constants for environment variable names
+const FRONTEND_URL_KEY: &str = "FRONTEND_URL";
+const BACKEND_INTERNAL_PORT_KEY: &str = "BACKEND_INTERNAL_PORT";
+const FRONTEND_INTERNAL_PORT_KEY: &str = "FRONTEND_INTERNAL_PORT";
 
 #[get("/api/health")]
 async fn health_check() -> HttpResponse {
@@ -21,7 +25,7 @@ async fn health_check() -> HttpResponse {
 
 #[get("/api/config")]
 async fn get_config() -> HttpResponse {
-    let backend_port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "92".to_string());
+    let backend_port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "92".to_string());
 
     HttpResponse::Ok().json(serde_json::json!({
         "BACKEND_URL": format!("http://backend:{}", backend_port)
@@ -30,7 +34,7 @@ async fn get_config() -> HttpResponse {
 
 #[get("/static/js/api_config.js")]
 async fn api_config() -> HttpResponse {
-    let backend_port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "92".to_string());
+    let backend_port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "92".to_string());
 
     let js_content = format!("window.BACKEND_URL = 'http://backend:{}';\n", backend_port);
 
@@ -195,8 +199,8 @@ async fn main() -> std::io::Result<()> {
 
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
 
-    let frontend_port = env::var("FRONTEND_INTERNAL_PORT").unwrap_or_else(|_| "91".to_string());
-    let backend_port = env::var("BACKEND_INTERNAL_PORT").unwrap_or_else(|_| "92".to_string());
+    let frontend_port = env::var(FRONTEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "91".to_string());
+    let backend_port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "92".to_string());
 
     let env_js = format!("window.BACKEND_URL = 'http://backend:{}';\n", backend_port);
 
@@ -214,7 +218,7 @@ async fn main() -> std::io::Result<()> {
             .wrap(ApiProxy::new(backend_url.clone()))
             .wrap(Cors::default()
                     // Read your frontend URL(s) from config or env, never use `allow_any_origin` in prod
-                    .allowed_origin(&std::env::var("FRONTEND_URL")
+                    .allowed_origin(&std::env::var(FRONTEND_URL_KEY)
                         .unwrap_or_else(|_| "http://localhost:8080".into()))
                     .allowed_methods(vec!["GET", "POST"])
                     .allowed_headers(vec![
