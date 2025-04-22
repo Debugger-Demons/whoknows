@@ -98,6 +98,9 @@ where
         if req.path().starts_with("/api/")
             && req.path() != "/api/health"
             && req.path() != "/api/config"
+            && req.path() != "/api/login"
+            && req.path() != "/api/logout"
+            && req.path() != "/api/register"
         {
             let client = self.client.clone();
             let backend_url = self.backend_url.clone();
