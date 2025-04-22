@@ -202,10 +202,6 @@ async fn main() -> std::io::Result<()> {
     let frontend_port = env::var(FRONTEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "91".to_string());
     let backend_port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "92".to_string());
 
-    let env_js = format!("window.BACKEND_URL = 'http://backend:{}';\n", backend_port);
-
-    fs::write("./static/js/environment.js", env_js)?;
-
     info!("Starting server at http://0.0.0.0:{}", frontend_port);
     info!("Using backend at http://backend:{}", backend_port);
 
