@@ -19,7 +19,6 @@ services:
       - RUST_LOG=${RUST_LOG}
       - DATABASE_URL=${DATABASE_URL}
       - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
-      - DATA_DIR=${DATA_DIR}
     volumes:
       - ./database:/app/data
     expose:
