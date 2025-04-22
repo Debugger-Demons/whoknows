@@ -4,18 +4,9 @@
  * @url http://<Container-Service-Name>:${BACKEND_INTERNAL_PORT}
  * @url fx. http://backend:92
  *
- * @note CSRF token is included in all requests
- * - benefit:
- *   - prevents CSRF attacks
- *   - prevents XSS attacks (csrf token helps prevent XSS attacks by validating the request origin)
- *   - prevents SQL injection attacks
- *   - prevents file upload attacks
- *   - prevents remote code execution attacks
- *   - prevents cross-site request forgery attacks
- *   - prevents clickjacking attacks
- * - CSRF token is fetched from the meta tag in the HTML file
- * - CSRF token is sent in the header of all requests
- * - CSRF token is sent in the body of POST requests
+ * @note THIS CLIENT DOES NOT IMPLEMENT CSRF PROTECTION.
+ * Ensure your backend API either uses alternative security measures (like stateless token auth)
+ * or that you understand and accept the risks of CSRF attacks if using session cookies.
  */
 class ApiClient {
   /**
@@ -29,21 +20,9 @@ class ApiClient {
       const url = `/api/search?q=${encodeURIComponent(
         query
       )}&language=${language}`;
-      const csrfToken = this.getCSRFToken();
 
-      /**
-       * @description Fetch the search results from the backend
-       * @param {string} url - The URL to fetch the search results from
-       * @returns {Promise<Object>} - Promise resolving to search results
-       *
-       * @note fetch() finds network to Backend container
-       * - backend cotainer is found by service name in docker-compose.yml
-       */
       const response = await fetch(url, {
-        headers: {
-          "X-CSRF-TOKEN": csrfToken,
-        },
-        credentials: "include", // cookies are included in requests
+        credentials: "include",
       });
 
       if (!response.ok) {
@@ -58,7 +37,7 @@ class ApiClient {
   }
 
   /**
-   * Attempt to log in a user
+   * Attempt to log in a user by sending JSON data.
    * @param {string} username - The username
    * @param {string} password - The password
    * @returns {Promise<Object>} - Promise resolving to login result
@@ -66,27 +45,63 @@ class ApiClient {
   async login(username, password) {
     try {
       const url = `/api/login`;
-      const csrfToken = this.getCSRFToken();
+      // Prepare login data as a JavaScript object
+      const loginData = {
+        username: username,
+        password: password,
+      };
+
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRF-TOKEN": csrfToken,
+          // *** Set Content-Type to application/json ***
+          "Content-Type": "application/json",
+          // Optional: Indicate that we expect a JSON response back
+          Accept: "application/json",
         },
-        body: `username=${encodeURIComponent(
-          username
-        )}&password=${encodeURIComponent(password)}`,
+        // *** Stringify the login data object for the body ***
+        body: JSON.stringify(loginData),
         credentials: "include", // Send cookies with the request
       });
 
+      // --- Start: Improved Error Handling (Optional but recommended) ---
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Handles 400, 401, 403, 404, 500 etc.
+        let errorData = { message: `HTTP error! status: ${response.status}` };
+        try {
+          // Attempt to parse potential JSON error response from the backend
+          const errorJson = await response.json();
+          // Merge backend error details if available (e.g., {"error": "Invalid credentials"})
+          errorData = { ...errorData, ...errorJson };
+        } catch (parseError) {
+          // If backend error response isn't JSON or is empty, add status text
+          errorData.message += ` ${response.statusText || ""}`.trim();
+        }
+        // Create an Error object with more details
+        const error = new Error(errorData.error || errorData.message); // Prioritize specific error message from backend
+        error.status = response.status;
+        error.data = errorData; // Attach full error data
+        throw error; // Throw the detailed error
       }
+      // --- End: Improved Error Handling ---
 
+      // Parse the successful JSON response (e.g., {"success": true, "user": {...}})
       return await response.json();
     } catch (error) {
-      console.error("Login error:", error);
-      return { success: false, error: "Login failed" };
+      // Log the detailed error from the catch block
+      console.error(
+        "Login error:",
+        error.status,
+        error.message,
+        error.data || error
+      );
+      // Return a structured error object for the calling code (login.js)
+      return {
+        success: false,
+        status: error.status || null, // Include HTTP status if available
+        // Prioritize specific error message from backend if available
+        error: error.data?.error || error.message || "Login failed",
+      };
     }
   }
 
@@ -97,20 +112,27 @@ class ApiClient {
   async logout() {
     try {
       const url = `/api/logout`;
-      const csrfToken = this.getCSRFToken();
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "X-CSRF-TOKEN": csrfToken,
+          // No specific headers needed usually for logout, unless backend requires them
         },
-        credentials: "include", // cookies are included in requests
+        credentials: "include", // Send cookies to invalidate session
       });
 
       if (!response.ok) {
+        // --- Add similar improved error handling as login if needed ---
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      // Often logout might return empty body or simple {success: true}
+      // Handle potential empty response body gracefully
+      try {
+        return await response.json();
+      } catch (e) {
+        // If parsing fails (e.g., empty body), return success based on status code
+        return { success: response.ok };
+      }
     } catch (error) {
       console.error("Logout error:", error);
       return { success: false, error: "Logout failed" };
@@ -118,47 +140,53 @@ class ApiClient {
   }
 
   /**
-   * Register a new user
+   * Register a new user by sending JSON data
    * @param {Object} userData - User registration data
    * @returns {Promise<Object>} - Promise resolving to registration result
    */
   async register(userData) {
     try {
       const url = `/api/register`;
-      const csrfToken = this.getCSRFToken();
-      const formData = new URLSearchParams();
-
-      for (const [key, value] of Object.entries(userData)) {
-        formData.append(key, value);
-      }
+      const bodyData = JSON.stringify(userData);
 
       const response = await fetch(url, {
         method: "POST",
         headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          "X-CSRF-TOKEN": csrfToken,
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        body: formData,
-        credentials: "include", // cookies are included in requests
+        body: bodyData,
+        credentials: "include",
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorData = { message: `HTTP error! status: ${response.status}` };
+        try {
+          const errorJson = await response.json();
+          errorData = { ...errorData, ...errorJson };
+        } catch (parseError) {
+          errorData.message += ` ${response.statusText || ""}`.trim();
+        }
+        const error = new Error(errorData.error || errorData.message);
+        error.status = response.status;
+        error.data = errorData;
+        throw error;
       }
 
       return await response.json();
     } catch (error) {
-      console.error("Registration error:", error);
-      return { success: false, error: "Registration failed" };
+      console.error(
+        "Registration error:",
+        error.status,
+        error.message,
+        error.data || error
+      );
+      return {
+        success: false,
+        status: error.status || null,
+        error: error.data?.error || error.message || "Registration failed",
+      };
     }
-  }
-
-  getCSRFToken() {
-    const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-    const csrfToken = csrfTokenElement
-      ? csrfTokenElement.getAttribute("content")
-      : "";
-    return csrfToken;
   }
 }
 

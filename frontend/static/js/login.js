@@ -16,11 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     try {
-      // In a static demo, we'll just show a message
-      showError('This is a static demo. Login is not functional.');
-      
       // In a real application, you would use the API client:
-      /*
+      
       const response = await api.login(username, password);
       
       if (response.success) {
@@ -29,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showError(response.error || 'Login failed. Please check your credentials.');
       }
-      */
+      
     } catch (error) {
       console.error('Login error:', error);
       showError('An error occurred during login. Please try again.');
