@@ -17,6 +17,7 @@ env:
   SERVER_USER: ${{ secrets.DEV_SERVER_USER }} # deployer
   SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }} # IP or domain
   SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }} # 22 ssh port, 10222
+  DATABASE_URL: ${{ secrets.DB_PATH}}
   # SSH:
   SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }} # private key for SSH access
   ENV_FILE_CONTENT: ${{ secrets.DEV_ENV_FILE }} # .env file loaded content
@@ -34,8 +35,17 @@ env:
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
 jobs:
+  # ---------------------------------------------
+  # ----------------- validate-config ------------
+  #
   validate-config:
     uses: ./.github/workflows/validate.env_and_secrets.yml
+    with:
+      environment: development
+    secrets:
+      DEV_ENV_FILE: ${{ secrets.DEV_ENV_FILE }}
+      DEV_SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
+      DEV_GHCR_PAT_OR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
 
   #
   # ---------------------------------------------
@@ -153,6 +163,9 @@ jobs:
           echo "IMAGE_TAG_BACKEND=${{ needs.build-push.outputs.backend_image_sha }}" >> VERSION
           echo "IMAGE_TAG_FRONTEND=${{ needs.build-push.outputs.frontend_image_sha }}" >> VERSION
 
+          # ensure dir exists
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}"
+
           # Transfer to server
           ${{ env.SCP_CMD }} VERSION ${SERVER_DEST_BASE}/VERSION
 
@@ -194,6 +207,7 @@ jobs:
           GHCR_PAT_OR_TOKEN="${{ env.GHCR_PAT_OR_TOKEN }}"
           GHCR_REGISTRY="${{ env.GHCR_REGISTRY }}"
           GITHUB_ACTOR="${{ github.actor }}"
+          DATABASE_URL="${{ env.DATABASE_URL}}"
 
           ${{ env.SSH_CMD }} << EOF
             set -e 

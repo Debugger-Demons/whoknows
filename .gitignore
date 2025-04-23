@@ -1,6 +1,11 @@
 # docker container
 whoknows/
 
+# cursor
+.cursor
+/context
+frontend/context/
+
 # Rust
 /target/
 target/
@@ -18,12 +23,26 @@ debug/
 
 # Environment variables
 .env
-.env.production
-.env.development
-backend/.env
+.env.*
+
+backend/.env.local.backend
+frontend/.env.local.frontend
+
+backend/.env.local.backend
+backend/meta.json
+backend/db-migration/whoknows.sql
+
+## templates included in git
+!.env.template
+!backend/.env.template
+!backend/.env.local.backend.template
+!frontend/.env.template
+!frontend/.env.local.frontend.template
+!backend/db-migration/.env.template
+
+# node_modules
 backend/db-migration/node_modules/
 backend/db-migration/node_modules
-frontend/.env
 
 # ai prompt
 ai-prompt-content/
@@ -493,7 +512,3 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
-
-# End of https://www.toptal.com/developers/gitignore/api/node
-frontend/.env.local.frontend
-frontend/.cursor/rules/rules.mdc

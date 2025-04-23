@@ -1,0 +1,44 @@
+{
+  "db_name": "SQLite",
+  "query": "SELECT title, url, language, last_updated, content FROM pages WHERE language = ?1 AND content LIKE ?2",
+  "describe": {
+    "columns": [
+      {
+        "name": "title",
+        "ordinal": 0,
+        "type_info": "Text"
+      },
+      {
+        "name": "url",
+        "ordinal": 1,
+        "type_info": "Text"
+      },
+      {
+        "name": "language",
+        "ordinal": 2,
+        "type_info": "Text"
+      },
+      {
+        "name": "last_updated",
+        "ordinal": 3,
+        "type_info": "Datetime"
+      },
+      {
+        "name": "content",
+        "ordinal": 4,
+        "type_info": "Text"
+      }
+    ],
+    "parameters": {
+      "Right": 2
+    },
+    "nullable": [
+      true,
+      false,
+      false,
+      true,
+      false
+    ]
+  },
+  "hash": "f015b1b166a86e2e3b54eaf1aecfeaf0c2a9664137c263b03bb86a8901226cf3"
+}
