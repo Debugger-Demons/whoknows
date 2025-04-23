@@ -4,6 +4,8 @@
 
 The WhoKnows API provides access to the core functionality of the WhoKnows platform. This documentation outlines the available endpoints for authentication and search.
 
+further details [backend API documentation](../backend/docs/api.md)
+
 ## Base URL
 
 All API endpoints are relative to:
@@ -43,8 +45,7 @@ Registers a new user account.
 ```json
 {
   "success": true,
-  "message": "User registered successfully",
-  "user_id": 1
+  "message": "User registered successfully"
 }
 ```
 
@@ -70,7 +71,12 @@ Authenticates a user and creates a session.
 ```json
 {
   "success": true,
-  "message": "Login successful"
+  "message": "Login successful",
+  "user": {
+    "id": 1,
+    "username": "johndoe",
+    "email": "john.doe@example.com"
+  }
 }
 ```
 
@@ -86,8 +92,7 @@ Ends the current user session.
 
 ```json
 {
-  "success": true,
-  "message": "Logged out successfully"
+  "message": "Logout successful"
 }
 ```
 
@@ -114,25 +119,22 @@ Searches for pages based on query text.
 
 ```json
 {
-  "results": [
+  "search_results": [
     {
       "title": "Introduction to Search",
       "url": "https://example.com/search-intro",
       "language": "en",
       "last_updated": "2023-11-15T10:30:45Z",
-      "snippet": "A brief excerpt from the page content that matches the search..."
+      "content": "The full content of the page that matches the search..."
     },
     {
       "title": "Advanced Search Techniques",
       "url": "https://example.com/advanced-search",
       "language": "en",
       "last_updated": "2023-10-20T14:25:30Z",
-      "snippet": "Another excerpt that matches the search query..."
+      "content": "Another page's full content that matches the search query..."
     }
-  ],
-  "total": 42,
-  "limit": 20,
-  "offset": 0
+  ]
 }
 ```
 
@@ -168,9 +170,7 @@ All endpoints follow a consistent error response format:
 
 ```json
 {
-  "success": false,
-  "error": "Error message describing what went wrong",
-  "error_code": "ERROR_CODE"
+  "error": "Error message describing what went wrong"
 }
 ```
 

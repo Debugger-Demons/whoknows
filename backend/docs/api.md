@@ -31,8 +31,23 @@ This document details the RESTful API endpoints exposed by the backend service.
     ```
 - **Error Responses**:
   - **Code**: 400 Bad Request (Empty fields)
+    ```json
+    {
+      "error": "Username and password cannot be empty"
+    }
+    ```
   - **Code**: 401 Unauthorized (Invalid credentials)
+    ```json
+    {
+      "error": "Invalid username or password"
+    }
+    ```
   - **Code**: 500 Internal Server Error
+    ```json
+    {
+      "error": "Login failed (database error)"
+    }
+    ```
 
 ### Logout
 - **URL**: `/api/logout`
@@ -59,18 +74,33 @@ This document details the RESTful API endpoints exposed by the backend service.
   }
   ```
 - **Success Response**:
-  - **Code**: 200 OK
+  - **Code**: 201 Created
   - **Content**:
     ```json
     {
       "success": true,
-      "message": "Registration successful"
+      "message": "User registered successfully"
     }
     ```
 - **Error Responses**:
   - **Code**: 400 Bad Request (Validation errors)
+    ```json
+    {
+      "error": "Passwords do not match"
+    }
+    ```
   - **Code**: 409 Conflict (Username already exists)
+    ```json
+    {
+      "error": "Username already taken"
+    }
+    ```
   - **Code**: 500 Internal Server Error
+    ```json
+    {
+      "error": "Database error during registration"
+    }
+    ```
 
 ## Data Endpoints
 
@@ -79,13 +109,13 @@ This document details the RESTful API endpoints exposed by the backend service.
 - **Method**: `GET`
 - **Query Parameters**:
   - `q`: Search query (optional)
-  - `language`: Filter by language (optional)
+  - `language`: Filter by language (optional, default: "en")
 - **Success Response**:
   - **Code**: 200 OK
   - **Content**:
     ```json
     {
-      "results": [
+      "search_results": [
         {
           "title": "Example Page",
           "url": "https://example.com",
@@ -94,6 +124,13 @@ This document details the RESTful API endpoints exposed by the backend service.
           "content": "Example content..."
         }
       ]
+    }
+    ```
+- **Error Response**:
+  - **Code**: 500 Internal Server Error
+    ```json
+    {
+      "error": "Database query failed"
     }
     ```
 
