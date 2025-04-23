@@ -15,7 +15,7 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 # Declare targets that don't represent files
 .PHONY: help update-env-secrets update-env-vars pr-create i-create \
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
-	build-frontend run-frontend stop-frontend
+	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend
 
 # === Compose Management ===
 run-compose: 
@@ -37,39 +37,30 @@ clean-compose:
 	docker rmi whoknows.local.frontend
 	@echo "Compose cleaned up!"
 
-
-
-# === Frontend Management ===
-build-frontend:
-	@echo "Building frontend Docker image..."
-	docker build -t whoknows.frontend --build-arg FRONTEND_INTERNAL_PORT=91 --build-arg BACKEND_INTERNAL_PORT=92 --build-arg COMPOSE_PROJECT_NAME=whoknows --build-arg NODE_ENV=production ./frontend
-
+# === Frontend Docker ===
 run-frontend: build-frontend
-	@echo "Running frontend container..."
-	docker run -d --name whoknows_frontend_test -p 8080:91 -e FRONTEND_INTERNAL_PORT=91 -e BACKEND_INTERNAL_PORT=92 -e COMPOSE_PROJECT_NAME=whoknows -e NODE_ENV=production whoknows.frontend
-	@echo "Frontend is now running at http://localhost:8080"
+	@echo "Frontend is running via cargo make dev-docker"
 
 stop-frontend:
 	@echo "Stopping frontend container..."
-	docker stop whoknows_frontend_test || true
-	docker rm whoknows_frontend_test || true
+	cd frontend && cargo make stop-docker
 
-# === Backend Management ===
-build-backend:
-	@echo "Building backend Docker image..."
-	docker build -t whoknows.backend --build-arg BACKEND_INTERNAL_PORT=92 --build-arg COMPOSE_PROJECT_NAME=whoknows --build-arg NODE_ENV=production ./backend
+build-frontend:
+	@echo "Building frontend Docker image..."
+	cd frontend && cargo make dev-docker
 
+# === Backend Docker ===
 run-backend: build-backend
-	@echo "Running backend container..."
-	docker run -d --name whoknows_backend_test -p 92:92 -e BACKEND_INTERNAL_PORT=92 -e COMPOSE_PROJECT_NAME=whoknows -e NODE_ENV=production whoknows.backend
-	@echo "Backend is now running at http://localhost:92"
+	@echo "Backend is running via cargo make dev-docker"
 
 stop-backend:
 	@echo "Stopping backend container..."
 	docker stop whoknows_backend_test || true
 	docker rm whoknows_backend_test || true
 
-
+build-backend:
+	@echo "Building backend Docker image..."
+	cd backend && cargo make dev-docker
 
 # === Environment Secret Management ===
 
@@ -156,11 +147,17 @@ help:
 	@echo "  make stop-compose        - Stop the compose"
 	@echo "  make clean-compose       - Clean the compose"
 	@echo ""
-	@echo "---- Frontend Management ----"
+	@echo "---- Frontend Docker ----"
 	@echo ""
-	@echo "  make build-frontend       - Build the frontend Docker image"
-	@echo "  make run-frontend         - Build and run the frontend container"
-	@echo "  make stop-frontend        - Stop and remove the frontend container"
+	@echo "  make run-frontend         - Build and run the frontend using cargo make"
+	@echo "  make stop-frontend        - Stop the frontend containers"
+	@echo "  make build-frontend       - Build the frontend using cargo make"
+	@echo ""
+	@echo "---- Backend Docker ----"
+	@echo ""
+	@echo "  make run-backend          - Build and run the backend using cargo make"
+	@echo "  make stop-backend         - Stop the backend containers"
+	@echo "  make build-backend        - Build the backend using cargo make"
 	@echo ""
 	@echo "---- Environment & PR Management ----"
 	@echo ""

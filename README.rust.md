@@ -37,6 +37,8 @@ To get the system up and running quickly:
 
 2. **Start with Make cmd**
    ```bash
+   # cp .env.template .env # create .env file
+
    make run-compose
 
    # make help for all available cmds

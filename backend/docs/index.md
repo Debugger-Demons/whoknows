@@ -25,8 +25,8 @@ Database schema, access patterns, and performance considerations.
 - [Rust Book](https://doc.rust-lang.org/book/)
 
 ### Project Links
-- [GitHub Repository](https://github.com/your-org/your-repo)
-- [Issue Tracker](https://github.com/your-org/your-repo/issues)
+- [GitHub Repository](https://github.com/Debugger-Demons/whoknows)
+- [Issue Tracker (not implemented yet)](https://github.com/your-org/your-repo/issues)
 
 ## Contributing to Documentation
 We welcome contributions to improve this documentation. Please submit a pull request with your changes. 
