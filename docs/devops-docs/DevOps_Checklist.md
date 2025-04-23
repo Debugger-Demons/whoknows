@@ -1,6 +1,6 @@
 # DevOps Implementation Checklist
 
-This checklist tracks the implementation of DevOps practices and tools throughout the project lifecycle, aligned with the official course curriculum.
+This checklist tracks the implementation of DevOps practices and tools throughout the project lifecycle, aligned with the official course curriculum and appropriate for our simple application with user authentication and search functionality.
 
 ## Week 1: Introduction + Tools
 
@@ -151,7 +151,7 @@ This checklist tracks the implementation of DevOps practices and tools throughou
   - [ ] Configure GitHub Pages deployments
   - [ ] Understand GitOps principles
 
-- [ ] **Reverse Proxies**
+- [ ] **Reverse Proxies** *(Optional for simple app)*
   - [ ] Set up reverse proxy configuration
   - [ ] Configure zero-downtime deployments
 
@@ -159,7 +159,6 @@ This checklist tracks the implementation of DevOps practices and tools throughou
   - [ ] Create postmortem process
   - [ ] Set up user feedback surveys
   - [ ] Implement linting for Docker (Hadolint)
-  - [ ] Configure FTS5 for search
 
 **Learning Goals**: DevOps definitions and principles, Flow/Feedback/Learning, postmortem importance, continuous deployment methods.
 
@@ -178,7 +177,7 @@ This checklist tracks the implementation of DevOps practices and tools throughou
   - [ ] Document security breach protocols
 
 - [ ] **Test Automation**
-  - [ ] Implement various test types
+  - [ ] Implement essential test types
   - [ ] Set up continuous testing
   - [ ] Configure test reporting
 
@@ -214,7 +213,7 @@ This checklist tracks the implementation of DevOps practices and tools throughou
 
 - [ ] **Logging System**
   - [ ] Implement structured logging
-  - [ ] Set up ELK stack for logging
+  - [ ] Set up basic logging (ELK stack if advanced)
   - [ ] Configure log retention policies
 
 - [ ] **Monitoring Setup**
