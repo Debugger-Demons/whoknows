@@ -136,10 +136,10 @@ This checklist tracks the implementation of DevOps practices and tools throughou
   - [x] Analyze "Detecting Agile BS" paper
   - [x] Create an issue template
 
-- [x] **DevOps Assessment**
-  - [x] Document "How are you DevOps?"
-  - [x] Identify areas for improvement
-  - [x] Plan implementation of industry best practices
+- [ ] **DevOps Assessment**
+  - [ ] Document "How are you DevOps?"
+  - [ ] Identify areas for improvement
+  - [ ] Plan implementation of industry best practices
 
 **Learning Goals**: DevOps history and evolution, organizational problem-solving, psychological safety, pipeline execution optimization.
 
@@ -147,9 +147,9 @@ This checklist tracks the implementation of DevOps practices and tools throughou
 
 - [x] **Advanced CI/CD**
   - [x] Implement Continuous Deployment
-  - [x] Set up smoke testing
-  - [x] Configure GitHub Pages deployments
-  - [x] Understand GitOps principles
+  - [ ] Set up smoke testing
+  - [ ] Configure GitHub Pages deployments
+  - [ ] Understand GitOps principles
 
 - [ ] **Reverse Proxies**
   - [ ] Set up reverse proxy configuration
@@ -187,7 +187,7 @@ This checklist tracks the implementation of DevOps practices and tools throughou
 ## Week 10: Databases, ORM, Data Scraping
 
 - [x] **Database Management**
-  - [x] Implement database migrations
+  - [ ] Implement database migrations
   - [ ] Set up indexing for better performance
   - [ ] Create database backup procedures
   - [x] Document database structure
