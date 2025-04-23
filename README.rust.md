@@ -72,6 +72,12 @@ For more detailed setup instructions, see the [Getting Started Guide](docs/Getti
 - [Development Environment Setup](docs/development/setup.md)
 - [Git Workflow](docs/VCS/VCS-Git-flow.md)
 
+### DevOps Documentation
+- [DevOps Implementation Checklist](docs/devops-docs/DevOps_Checklist.md) - Week-by-week DevOps implementation tasks
+- [DevOps Index](docs/devops/index.md) - DevOps documentation overview
+- [GitHub Actions](docs/devops/github-actions.md) - CI/CD workflows
+- [Docker](docs/devops/docker.md) - Docker setup and usage
+
 ## System Architecture
 
 The modern WhoKnows system follows a clean, service-oriented architecture:
@@ -124,6 +130,9 @@ Current status: **In Development**
 Current phase:
 - DevOps => Phase 2: CI/CD & Cloud Infrastructure
 - Rust Backend => Phase 1 & 2: Rust Core and Web & Data
+
+Implementation Progress:
+- [DevOps Implementation Checklist](docs/devops-docs/DevOps_Checklist.md) - Track current DevOps implementation status
 
 Roadmap docs:
 - [DevOps Roadmap](docs/development/roadmap.DevOps.md)

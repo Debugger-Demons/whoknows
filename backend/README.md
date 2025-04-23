@@ -37,18 +37,29 @@ Detailed documentation is available in the `docs` directory:
 cd backend
 
 # Set up environment variables
-cp .env.example .env
-# Edit .env with your settings
+cp .env.example .env.local.backend
+# Edit .env.local.backend with your settings
 
-# Build and run
-cargo build
-cargo run
+# Run with hot-reloading (uses cargo-make)
+cargo install cargo-make
+cargo make dev
 ```
 
 ### Docker Development
 ```bash
-# Using Docker Compose
-docker-compose -f docker-compose.dev.yml up backend
+# Using cargo-make
+cargo make dev-docker
+
+# Or using root Makefile
+cd ..
+make build-backend
+make run-backend
+```
+
+### Using Docker Compose
+```bash
+# From project root
+make run-compose
 ```
 
 ## Environment Variables
