@@ -12,6 +12,7 @@ A modern search engine built with Rust and ActixWeb, modernizing the legacy WhoK
     - [Centralized Documentation](#centralized-documentation)
     - [Component Documentation](#component-documentation)
     - [Development Guides](#development-guides)
+    - [DevOps Documentation](#devops-documentation)
   - [System Architecture](#system-architecture)
   - [Development](#development)
     - [Prerequisites](#prerequisites)
@@ -74,8 +75,8 @@ For more detailed setup instructions, see the [Getting Started Guide](docs/Getti
 
 ### DevOps Documentation
 - [DevOps Overview](docs/devops/index.md) - Central navigation for DevOps documentation
-- [DevOps Implementation Checklist](docs/devops-docs/DevOps_Checklist.md) - Week-by-week DevOps implementation tracking
-- [Docker](docs/devops/docker.md) - Docker setup and usage
+- [DevOps Implementation Checklist](docs/devops/DevOps_Checklist.md) - Week-by-week DevOps implementation tracking
+- [Docker](docs/devops/docker/docker.md) - Docker setup and usage
 - [GitHub Actions](docs/devops/github-actions.md) - CI/CD workflows
 
 ## System Architecture

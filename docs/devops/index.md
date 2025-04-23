@@ -34,10 +34,12 @@ For a detailed week-by-week implementation status, see the [DevOps Implementatio
 
 | Tool | Purpose | Documentation |
 |------|---------|---------------|
-| Git | Version control | [Git Documentation](https://git-scm.com/doc) |
+
 | GitHub Actions | CI/CD | [GitHub Actions](github-actions.md) |
-| Docker | Containerization | [Docker Documentation](docker.md) |
+| Docker | Containerization | [Docker Documentation](./docker/docker.md) |
+| Monitoring | | [Monitoring documentation](./monitoring/setup.md) |
 | SQLite | Database | [SQLite Documentation](https://www.sqlite.org/docs.html) |
+| Git | Version control | [Git Documentation](https://git-scm.com/doc) |
 | Rust | Backend & Frontend | [Rust Documentation](https://www.rust-lang.org/learn) |
 
 ## Getting Started with DevOps
