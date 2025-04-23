@@ -3,6 +3,15 @@
 ## Overview
 The backend service is built with Rust using the Actix web framework. It provides RESTful API endpoints and handles user authentication, data storage, and business logic for the application.
 
+## 📚 Documentation
+
+Detailed documentation is available in the `docs` directory:
+
+- [API Documentation](docs/api.md) - Details of all API endpoints
+- [Architecture Overview](docs/architecture.md) - System design and components
+- [Setup Guide](docs/setup.md) - Instructions for local and Docker setup
+- [Database Documentation](docs/database.md) - Schema and data access patterns
+
 ## Tech Stack
 - **Language**: Rust
 - **Web Framework**: Actix-web 4.0
@@ -18,67 +27,29 @@ The backend service is built with Rust using the Actix web framework. It provide
 - `/.sqlx` - SQLx prepared statements cache
 - `/scripts` - Utility scripts
 - `/learnings` - Documentation and notes
+- `/docs` - Detailed documentation
 
-## Docker Integration
-The backend service is containerized and managed via Docker Compose.
+## Quick Start
 
-### Dockerfile
-The backend Dockerfile uses a multi-stage build process:
-1. **Builder Stage**: Compiles the Rust application
-2. **Runtime Stage**: Creates a minimal image with only the compiled binary
+### Local Development
+```bash
+# Clone repository and navigate to backend directory
+cd backend
 
-### Docker Compose Configuration
-In `docker-compose.dev.yml`, the backend service is configured with:
-- **Container Name**: Derived from `${COMPOSE_PROJECT_NAME}_backend_dev`
-- **Environment Variables**: Database URL, session secrets, ports, etc.
-- **Volume Mount**: `/home/deployer/deployment/app/data:/app/data` for persistent data
-- **Network**: Connected to `app-network` for communication with other services
-- **Port**: Exposed on `${BACKEND_INTERNAL_PORT}`
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your settings
 
-## Database Connection
-The backend connects to an SQLite database:
+# Build and run
+cargo build
+cargo run
+```
 
-1. **Connection Initialization**:
-   ```rust
-   let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-   let pool = SqlitePoolOptions::new()
-       .max_connections(5)
-       .connect(&database_url)
-       .await?;
-   ```
-
-2. **Data Access**: The application uses SQLx for type-safe database operations:
-   ```rust
-   sqlx::query!("SELECT * FROM users WHERE username = ?", username)
-       .fetch_optional(pool.get_ref())
-       .await
-   ```
-
-3. **Migration**: Database schema is defined in `/db-migration/whoknows.sql`
-
-## Request-Response Flow
-
-1. **HTTP Request**: Client sends a request to an endpoint (e.g., `/api/login`)
-
-2. **Middleware Processing**:
-   - CORS handling
-   - Session management
-   - Authentication verification
-   - Logging
-
-3. **Route Handler**:
-   - Request payload extraction and validation
-   - Business logic execution
-   - Database interaction
-   - Response generation
-
-4. **Response**: Formatted JSON is returned to the client
-
-### Example: Login Flow
-1. Client sends credentials to `/api/login`
-2. Backend validates credentials against database
-3. On success, session is created and user data returned
-4. On failure, appropriate error message is returned
+### Docker Development
+```bash
+# Using Docker Compose
+docker-compose -f docker-compose.dev.yml up backend
+```
 
 ## Environment Variables
 - `DATABASE_URL`: Path to SQLite database
@@ -86,22 +57,18 @@ The backend connects to an SQLite database:
 - `RUST_LOG`: Logging level configuration
 - `SESSION_SECRET_KEY`: Key for secure session cookies
 
-## Running the Backend
-### With Docker Compose
-```bash
-docker-compose -f docker-compose.dev.yml up backend
-```
-
-### Locally for Development
-```bash
-cd backend
-cargo run
-```
-
-## API Endpoints
+## API Endpoints Overview
 - `GET /` - Health check
 - `GET /config` - Server configuration info
 - `POST /api/login` - User authentication
 - `GET /api/logout` - Session termination
 - `POST /api/register` - User registration
 - `GET /api/search` - Search functionality
+
+See the [API Documentation](docs/api.md) for complete details.
+
+## Contributing
+1. Ensure you have Rust installed
+2. Follow the setup instructions in the [Setup Guide](docs/setup.md)
+3. Review the [Architecture Overview](docs/architecture.md) to understand the system
+4. Make your changes and submit a pull request
