@@ -55,6 +55,7 @@ See the [Architecture Overview](docs/architecture.md) for more details.
 
 - Docker and Docker Compose
 - Rust (for development only)
+- Cargo Make (for development only)
 
 ### Installation
 
@@ -62,7 +63,12 @@ See the [Architecture Overview](docs/architecture.md) for more details.
 2. Build and run the containers:
 
 ```bash
-docker-compose up --build
+# Using Docker Compose
+make run-compose
+
+# Or just the frontend container
+make build-frontend
+make run-frontend
 ```
 
 3. Access the application at `http://localhost:8080`
@@ -90,14 +96,28 @@ frontend/
 To run the frontend in development mode:
 
 ```bash
+# Install Cargo Make (if not already installed)
+cargo install cargo-make
+
+# Run with hot-reloading
 cd frontend
-cargo run
+cargo make dev
 ```
 
-For hot-reloading during development, you can use `cargo-watch`:
+For Docker-based development:
 
 ```bash
-cargo watch -x run
+# Run in Docker container
+cargo make dev-docker
+
+# Stop running container
+cargo make stop-docker
+```
+
+For available tasks:
+
+```bash
+cargo make help
 ```
 
 ## Environment Variables
