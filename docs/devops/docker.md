@@ -2,7 +2,7 @@
 
 ## Overview
 
-Docker is used to containerize the WhoKnows application, making it easier to develop, test, and deploy in consistent environments. This document covers the Docker setup and usage for the project.
+Docker is used to containerize the WhoKnows application, making it easier to develop, test, and deploy in consistent environments. This document covers the Docker setup for our simple application with user authentication and search functionality.
 
 ## Prerequisites
 
@@ -58,12 +58,6 @@ services:
 ### Building and Running
 
 ```bash
-# Build the Docker image
-docker build -t whoknows .
-
-# Run the Docker container
-docker run -p 8080:8080 whoknows
-
 # Build and run with Docker Compose
 docker-compose up --build
 
@@ -82,9 +76,6 @@ docker-compose down
 
 # View logs
 docker-compose logs -f
-
-# Execute commands inside the container
-docker-compose exec whoknows /bin/bash
 ```
 
 ## Development with Docker
@@ -111,9 +102,4 @@ This allows you to edit code on your local machine and see changes immediately w
 2. **Database file permissions**: If you encounter database file permission issues, ensure the volume directory is writable:
    ```bash
    chmod 777 ./data
-   ```
-
-3. **Container won't start**: Check the logs for detailed error messages:
-   ```bash
-   docker-compose logs
    ``` 

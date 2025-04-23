@@ -73,10 +73,10 @@ For more detailed setup instructions, see the [Getting Started Guide](docs/Getti
 - [Git Workflow](docs/VCS/VCS-Git-flow.md)
 
 ### DevOps Documentation
-- [DevOps Implementation Checklist](docs/devops-docs/DevOps_Checklist.md) - Week-by-week DevOps implementation tasks
-- [DevOps Index](docs/devops/index.md) - DevOps documentation overview
-- [GitHub Actions](docs/devops/github-actions.md) - CI/CD workflows
+- [DevOps Overview](docs/devops/index.md) - Central navigation for DevOps documentation
+- [DevOps Implementation Checklist](docs/devops-docs/DevOps_Checklist.md) - Week-by-week DevOps implementation tracking
 - [Docker](docs/devops/docker.md) - Docker setup and usage
+- [GitHub Actions](docs/devops/github-actions.md) - CI/CD workflows
 
 ## System Architecture
 

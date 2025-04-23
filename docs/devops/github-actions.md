@@ -2,13 +2,13 @@
 
 ## Overview
 
-GitHub Actions automate our CI/CD pipeline for the WhoKnows project. This document outlines the workflows we use and how to work with them.
+GitHub Actions automate our CI/CD pipeline for the WhoKnows project. This document outlines the essential workflows we use for our simple application with user authentication and search functionality.
 
 ## Main Workflows
 
 ### CI Workflow
 
-This workflow runs on every pull request and push to the main branch.
+This workflow runs on every pull request and push to the main branch to ensure code quality.
 
 ```yaml
 name: CI
@@ -76,22 +76,6 @@ To set up the required secrets for workflows:
 4. Add the following secrets:
    - `DEPLOY_TOKEN`: Token for deployment
 
-## Running Workflows Locally
-
-You can test GitHub Actions workflows locally using [act](https://github.com/nektos/act):
-
-```bash
-# Install act
-brew install act  # macOS
-# or download from https://github.com/nektos/act/releases
-
-# Run the CI workflow
-act -j test
-
-# Run with secrets for deployment
-act -j deploy -s DEPLOY_TOKEN=your_token_here
-```
-
 ## Extending Workflows
 
 To add a new workflow:
@@ -105,5 +89,4 @@ To add a new workflow:
 If a workflow fails, check:
 
 1. The workflow run in GitHub Actions tab for detailed logs
-2. Verify all required secrets are set correctly
-3. Ensure any external services or APIs are accessible from the workflow 
+2. Verify all required secrets are set correctly 

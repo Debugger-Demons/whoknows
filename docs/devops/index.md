@@ -2,7 +2,13 @@
 
 ## Overview
 
-This section documents the DevOps practices and tools used in the WhoKnows project. The documentation is designed to be straightforward and focused on the essential components needed to develop, test, and deploy the application.
+This section documents the streamlined DevOps practices and tools used in the WhoKnows project. The documentation focuses on the essential components needed to develop, test, and deploy our simple application with:
+- User functionality: login, register, logout
+- Core feature: search
+
+## Implementation Status
+
+For a detailed week-by-week implementation status, see the [DevOps Implementation Checklist](../devops-docs/DevOps_Checklist.md).
 
 ## CI/CD Pipeline
 
