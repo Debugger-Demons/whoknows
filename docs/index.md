@@ -52,6 +52,7 @@ The frontend is a Rust Actix-Web service serving static files:
 - [Pre-commit Setup](./precommitsetup.md) - Setting up pre-commit hooks
 
 ### DevOps Documentation
+- [DevOps Implementation Checklist](./devops-docs/DevOps_Checklist.md) - Week-by-week DevOps implementation tasks
 - [DevOps Index](./devops/index.md) - DevOps documentation overview
 - [GitHub Actions](./devops/github-actions.md) - CI/CD workflows
 - [Docker](./devops/docker.md) - Docker setup and usage
@@ -96,6 +97,8 @@ The frontend is a Rust Actix-Web service serving static files:
     ├── database_schema.md  # Database structure
     ├── api_documentation.md # API overview
     ├── user_guide.md       # User instructions
+    ├── devops-docs/        # DevOps implementation documentation
+    │   └── DevOps_Checklist.md # DevOps implementation checklist
     ├── architecture/       # Architecture documentation
     ├── devops/             # DevOps documentation
     ├── operations/         # Operations documentation

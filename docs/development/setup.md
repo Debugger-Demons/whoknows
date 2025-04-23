@@ -8,6 +8,7 @@ Before you begin, ensure you have the following installed:
 
 - [Git](https://git-scm.com/)
 - [Rust](https://www.rust-lang.org/tools/install) 1.81 or later
+- [Cargo Make](https://github.com/sagiegurari/cargo-make) (`cargo install cargo-make`)
 - [SQLite](https://www.sqlite.org/download.html)
 - [Python](https://www.python.org/downloads/) (for pre-commit hooks)
 
@@ -40,43 +41,81 @@ Initialize the SQLite database:
 sqlite3 whoknows.db < backend/db-migration/whoknows.tables.sql
 ```
 
-## Step 4: Build the Backend
+## Step 4: Environment Configuration
+
+Set up environment variables for both services:
+
+```bash
+# For backend
+cd backend
+cp .env.example .env.local.backend
+# Edit .env.local.backend with your configuration
+
+# For frontend
+cd ../frontend
+cp .env.example .env.local.frontend
+# Edit .env.local.frontend with your configuration
+```
+
+## Step 5: Running the Application
+
+### Option 1: Using Docker Compose (Recommended for Full Stack)
+
+From the project root:
+```bash
+make run-compose
+```
+
+To stop the services:
+```bash
+make stop-compose
+```
+
+To clean up all containers, images, and volumes:
+```bash
+make clean-compose
+```
+
+### Option 2: Using Individual Services with Cargo Make
+
+#### Running the Backend
 
 ```bash
 cd backend
-cargo build
-```
-
-## Step 5: Build the Frontend
-
-```bash
-cd frontend
-cargo build
-```
-
-## Step 6: Running the Application
-
-### Running the Backend
-
-```bash
-cd backend
-cargo run
+cargo make dev
 ```
 
 The backend will be available at http://localhost:9200.
 
-### Running the Frontend
+#### Running the Frontend
 
 In a new terminal:
 
 ```bash
 cd frontend
-cargo run
+cargo make dev
 ```
 
 The frontend will be available at http://localhost:8080.
 
-## Step 7: Testing
+### Option 3: Running Individual Docker Containers
+
+```bash
+# From project root
+# For backend
+make build-backend
+make run-backend
+
+# For frontend
+make build-frontend
+make run-frontend
+
+# To stop services
+make stop-backend
+make stop-frontend
+```
+
+## Step 6: Testing
 
 Run tests to ensure everything is working properly:
 
@@ -88,6 +127,32 @@ cargo test
 # Frontend tests
 cd frontend
 cargo test
+```
+
+## GitHub Workflow
+
+### Creating Issues
+
+The project provides make commands for creating issues:
+
+```bash
+# Create an enhancement issue
+make i-create-enhancement t="New feature description" f="./docs/issues/feature_description.md"
+
+# Create a bug issue
+make i-create-bug t="Bug description" f="./docs/issues/bug_description.md"
+
+# Create a documentation issue
+make i-create-documentation t="Documentation task" f="./docs/issues/docs_task.md"
+```
+
+### Creating Pull Requests
+
+After making changes to environment variables:
+
+```bash
+make env-update
+make pr-create
 ```
 
 ## IDE Setup

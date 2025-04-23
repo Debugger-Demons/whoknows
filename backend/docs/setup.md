@@ -3,6 +3,7 @@
 ## Prerequisites
 - Rust 1.81 or later
 - Cargo package manager
+- Cargo Make (`cargo install cargo-make`)
 - Docker (optional, for containerized deployment)
 - SQLite (included in Rust dependencies)
 
@@ -15,7 +16,7 @@ cd your-repo/backend
 ```
 
 ### 2. Environment Setup
-Create a `.env` file in the backend directory with the following variables:
+Create a `.env.local.backend` file in the backend directory with the following variables:
 ```
 DATABASE_URL=sqlite:./whoknows.db
 BACKEND_INTERNAL_PORT=8080
@@ -38,42 +39,57 @@ sqlx migrate run
 
 ### 4. Build and Run
 ```bash
-cargo build
-cargo run
+# Install cargo-make if not already installed
+cargo install cargo-make
+
+# Run with hot-reloading
+cargo make dev
 ```
 
 The server will be available at `http://localhost:8080`
 
 ## Docker Development Setup
 
-### 1. Build Docker Image
+### 1. Using Cargo Make (from backend directory)
 ```bash
-docker build -t whoknows-backend .
+cargo make dev-docker
 ```
 
-### 2. Run Container
+### 2. Using Root Makefile (from project root)
 ```bash
-docker run -p 8080:8080 \
-  -e DATABASE_URL=sqlite:/app/data/whoknows.db \
-  -e BACKEND_INTERNAL_PORT=8080 \
-  -e RUST_LOG=debug \
-  -e SESSION_SECRET_KEY=your_secure_random_key_here \
-  -v $(pwd)/data:/app/data \
-  whoknows-backend
+make build-backend
+make run-backend
 ```
+
+The backend will be available at `http://localhost:92`
 
 ## Docker Compose Setup
 
-### 1. Using docker-compose.dev.yml
+### Using docker-compose with Makefile
 ```bash
-docker-compose -f docker-compose.dev.yml up backend
+# From project root
+make run-compose
 ```
 
 This will:
-- Build the backend container
+- Build both frontend and backend containers
 - Set up all necessary environment variables
-- Create a volume mount for persistent data
-- Expose the service on the configured port
+- Create volume mounts for persistent data
+- Expose the services on the configured ports
+
+## Stopping Services
+
+### Stop Docker Containers
+```bash
+# Stop only backend (from project root)
+make stop-backend
+
+# Stop all services (from project root)
+make stop-compose
+
+# Clean up all containers, images and volumes (from project root)
+make clean-compose
+```
 
 ## Troubleshooting
 

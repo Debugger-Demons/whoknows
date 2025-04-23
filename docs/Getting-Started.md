@@ -7,6 +7,7 @@ Welcome to the WhoKnows project! This guide will help you get up and running qui
 Before you begin, ensure you have the following installed:
 - [Git](https://git-scm.com/)
 - [Rust](https://www.rust-lang.org/tools/install) 1.81 or later
+- [Cargo Make](https://github.com/sagiegurari/cargo-make) (`cargo install cargo-make`)
 - [SQLite](https://www.sqlite.org/download.html)
 
 ## Quick Start
@@ -23,20 +24,56 @@ Before you begin, ensure you have the following installed:
    sqlite3 whoknows.db < backend/db-migration/whoknows.tables.sql
    ```
 
-3. **Start the backend**
+3. **Option 1: Run with Docker Compose**
    ```bash
-   cd backend
-   cargo run
+   # Run both frontend and backend containers
+   make run-compose
    ```
 
-4. **Start the frontend (in a new terminal)**
+4. **Option 2: Run services individually**
+
+   For the backend:
+   ```bash
+   cd backend
+   cp .env.example .env.local.backend
+   # Edit .env.local.backend as needed
+   cargo make dev
+   ```
+
+   For the frontend (in a new terminal):
    ```bash
    cd frontend
-   cargo run
+   cp .env.example .env.local.frontend
+   # Edit .env.local.frontend as needed
+   cargo make dev
+   ```
+
+   Or use Docker for individual services:
+   ```bash
+   # Run just the backend
+   make build-backend
+   make run-backend
+   
+   # Run just the frontend
+   make build-frontend
+   make run-frontend
    ```
 
 5. **Access the application**
    - Open your browser and go to: http://localhost:8080
+
+6. **Stopping the services**
+   ```bash
+   # If using Docker Compose
+   make stop-compose
+   
+   # If running individual containers
+   make stop-frontend
+   make stop-backend
+   
+   # To clean up all containers and images
+   make clean-compose
+   ```
 
 ## Core Functionality
 

@@ -56,6 +56,12 @@ For complete API documentation, see the [API Documentation](./api_documentation.
 
 3. Test your changes
    ```bash
+   # Backend tests
+   cd backend
+   cargo test
+   
+   # Frontend tests
+   cd frontend
    cargo test
    ```
 
@@ -71,6 +77,49 @@ For complete API documentation, see the [API Documentation](./api_documentation.
    ```
 
 6. Create a pull request on GitHub
+   ```bash
+   # Using the root Makefile
+   make pr-create
+   
+   # Or manually
+   gh pr create
+   ```
+
+### Running the Application
+
+You can run the application using make commands:
+
+```bash
+# Run everything with Docker Compose
+make run-compose
+
+# Run only backend
+cd backend
+cargo make dev
+
+# Run only frontend
+cd frontend
+cargo make dev
+
+# Run in Docker containers
+make build-frontend
+make run-frontend
+make build-backend
+make run-backend
+```
+
+To stop services:
+```bash
+# Stop and remove individual containers
+make stop-frontend
+make stop-backend
+
+# Stop all services
+make stop-compose
+
+# Clean up all containers and images
+make clean-compose
+```
 
 ### Code Style
 
@@ -96,6 +145,14 @@ When adding new features:
 4. Update the database schema if needed
 5. Write tests for the new functionality
 6. Update documentation
+7. Create an issue using the Makefile:
+   ```bash
+   # Create an enhancement issue
+   make i-create-enhancement t="New Feature Description" f="./docs/issues/feature_description.md"
+   
+   # Create a bug issue
+   make i-create-bug t="Bug Description" f="./docs/issues/bug_description.md"
+   ```
 
 ## Common Tasks
 
@@ -113,6 +170,14 @@ When adding new features:
 2. Run the migration during development
 3. Update the database schema documentation
 4. Update any affected code
+
+## Environment Variables
+
+To update environment secrets:
+```bash
+# Update production and development environment variables
+make env-update
+```
 
 ## Troubleshooting
 
