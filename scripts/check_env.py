@@ -5,8 +5,7 @@ import sys
 ENV_FILE_PATH = ".env"
 REQUIRED_FILES = [
             "./database/whoknows.db",
-            ".env",
-            ".env.development"
+            ".env"
 ]
 
 def check_env():
