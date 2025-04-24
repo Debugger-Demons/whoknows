@@ -9,6 +9,7 @@ on:
 env:
   # Use ghcr.io for GitHub Container Registry
   GHCR_REGISTRY: ghcr.io
+  GHCR_TOKEN: ${{ secrets.DEV_GHCR_PAT_OR_TOKEN }}
 
   # Paths relative to repo root
   BACKEND_PATH: ./backend
@@ -44,7 +45,7 @@ jobs:
         with:
           registry: ${{ env.GHCR_REGISTRY }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN for actions in the same repo
+          password: ${{ env.GHCR_TOKEN }}
 
       # ---------------------------------------------
       # Prepare Tags and Image Names
