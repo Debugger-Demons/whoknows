@@ -512,3 +512,4 @@ dist
 
 # SvelteKit build / generate output
 .svelte-kit
+txt-copies/*
