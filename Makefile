@@ -142,7 +142,19 @@ i-create-dependencies:
 i-create-documentation:
 	@$(MAKE) i-create LABEL="documentation" TITLE_DESC="$(TITLE_DESC)" BODY_FILE="$(BODY_FILE)"
 
-# === Help ===
+
+
+# ====================================================================
+# ============================== release =============================
+
+# make release tag="v1.0.0"
+release:
+	@echo "creating release"
+	@python ./scripts/release/release.py $(tag)
+	@echo "release successful"
+
+# ====================================================================
+# =============================== Help ===============================
 
 # Show help
 help:
