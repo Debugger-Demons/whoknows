@@ -3,13 +3,11 @@ whoknows/
 
 # cursor
 .cursor
-/context
-frontend/context/
+*/context
 
 # Rust
-/target/
-target/
-debug/
+*/target/
+*/debug/
 **/*.rs.bk
 *.pdb
 
@@ -25,10 +23,6 @@ debug/
 .env
 .env.*
 
-backend/.env.local.backend
-frontend/.env.local.frontend
-
-backend/.env.local.backend
 backend/meta.json
 backend/db-migration/whoknows.sql
 
@@ -40,15 +34,8 @@ backend/db-migration/whoknows.sql
 !frontend/.env.local.frontend.template
 !backend/db-migration/.env.template
 
-# node_modules
-backend/db-migration/node_modules/
-backend/db-migration/node_modules
-
 # ai prompt
 ai-prompt-content/
-
-# Rust build artifacts
-backend/target/
 
 # Optional: Commit Cargo.lock for reproducible application builds
 # Cargo.lock
@@ -57,7 +44,7 @@ backend/target/
 # This assumes whoknows.db is directly in the database directory locally
 # If it's only ever created inside the Docker volume, this might not be strictly necessary
 # but it's good practice to ignore potential local DB files.
-database/whoknows.db
+*/whoknows.db
 database/whoknows.db-journal # SQLite temporary files
 
 # SSH keys / Secrets
@@ -72,11 +59,6 @@ deployment/scripts/deploy_key* # Covers keys within scripts dir too
 .vscode/
 *.swp
 *~
-
-# Frontend build artifacts & dependencies
-frontend/node_modules/
-frontend/dist/ # Vite's default output directory
-# frontend/build/ # Only if you configure Vite/another tool to output here
 
 # Log files
 *.log
@@ -281,7 +263,6 @@ docs/_build/
 
 # PyBuilder
 .pybuilder/
-target/
 
 # Jupyter Notebook
 .ipynb_checkpoints
