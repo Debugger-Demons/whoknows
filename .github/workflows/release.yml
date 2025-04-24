@@ -1,0 +1,166 @@
+# .github/workflows/release.yml
+name: Create Release and Publish Images
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+env:
+  # Use ghcr.io for GitHub Container Registry
+  GHCR_REGISTRY: ghcr.io
+
+  # Paths relative to repo root
+  BACKEND_PATH: ./backend
+  FRONTEND_PATH: ./frontend
+  DOCKER_COMPOSE_PROD_TEMPLATE: ./docker-compose.prod.yml # Source for release compose file
+  ENV_TEMPLATE_FILE: .env.template # Source for .env template asset
+
+jobs:
+  # ---------------------------------------------
+  # -------------- build-push-release -----------
+  # Builds images, pushes them, creates release, attaches assets
+  # ---------------------------------------------
+  build-push-release:
+    name: Build, Push Images & Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to create releases and upload assets
+      packages: write # Needed to push packages (Docker images) to GHCR
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        # Fetch all history for all tags and branches for release notes generation (optional)
+        # with:
+        #   fetch-depth: 0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Log in to GHCR using the automatically provided GITHUB_TOKEN
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GHCR_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }} # Use GITHUB_TOKEN for actions in the same repo
+
+      # ---------------------------------------------
+      # Prepare Tags and Image Names
+      # ---------------------------------------------
+      - name: Get the version tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT # Extracts 'vX.Y.Z' from 'refs/tags/vX.Y.Z'
+
+      - name: Define Image Base Name (Lowercase)
+        id: image_base
+        run: echo "NAME=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT # github.repository is owner/repo
+
+      - name: Store Full Image Names
+        id: image_names
+        run: |
+          VERSION_TAG=${{ steps.get_version.outputs.VERSION }}
+          IMAGE_BASE="${{ env.GHCR_REGISTRY }}/${{ steps.image_base.outputs.NAME }}"
+          echo "BACKEND_IMAGE_TAGGED=${IMAGE_BASE}/backend:${VERSION_TAG}" >> $GITHUB_OUTPUT
+          echo "FRONTEND_IMAGE_TAGGED=${IMAGE_BASE}/frontend:${VERSION_TAG}" >> $GITHUB_OUTPUT
+          # Optionally add a 'stable' or 'latest' tag alongside the version
+          echo "BACKEND_IMAGE_STABLE=${IMAGE_BASE}/backend:stable" >> $GITHUB_OUTPUT
+          echo "FRONTEND_IMAGE_STABLE=${IMAGE_BASE}/frontend:stable" >> $GITHUB_OUTPUT
+
+      # ---------------------------------------------
+      # Build and Push Images
+      # ---------------------------------------------
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.BACKEND_PATH }}
+          file: ${{ env.BACKEND_PATH }}/Dockerfile
+          target: production # Ensure we build the production stage from the multi-stage Dockerfile
+          push: true
+          tags: |
+            ${{ steps.image_names.outputs.BACKEND_IMAGE_TAGGED }}
+            ${{ steps.image_names.outputs.BACKEND_IMAGE_STABLE }} # Push stable tag too
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.FRONTEND_PATH }}
+          file: ${{ env.FRONTEND_PATH }}/Dockerfile # Assuming frontend Dockerfile name
+          target: production # Ensure we build the production stage
+          push: true
+          tags: |
+            ${{ steps.image_names.outputs.FRONTEND_IMAGE_TAGGED }}
+            ${{ steps.image_names.outputs.FRONTEND_IMAGE_STABLE }} # Push stable tag too
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ---------------------------------------------
+      # Prepare Release Assets
+      # ---------------------------------------------
+      - name: Create docker-compose.release.yml
+        run: |
+          # Use sed to replace the placeholder variables with the specific tagged images
+          # Note: Using a delimiter other than / for sed because paths contain /
+
+          sed \
+            -e 's|${IMAGE_TAG_BACKEND}|${{ steps.image_names.outputs.BACKEND_IMAGE_TAGGED }}|g' \
+            -e 's|${IMAGE_TAG_FRONTEND}|${{ steps.image_names.outputs.FRONTEND_IMAGE_TAGGED }}|g' \
+            ${{ env.DOCKER_COMPOSE_PROD_TEMPLATE }} > docker-compose.release.yml
+
+        # Note: This assumes your docker-compose.prod.yml uses exactly `${IMAGE_TAG_BACKEND}`
+        # and `${IMAGE_TAG_FRONTEND}` as placeholders for the image names. Adjust if needed.
+
+      # ---------------------------------------------
+      # Create GitHub Release
+      # ---------------------------------------------
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          release_name: Release ${{ steps.get_version.outputs.VERSION }}
+          body: |
+            Release for version ${{ steps.get_version.outputs.VERSION }}.
+
+            **Docker Images:**
+            * Backend: `${{ steps.image_names.outputs.BACKEND_IMAGE_TAGGED }}`
+            * Frontend: `${{ steps.image_names.outputs.FRONTEND_IMAGE_TAGGED }}`
+            (Also tagged as `${{ steps.image_names.outputs.BACKEND_IMAGE_STABLE }}` and `${{ steps.image_names.outputs.FRONTEND_IMAGE_STABLE }}`)
+
+            **To Run:**
+            1. Download `docker-compose.release.yml` and `.env.template` from the assets below.
+            2. Rename `.env.template` to `.env`.
+            3. **Edit `.env`** and fill in all required values (secrets, host paths for volumes, ports). Pay special attention to `DATABASE_URL`'s host path mapping and `SESSION_SECRET_KEY`.
+            4. Run `docker compose -f docker-compose.release.yml pull` to fetch the images.
+            5. Run `docker compose -f docker-compose.release.yml up -d` to start the application.
+
+          draft: false
+          prerelease: false # Set to true if tag indicates pre-release (e.g., v1.0.0-beta)
+
+      # ---------------------------------------------
+      # Upload Release Assets
+      # ---------------------------------------------
+      - name: Upload docker-compose.release.yml Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./docker-compose.release.yml
+          asset_name: docker-compose.release.yml
+          asset_content_type: application/x-yaml
+
+      - name: Upload .env.template Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./${{ env.ENV_TEMPLATE_FILE }} # Assuming it's at the root
+          asset_name: .env.template
+          asset_content_type: text/plain
