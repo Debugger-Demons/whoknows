@@ -1,5 +1,5 @@
 # .github/workflows/release.yml
-name: Create Release and Publish Images
+name: release
 
 on:
   push:
