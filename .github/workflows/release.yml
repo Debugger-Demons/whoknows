@@ -2,9 +2,9 @@
 name: Create Release and Publish Images
 
 on:
-  pull_request:
-    types: [closed]
-    branches: [main]
+  push:
+    tags:
+      - "v*" # Trigger on any tag that starts with 'v', e.g., v1.0.0
 
 env:
   # Use ghcr.io for GitHub Container Registry
@@ -51,7 +51,9 @@ jobs:
       # ---------------------------------------------
       - name: Get the version tag
         id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT # Extracts 'vX.Y.Z' from 'refs/tags/vX.Y.Z'
+        run: |
+          # Generate a version based on date and short commit hash
+          echo "VERSION=$(date +'%Y%m%d')-$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
       - name: Define Image Base Name (Lowercase)
         id: image_base
