@@ -80,9 +80,10 @@ jobs:
           file: ${{ env.BACKEND_PATH }}/Dockerfile
           target: production # Ensure we build the production stage from the multi-stage Dockerfile
           push: true
+          # Push both version tag and stable tag
           tags: |
             ${{ steps.image_names.outputs.BACKEND_IMAGE_TAGGED }}
-            ${{ steps.image_names.outputs.BACKEND_IMAGE_STABLE }} # Push stable tag too
+            ${{ steps.image_names.outputs.BACKEND_IMAGE_STABLE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -93,9 +94,10 @@ jobs:
           file: ${{ env.FRONTEND_PATH }}/Dockerfile # Assuming frontend Dockerfile name
           target: production # Ensure we build the production stage
           push: true
+          # Push both version tag and stable tag
           tags: |
             ${{ steps.image_names.outputs.FRONTEND_IMAGE_TAGGED }}
-            ${{ steps.image_names.outputs.FRONTEND_IMAGE_STABLE }} # Push stable tag too
+            ${{ steps.image_names.outputs.FRONTEND_IMAGE_STABLE }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
