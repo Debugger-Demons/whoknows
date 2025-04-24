@@ -43,7 +43,6 @@ The backend service is built with Rust using the Actix web framework. This docum
   - Flash messages for user feedback
 - **Security Measures**:
   - Secure password storage
-  - CSRF protection
   - Secure cookie settings
 
 ## Request Flow
@@ -53,15 +52,11 @@ The backend service is built with Rust using the Actix web framework. This docum
    - CORS headers applied
    - Session validation
    - Authentication checks
-3. **Route Handler Execution**:
-   - Request data extraction and validation
-   - Business logic processing
-   - Database operations
-4. **Response Generation**:
+3. **Response Generation**:
    - Data serialization
    - Status code selection
    - Header application
-5. **Client Response**: Formatted data returned to frontend
+4. **Client Response**: Formatted data returned to frontend
 
 ## Deployment Architecture
 

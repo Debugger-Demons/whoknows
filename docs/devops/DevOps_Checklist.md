@@ -112,7 +112,7 @@ This checklist tracks the implementation of DevOps practices and tools throughou
 
 - [x] **Multi-container Setup**
   - [x] Create docker-compose configuration
-  - [x] Set up hot reload in Docker
+  - [ ] Set up hot reload in Docker
   - [x] Debug docker-compose setup
   - [x] Configure container networking
 
@@ -121,10 +121,10 @@ This checklist tracks the implementation of DevOps practices and tools throughou
   - [x] Set up workflow strategies
   - [x] Create CI/CD pipeline for delivery
 
-- [x] **DevOps Practices**
-  - [x] Document agile methodologies
-  - [x] Define DevOps principles and metrics
-  - [x] Set up knowledge sharing practices
+- [ ] **DevOps Practices**
+  - [ ] Document agile methodologies
+  - [ ] Define DevOps principles and metrics
+  - [ ] Set up knowledge sharing practices
 
 **Learning Goals**: Docker-compose benefits, hot reload in Docker, agile principles, DevOps history and concepts, Continuous Delivery implementation.
 
@@ -148,17 +148,17 @@ This checklist tracks the implementation of DevOps practices and tools throughou
 - [x] **Advanced CI/CD**
   - [x] Implement Continuous Deployment
   - [ ] Set up smoke testing
-  - [ ] Configure GitHub Pages deployments
-  - [ ] Understand GitOps principles
+  - [ ] Configure GitHub Pages deployments (Optional)
+  - [ ] Understand GitOps principles (Personal)
 
-- [ ] **Reverse Proxies** *(Optional for simple app)*
-  - [ ] Set up reverse proxy configuration
-  - [ ] Configure zero-downtime deployments
+- [x] **Reverse Proxies** *(Optional for simple app)*
+  - [x] Set up reverse proxy configuration
+  - [x] Configure zero-downtime deployments
 
 - [ ] **Team Practices**
   - [ ] Create postmortem process
-  - [ ] Set up user feedback surveys
-  - [ ] Implement linting for Docker (Hadolint)
+  - [ ] Set up user feedback surveys (Optional)
+  - [ ] Implement linting for Docker (Hadolint) (Personal)
 
 **Learning Goals**: DevOps definitions and principles, Flow/Feedback/Learning, postmortem importance, continuous deployment methods.
 
@@ -166,20 +166,23 @@ This checklist tracks the implementation of DevOps practices and tools throughou
 
 - [ ] **Security Integration**
   - [ ] Implement DevSecOps practices
-  - [ ] Set up fail2ban
+  - [x] Set up fail2ban
   - [ ] Configure firewall for Docker
-  - [ ] Secure GitHub Actions workflows
+  - [x] Secure GitHub Actions workflows
 
 - [x] **TLS Configuration**
   - [x] Register domain
   - [x] Set up HTTPS with SSL certificates
-  - [x] Implement security hardening
-  - [ ] Document security breach protocols
+  - [ ] Implement security hardening (Optional)
+  - [ ] Document security breach protocols (Optional)
 
 - [ ] **Test Automation**
-  - [ ] Implement essential test types
+  - [ ] Implement essential test types 
+    - [ ] Unit tests
+    - [ ] Integration tests
   - [ ] Set up continuous testing
   - [ ] Configure test reporting
+    - [ ] GitHub pages for publishing reports (Optional)
 
 **Learning Goals**: DevSecOps mentality, security testing types, Docker security scanning, continuous testing, shift-left vs shift-right testing.
 
@@ -189,6 +192,7 @@ This checklist tracks the implementation of DevOps practices and tools throughou
   - [ ] Implement database migrations
   - [ ] Set up indexing for better performance
   - [ ] Create database backup procedures
+    - [ ] Dumping and Backup directory
   - [x] Document database structure
 
 - [ ] **ORM Implementation**
