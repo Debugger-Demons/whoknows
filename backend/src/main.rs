@@ -3,6 +3,10 @@
 use actix_cors::Cors;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
+// --- Prometheus Monitoring ---
+use prometheus::{Encoder, TextEncoder, IntCounter, register_int_counter};
+use lazy_static::lazy_static;
+
 use std::env;
 
 // --- Serialization/Deserialization ---
@@ -39,6 +43,15 @@ const BACKEND_INTERNAL_PORT_KEY: &str = "BACKEND_INTERNAL_PORT";
 const RUST_LOG_KEY: &str = "RUST_LOG";
 const BUILD_VERSION_KEY: &str = "BUILD_VERSION";
 const SESSION_SECRET_KEY_KEY: &str = "SESSION_SECRET_KEY";
+
+
+// --- Prometheus Metrics ---
+lazy_static! {
+    static ref HTTP_REQUESTS_TOTAL: IntCounter = register_int_counter!(
+        "http_requests_total",
+        "Total number of HTTP requests handled by the server"
+    ).unwrap();
+}
 
 // --- Struct Definitions ---
 
@@ -115,6 +128,7 @@ const HOST_NAME: &str = "0.0.0.0";
 
 #[get("/")]
 async fn hello() -> impl Responder {
+    HTTP_REQUESTS_TOTAL.inc(); // <<-- ADD THIS
     HttpResponse::Ok().body("Hello from Actix Backend!")
 }
 
@@ -138,6 +152,30 @@ async fn config() -> impl Responder {
         build_version,
     })
 }
+
+#[get("/metrics")]
+async fn metrics() -> impl Responder {
+    use prometheus::{Encoder, TextEncoder, gather};
+
+    let encoder = TextEncoder::new();
+    let metric_families = gather(); // Collect all registered metrics
+    let mut buffer = Vec::new();
+
+    if let Err(err) = encoder.encode(&metric_families, &mut buffer) {
+        eprintln!("Failed to encode Prometheus metrics: {:?}", err);
+        return HttpResponse::InternalServerError().finish();
+    }
+
+    let response_body = match String::from_utf8(buffer) {
+        Ok(s) => s,
+        Err(_) => return HttpResponse::InternalServerError().finish(),
+    };
+
+    HttpResponse::Ok()
+        .content_type("text/plain; charset=utf-8")
+        .body(response_body)
+}
+
 
 #[post("/api/login")]
 async fn post_login(
@@ -520,6 +558,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_logout)
             .service(get_search)
             .service(get_weather)
+            .service(metrics)
         // Removed duplicate/unused service registrations
     })
     .bind((HOST_NAME, port))?
