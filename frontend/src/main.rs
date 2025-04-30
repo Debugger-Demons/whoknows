@@ -32,6 +32,8 @@ async fn get_config() -> HttpResponse {
     }))
 }
 
+// TODO: /api/metrics
+
 #[get("/static/js/api_config.js")]
 async fn api_config() -> HttpResponse {
     let backend_port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "92".to_string());
@@ -103,6 +105,7 @@ where
             && req.path() != "/api/health"
             && req.path() != "/api/config"
             && req.path() != "/api/logout"
+            // TODO: && req.path() != "/api/metrics"
         {
             let client = self.client.clone();
             let backend_url = self.backend_url.clone();

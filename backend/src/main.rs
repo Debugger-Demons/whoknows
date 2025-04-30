@@ -4,8 +4,8 @@ use actix_cors::Cors;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
 // --- Prometheus Monitoring ---
-use prometheus::{Encoder, TextEncoder, IntCounter, register_int_counter};
 use lazy_static::lazy_static;
+use prometheus::{register_int_counter, Encoder, IntCounter, TextEncoder};
 
 use std::env;
 
@@ -44,13 +44,13 @@ const RUST_LOG_KEY: &str = "RUST_LOG";
 const BUILD_VERSION_KEY: &str = "BUILD_VERSION";
 const SESSION_SECRET_KEY_KEY: &str = "SESSION_SECRET_KEY";
 
-
 // --- Prometheus Metrics ---
 lazy_static! {
     static ref HTTP_REQUESTS_TOTAL: IntCounter = register_int_counter!(
         "http_requests_total",
         "Total number of HTTP requests handled by the server"
-    ).unwrap();
+    )
+    .unwrap();
 }
 
 // --- Struct Definitions ---
@@ -139,7 +139,6 @@ async fn get_about() -> impl Responder {
 
 #[get("/config")]
 async fn config() -> impl Responder {
-
     let db_url = env::var(DATABASE_URL_KEY).unwrap_or_else(|_| "Not Set".to_string());
     let port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "Not Set".to_string());
     let environment = env::var(RUST_LOG_KEY).unwrap_or_else(|_| "Not Set".to_string());
@@ -153,9 +152,9 @@ async fn config() -> impl Responder {
     })
 }
 
-#[get("/metrics")]
+#[get("/api/metrics")]
 async fn metrics() -> impl Responder {
-    use prometheus::{Encoder, TextEncoder, gather};
+    use prometheus::{gather, Encoder, TextEncoder};
 
     let encoder = TextEncoder::new();
     let metric_families = gather(); // Collect all registered metrics
@@ -175,7 +174,6 @@ async fn metrics() -> impl Responder {
         .content_type("text/plain; charset=utf-8")
         .body(response_body)
 }
-
 
 #[post("/api/login")]
 async fn post_login(
