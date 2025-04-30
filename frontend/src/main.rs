@@ -9,11 +9,72 @@ use log::{info, error};
 use std::env;
 use std::fs;
 use std::task::{Context, Poll};
+// --- Prometheus Monitoring ---
+use lazy_static::lazy_static;
+use prometheus::{register_int_counter, Encoder, IntCounter, TextEncoder};
 
 // Define constants for environment variable names
 const FRONTEND_URL_KEY: &str = "FRONTEND_URL";
 const BACKEND_INTERNAL_PORT_KEY: &str = "BACKEND_INTERNAL_PORT";
 const FRONTEND_INTERNAL_PORT_KEY: &str = "FRONTEND_INTERNAL_PORT";
+
+// --- Prometheus Metrics ---
+lazy_static! {
+    static ref HTTP_REQUESTS_TOTAL: IntCounter = register_int_counter!(
+        "http_requests_total",
+        "Total number of HTTP requests handled by the frontend server"
+    )
+    .unwrap();
+}
+
+// Request counter middleware
+struct RequestCounter;
+
+impl<S, B> Transform<S, ServiceRequest> for RequestCounter
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type Transform = RequestCounterMiddleware<S>;
+    type InitError = ();
+    type Future = Ready<Result<Self::Transform, Self::InitError>>;
+
+    fn new_transform(&self, service: S) -> Self::Future {
+        future::ok(RequestCounterMiddleware { service })
+    }
+}
+
+struct RequestCounterMiddleware<S> {
+    service: S,
+}
+
+impl<S, B> Service<ServiceRequest> for RequestCounterMiddleware<S>
+where
+    S: Service<ServiceRequest, Response = ServiceResponse<B>, Error = Error>,
+    S::Future: 'static,
+    B: 'static,
+{
+    type Response = ServiceResponse<B>;
+    type Error = Error;
+    type Future = LocalBoxFuture<'static, Result<Self::Response, Self::Error>>;
+
+    forward_ready!(service);
+
+    fn call(&self, req: ServiceRequest) -> Self::Future {
+        // Increment counter for all requests
+        HTTP_REQUESTS_TOTAL.inc();
+        
+        // Process the request
+        let fut = self.service.call(req);
+        Box::pin(async move {
+            let res = fut.await?;
+            Ok(res)
+        })
+    }
+}
 
 #[get("/api/health")]
 async fn health_check() -> HttpResponse {
@@ -32,7 +93,26 @@ async fn get_config() -> HttpResponse {
     }))
 }
 
-// TODO: /api/metrics
+#[get("/api/metrics")]
+async fn metrics() -> impl Responder {
+    let encoder = TextEncoder::new();
+    let metric_families = prometheus::gather(); // Collect all registered metrics
+    let mut buffer = Vec::new();
+
+    if let Err(err) = encoder.encode(&metric_families, &mut buffer) {
+        error!("Failed to encode Prometheus metrics: {:?}", err);
+        return HttpResponse::InternalServerError().finish();
+    }
+
+    let response_body = match String::from_utf8(buffer) {
+        Ok(s) => s,
+        Err(_) => return HttpResponse::InternalServerError().finish(),
+    };
+
+    HttpResponse::Ok()
+        .content_type("text/plain; charset=utf-8")
+        .body(response_body)
+}
 
 #[get("/static/js/api_config.js")]
 async fn api_config() -> HttpResponse {
@@ -105,7 +185,8 @@ where
             && req.path() != "/api/health"
             && req.path() != "/api/config"
             && req.path() != "/api/logout"
-            // TODO: && req.path() != "/api/metrics"
+            && req.path() != "/api/metrics"
+            
         {
             let client = self.client.clone();
             let backend_url = self.backend_url.clone();
@@ -212,6 +293,7 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .wrap(middleware::Logger::default())
+            .wrap(RequestCounter) // Add the request counter middleware
             .wrap(ApiProxy::new(backend_url.clone()))
             .wrap(Cors::default()
                     // Read your frontend URL(s) from config or env, never use `allow_any_origin` in prod
@@ -231,6 +313,7 @@ async fn main() -> std::io::Result<()> {
             .service(health_check)
             .service(get_config)
             .service(api_config)
+            .service(metrics)
             // Serve static files from the 'static' directory
             .service(files::Files::new("/static", "./static").show_files_listing())
             // Serve HTML files from the root directory

@@ -20,8 +20,6 @@ services:
       - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
     volumes:
       - ./database:/app/data
-    ports:
-      - "8092:${BACKEND_INTERNAL_PORT}"
     expose:
       - "${BACKEND_INTERNAL_PORT}"
     networks:
