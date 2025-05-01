@@ -1,4 +1,3 @@
-# docker-compose.dev.yml
 services:
   backend:
     container_name: whoknows.local.backend

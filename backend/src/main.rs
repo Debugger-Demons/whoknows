@@ -3,6 +3,9 @@
 use actix_cors::Cors;
 use actix_web::{get, post, web, App, HttpResponse, HttpServer, Responder};
 
+// --- Prometheus Monitoring ---
+// Removed prometheus imports as they're now in the frontend
+
 use std::env;
 
 // --- Serialization/Deserialization ---
@@ -39,6 +42,9 @@ const BACKEND_INTERNAL_PORT_KEY: &str = "BACKEND_INTERNAL_PORT";
 const RUST_LOG_KEY: &str = "RUST_LOG";
 const BUILD_VERSION_KEY: &str = "BUILD_VERSION";
 const SESSION_SECRET_KEY_KEY: &str = "SESSION_SECRET_KEY";
+
+// --- Prometheus Metrics ---
+// Removed lazy_static block for HTTP_REQUESTS_TOTAL
 
 // --- Struct Definitions ---
 
@@ -115,6 +121,7 @@ const HOST_NAME: &str = "0.0.0.0";
 
 #[get("/")]
 async fn hello() -> impl Responder {
+    // Removed HTTP_REQUESTS_TOTAL.inc() as it's now tracked in frontend
     HttpResponse::Ok().body("Hello from Actix Backend!")
 }
 
@@ -125,7 +132,6 @@ async fn get_about() -> impl Responder {
 
 #[get("/config")]
 async fn config() -> impl Responder {
-
     let db_url = env::var(DATABASE_URL_KEY).unwrap_or_else(|_| "Not Set".to_string());
     let port = env::var(BACKEND_INTERNAL_PORT_KEY).unwrap_or_else(|_| "Not Set".to_string());
     let environment = env::var(RUST_LOG_KEY).unwrap_or_else(|_| "Not Set".to_string());
@@ -520,6 +526,7 @@ async fn main() -> std::io::Result<()> {
             .service(get_logout)
             .service(get_search)
             .service(get_weather)
+        // Removed metrics service registration
         // Removed duplicate/unused service registrations
     })
     .bind((HOST_NAME, port))?
