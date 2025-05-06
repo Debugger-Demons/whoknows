@@ -49,9 +49,15 @@ NOTER
 
 ### Derivations from the DevOps Handbook
 
-Technology value stream became important in software quality.
-Implement several technologies to ensure a smooth and even flow for the developers in the project for every new implementation in the project.
-Gave a better experience for further development of the project due to the implementation of templates and bots that came with feedback for every PR.
+- Technology value stream became important in software quality.
+
+- Implemented several technologies to ensure a smooth and even flow for the developers in the project for every new implementation in the project.
+
+- Better experience for further development of the project.
+
+  - Issue template and pull request template made it easier to describe the PR and easier to read for the reviewers
+
+- Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented.
 
 ---
 
