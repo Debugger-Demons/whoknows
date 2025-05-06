@@ -19,10 +19,6 @@ WORKDIR /usr/src/app
 COPY Cargo.toml ./
 COPY Cargo.lock ./
 
-# Create empty src/main.rs to build dependencies
-RUN mkdir -p src && echo "fn main() {}" > src/main.rs
-RUN cargo build --release
-
 # Now copy the actual source code and build again
 COPY src ./src
 RUN touch src/main.rs && cargo build --release

@@ -18,6 +18,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
       - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
     volumes:
+      # server dir : container dir
       - /home/deployer/deployment/app/data:/app/data
     expose:
       - "${BACKEND_INTERNAL_PORT}"

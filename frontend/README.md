@@ -10,6 +10,15 @@ This project provides a lightweight frontend server that:
 2. Proxies API requests to the backend service
 3. Minimizes dependencies by using client-side JavaScript for templating and API calls
 
+## 📚 Documentation
+
+Detailed documentation is available in the `docs` directory:
+
+- [Architecture Overview](docs/architecture.md) - System design and component interactions
+- [Setup Guide](docs/setup.md) - Instructions for local and Docker setup
+- [Client-Side Architecture](docs/client-side.md) - Frontend JavaScript, HTML, and CSS details
+- [API Proxy Middleware](docs/proxy-middleware.md) - Details on the backend communication layer
+
 ## Architecture
 
 - **Frontend**: Rust Actix-Web server serving static files and proxying API requests
@@ -38,31 +47,15 @@ Public Internet  |                  |                   |                   |
                                                     Response to client
 ```
 
-1. **Client Request**: Browser makes a request to `/api/search?q=query`
-2. **Frontend Proxy**: Actix-Web middleware intercepts API requests
-3. **Internal Request**: Proxy forwards to `http://backend:92/api/search?q=query`
-4. **Backend Processing**: Backend processes request and returns response
-5. **Response Forwarding**: Frontend sends backend's response back to browser
+See the [Architecture Overview](docs/architecture.md) for more details.
 
-This approach solves several challenges:
-- **HTTPS Mixed Content**: Browser only makes requests to one origin
-- **Network Isolation**: Backend is not directly accessible from outside
-- **DNS Resolution**: Docker's internal DNS resolves service names to container IPs
-
-## Features
-
-- Clean separation of concerns between frontend and backend
-- API request proxying between containers
-- Simple, lightweight implementation
-- No server-side templating (uses JavaScript instead)
-- Docker containerization for easy deployment
-
-## Getting Started
+## Quick Start
 
 ### Prerequisites
 
 - Docker and Docker Compose
 - Rust (for development only)
+- Cargo Make (for development only)
 
 ### Installation
 
@@ -70,10 +63,17 @@ This approach solves several challenges:
 2. Build and run the containers:
 
 ```bash
-docker-compose up --build
+# Using Docker Compose
+make run-compose
+
+# Or just the frontend container
+make build-frontend
+make run-frontend
 ```
 
 3. Access the application at `http://localhost:8080`
+
+For detailed setup instructions, see the [Setup Guide](docs/setup.md).
 
 ## Project Structure
 
@@ -96,48 +96,42 @@ frontend/
 To run the frontend in development mode:
 
 ```bash
+# Install Cargo Make (if not already installed)
+cargo install cargo-make
+
+# Run with hot-reloading
 cd frontend
-cargo run
+cargo make dev
 ```
 
-For hot-reloading during development, you can use `cargo-watch`:
+For Docker-based development:
 
 ```bash
-cargo watch -x run
+# Run in Docker container
+cargo make dev-docker
+
+# Stop running container
+cargo make stop-docker
 ```
 
-## Implementation Details
+For available tasks:
 
-### API Proxying
-
-The frontend server uses Actix-Web middleware to proxy API requests:
-
-1. Intercepts requests starting with `/api/`
-2. Forwards them to the backend container
-3. Returns the backend's response to the client
-
-### Frontend JavaScript
-
-The JavaScript API client uses relative URLs that get proxied:
-
-```javascript
-// Instead of absolute URLs like http://backend:92/api/search
-fetch('/api/search?q=query')
+```bash
+cargo make help
 ```
 
-### Docker Networking
+## Environment Variables
 
-In the Docker Compose setup:
-- Containers communicate via the `app-network`
-- Service name `backend` resolves to the backend container's IP
-- Only the frontend is accessible from outside the Docker network
+- `FRONTEND_INTERNAL_PORT`: Port the server listens on (default: 91)
+- `BACKEND_INTERNAL_PORT`: Port the backend service uses (default: 92)
+- `FRONTEND_URL`: URL for CORS configuration (default: http://localhost:8080)
 
-## Customization
+## Contributing
 
-- HTML files in `static/html/` can be modified to change the UI
-- JavaScript in `static/js/` handles all frontend logic
-- CSS in `static/css/` controls the styling
-- Backend URL is configured via the `BACKEND_URL` environment variable
+1. Ensure you have Rust installed
+2. Follow the setup instructions in the [Setup Guide](docs/setup.md)
+3. Review the [Architecture Overview](docs/architecture.md) to understand the system
+4. Make your changes and submit a pull request
 
 ## License
 
