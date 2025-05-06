@@ -30,6 +30,11 @@ Issues arise when we have changed the structure of the code and forgot to update
 As the project grew transparency and knowledge sharing became more important so we changed the structure of the repository several times to make it easier to read and understand it. Knowledge became easier when additional documents where added, and spoke more of the structure.
 
 Followed the principle to reduce WIP and avoid large commits and pushes. It became easier to review, and approve PR because you could easily understand the architecture and context of it if the whole batch is in the same context, and does not strecth out to different branches and code context.
+
+It has been a good approach the secure the branches which has made it easy not to be nervous to push when you are done with a branch.
+
+---
+
 NOTER
 
 - Continuous improvement and learning!
@@ -38,13 +43,27 @@ NOTER
 - Reduce WIP (Work In Progress) Avoid large batch sizes
 - DevSecOps - Secure By design, not as an afterthought
 
-### The handbook
+---
 
 ## Software Quality
 
 ### Derivations from the DevOps Handbook
 
+Technology value stream became important in software quality.
+Implement several technologies to ensure a smooth and even flow for the developers in the project for every new implementation in the project.
+Gave a better experience for further development of the project due to the implementation of templates and bots that came with feedback for every PR.
+
+---
+
+CALMS
+
+---
+
 ### Actions
+
+Implemented several actions yaml files to ensure a smooth continous integration in our technology value stream.
+
+The motivation was to ensure high code quality, and avoid technical debt which also was the outcome of our tools.
 
 ### Code Rabbit
 
