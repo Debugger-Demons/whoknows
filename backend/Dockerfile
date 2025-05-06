@@ -34,7 +34,7 @@ WORKDIR /app
 # Create data directory
 # RUN mkdir -p /app/data
 
-COPY --from=builder /app/target/debug/backend .
+COPY --from=builder /app/release/debug/backend .
 
 RUN chmod +x ./backend
 
