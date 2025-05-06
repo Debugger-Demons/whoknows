@@ -59,6 +59,8 @@ NOTER
 
 - Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented.
 
+- Production and development adds to the value stream because it does not add chaos or discruption when we are deploying new features in the application
+
 ---
 
 CALMS
