@@ -1,8 +1,10 @@
 name: Build
 on:
-  pull_request:
+  push:
     branches:
-      - development
+      - dev
+  pull_request:
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
