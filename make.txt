@@ -1,0 +1,24 @@
+run-db:
+	@echo "Building and running PostgreSQL container: '${POSTGRES_DB}'..."
+	@docker build -t $(DB_IMAGE_NAME) ./db
+	@echo "Running PostgreSQL container..."
+	@docker run --name $(POSTGRES_DB) -p ${DB_PORT}:${DB_PORT} -d --env-file .env $(DB_IMAGE_NAME)
+	@echo "PostgreSQL container '$(POSTGRES_DB)' started."
+
+# Target to stop and remove the PostgreSQL container
+stop-db:
+	@echo "Stopping and removing PostgreSQL container '$(POSTGRES_DB)'..."
+	@docker stop $(POSTGRES_DB) || echo "Container not running or already stopped."
+	@docker rm $(POSTGRES_DB) || echo "Container not found or already removed."
+	@echo "Container stopped and removed."
+
+# Target to remove the PostgreSQL container and its volume
+clean-db: stop-db
+	@echo "Removing PostgreSQL data volume '$(DB_VOLUME_NAME)'..."
+	@docker volume rm $(DB_VOLUME_NAME) || echo "Volume not found or already removed."
+	@echo "Volume removed."
+
+clean-full-db: clean-db
+	@echo "removing PostgreSQL Images"
+	@docker rmi $(DB_IMAGE_NAME) || ehco "Image not found or already removed."
+	@echo "Image removed"

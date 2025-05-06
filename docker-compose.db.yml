@@ -1,0 +1,76 @@
+services:
+
+  database:
+    build:
+      context: database # ./database/
+      dockerfile: ./Dockerfile # ./database/Dockerfile
+    restart: always
+    container_name: whoknows_database
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER} # from .env
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD} 
+      - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes: 
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  backend:
+    container_name: whoknows.local.backend
+    env_file:
+      - .env
+    image: ${IMAGE_TAG_BACKEND_LOCAL}
+    build:
+      context: ./backend
+      args:
+        - APP_NAME=whoknows_local_compose
+        - RUST_LOG=${RUST_LOG}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+        - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
+    restart: unless-stopped
+    environment:
+      - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+      - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
+      - RUST_LOG=${RUST_LOG}
+      - DATABASE_URL=${DATABASE_URL}
+      - SESSION_SECRET_KEY=${SESSION_SECRET_KEY}
+    volumes:
+      - ./database:/app/data
+    expose:
+      - "${BACKEND_INTERNAL_PORT}"
+    networks:
+      - app-network
+
+  frontend:
+    container_name: whoknows.local.frontend
+    image: ${IMAGE_TAG_FRONTEND_LOCAL}
+    build:
+      context: ./frontend
+      args:
+        - NODE_ENV=${NODE_ENV:-production}
+        - COMPOSE_PROJECT_NAME=${COMPOSE_PROJECT_NAME}
+        - FRONTEND_INTERNAL_PORT=${FRONTEND_INTERNAL_PORT}
+        - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT}
+    restart: always
+    ports:
+      - "${HOST_PORT_FRONTEND:-8080}:${FRONTEND_INTERNAL_PORT:-91}"
+    environment:
+      - FRONTEND_INTERNAL_PORT=${FRONTEND_INTERNAL_PORT:-91}
+      - BACKEND_INTERNAL_PORT=${BACKEND_INTERNAL_PORT:-92}
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
+    name: ${COMPOSE_PROJECT_NAME}_db_data_dev
+
+networks:
+  app-network:
+    name: ${COMPOSE_PROJECT_NAME}_network_dev
+    driver: bridge

@@ -1,5 +1,10 @@
 # Makefile for updating environment secrets, creating issues, and pull requests
 
+ifneq (,$(wildcard ./.env))
+    include .env
+    export
+endif
+
 # === Configuration ===
 # Define fixed parameters for easy modification
 GH_REPO := Debugger-Demons/whoknows
@@ -70,6 +75,13 @@ stop-backend:
 	docker rm whoknows_backend_test || true
 
 
+# === Database ===
+# use docker-compose.db.yml
+# use database/Dockerfile
+build-db:
+	@echo "Building Database image"
+	docker build -t ${POSTGRES_DB} -d --env-file .env ./database 
+	@echo "Database running at http://localhost:${POSTGRES_HOST}"
 
 # === Environment Secret Management ===
 
@@ -165,6 +177,7 @@ help:
 	@echo "---- Compose Management ----"
 	@echo ""
 	@echo "  make run-compose         - Run the compose"
+	@echo "  make run-compose-psql    - Run the compose with Postgresql db"
 	@echo "  make stop-compose        - Stop the compose"
 	@echo "  make clean-compose       - Clean the compose"
 	@echo ""
@@ -173,6 +186,12 @@ help:
 	@echo "  make build-frontend       - Build the frontend Docker image"
 	@echo "  make run-frontend         - Build and run the frontend container"
 	@echo "  make stop-frontend        - Stop and remove the frontend container"
+	@echo ""
+	@echo "---- Database ----"
+	@echo ""
+	@echo "  make build-db       - Build the frontend Docker image"
+	@echo "  make run-db         - Build and run the frontend container"
+	@echo "  make stop-db        - Stop and remove the frontend container"
 	@echo ""
 	@echo "---- Environment & PR Management ----"
 	@echo ""
