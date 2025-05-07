@@ -47,9 +47,25 @@ NOTER
 
 ## Software Quality
 
-### Derivations from the DevOps Handbook
+---
 
-- Technology value stream became important in software quality.
+NOTES
+
+After you have setup a these code quality tools and gone through the issues, your group should create a brief document that answers the following questions:
+
+- Do you agree with the findings?
+
+- Which ones did you fix?
+
+- Which ones did you ignore?
+
+- Why?
+
+---
+
+### Impact of technology value stream
+
+- Technology value stream became important in software quality as we progressed
 
 - Implemented several technologies to ensure a smooth and even flow for the developers in the project for every new implementation in the project.
 
@@ -59,7 +75,9 @@ NOTER
 
 - Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented.
 
-- Production and development adds to the value stream because it does not add chaos or discruption when we are deploying new features in the application
+- Production and development branches adds to the value stream because it does not add chaos or discruption when we are deploying new features in the application
+
+### Findings
 
 ---
 
