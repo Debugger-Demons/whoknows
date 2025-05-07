@@ -21,17 +21,23 @@ We have tried to follow the given devops principles during the lectures, the dev
 
 ### Principles in DevOps
 
-Several principles have been followed but not to the fullest and we have not been DevOps 100% due to inexperience in the group.
+- Several principles have been followed but not to the fullest and we have not been DevOps 100% due to inexperience in the group.
 
-Tried to follow the principles by contionus improvement and realisting documentation was important for us. We have several md files that contains information about our stack and how it is built. That approach has made it easy to backtrack if the project became too complex to understand so we could always track back and read what we have written.
+- Tried to follow the principles by contionus improvement and realisting documentation was important for us. We have several md files that contains information about our stack and how it is built. That approach has made it easy to backtrack if the project became too complex to understand so we could always track back and read what we have written.
 
-Issues arise when we have changed the structure of the code and forgot to update the documentation, which can be a issue when we have cross referenced the .md files.
+- Issues arise when we have changed the structure of the code and forgot to update the documentation, which can be a issue when we have cross referenced the .md files.
 
-As the project grew transparency and knowledge sharing became more important so we changed the structure of the repository several times to make it easier to read and understand it. Knowledge became easier when additional documents where added, and spoke more of the structure.
+- As the project grew transparency and knowledge sharing became more important so we changed the structure of the repository several times to make it easier to read and understand it. Knowledge became easier when additional documents where added, and spoke more of the structure.
 
-Followed the principle to reduce WIP and avoid large commits and pushes. It became easier to review, and approve PR because you could easily understand the architecture and context of it if the whole batch is in the same context, and does not strecth out to different branches and code context.
+- Followed the principle to reduce WIP and avoid large commits and pushes. It became easier to review, and approve PR because you could easily understand the architecture and context of it if the whole batch is in the same context, and does not strecth out to different branches and code context.
 
-It has been a good approach the secure the branches which has made it easy not to be nervous to push when you are done with a branch.
+- It has been a good approach the secure the branches which has made it easy not to be nervous to push when you are done with a branch.
+
+### Inspiration from Eficode
+
+- Focused on fast feedback since it was a keyfactor from Eficode which is the reason for implementation of tools to get a quick overview of potential risks in the code.
+
+- Wrote documentation so team could work independently without being dependent on another person. We avoided silo issues that way.
 
 ---
 
