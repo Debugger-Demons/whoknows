@@ -63,6 +63,10 @@ After you have setup a these code quality tools and gone through the issues, you
 
 ---
 
+### Issue with these tools
+
+- Does not take business logic in to context. The static tools can check for patterns, and lack of variables but sometimes the context is more important to understand such as "Does it solve the need of the customer?"
+
 ### Impact of technology value stream
 
 - Technology value stream became important in software quality as we progressed
@@ -71,29 +75,35 @@ After you have setup a these code quality tools and gone through the issues, you
 
 - Better experience for further development of the project.
 
-  - Issue template and pull request template made it easier to describe the PR and easier to read for the reviewers
-
 - Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented.
 
-- Production and development branches adds to the value stream because it does not add chaos or discruption when we are deploying new features in the application
+### Implementation of SonarCube
 
-### Findings
+- There are duplicates of the code in the analysis but we ignored it due to lack of experience in the new coding language
+
+### Implementation of DeepSource
+
+#### Docker
+
+- apt install
+  - Agree with the findings but did not fix it. The system works, and it throws no errors, if it throws then it will be an easy fix. We had our focus elsewhere
+
+#### JavaScript
+
+- Lack of documentation
+- Bug risk
+
+#### Rust
+
+### Implementation of CodeClime
+
+- Does not support Rust
 
 ---
 
 CALMS
 
 ---
-
-### Actions
-
-Implemented several actions yaml files to ensure a smooth continous integration in our technology value stream.
-
-The motivation was to ensure high code quality, and avoid technical debt which also was the outcome of our tools.
-
-### Code Rabbit
-
-### Deepsource
 
 ## Monitoring Quality
 
