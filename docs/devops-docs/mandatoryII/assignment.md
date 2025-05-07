@@ -115,4 +115,6 @@ CALMS
 
 ### Prometheus
 
+- Great for finding numeric values and time stamp but cannot be used for searching arbituary text
+
 ### Grafana
