@@ -1,0 +1,92 @@
+1. What version control strategy did you choose and how did you actually do it / enforce it?
+
+Git Flow: 
+
+- git flow model
+-- 
+
+- release branches 
+-- we have used one release branch
+--- our 'main' branch is the production branch, which releases to Production Deployment
+--- we have created one branch from Development called `release-1.0.0`
+-- we havnt had a `hotfix`incident, but we have had several `fix/` branches, which were branched from `development` 
+
+
+- release management 
+-- 'proud' philosophy
+--- 1.0.0 major release
+--- 1.1.0 minor release - fx db migration from sqlite to postgresql
+--- 1.1.1 'shameful' release
+
+- VCS 
+-- advantages
+--- once we started properly using PRs, the branching and navigation of branches simplified greatly, and was much more intuitive
+--- concrete examples
+---- PR requests get Automatic bots which Review commits
+--- separate `feat` branches help with Parallel Development
+---- pros: 
+----- we have had minimal merge conflicts 
+----- separation with automated Kanban board has as well helped dividing into subdomains and separation of concerns and dependencies. 
+
+-- disadvantages
+--- remember to delete branches 
+
+Security Aspects
+
+- branch-protection of `main` and `dev`
+- secrets scan with workflows
+- dependabot
+
+
+---
+
+How are you DevOps
+
+- Guest Lecture (Eficode)
+
+
+Affirmative for why we are/have been DevOps
+
+- CALMS
+-- Culture: 
+--- good documentation 
+--- good vibes when physically met 
+--- no blame 
+-- Automation:
+--- Make, gh-cli, 
+--- PR Review bots
+--- Kanban board <--> PR and branches
+-- Lean
+--- tried to keep lean branches
+---- was difficult at the start, but got better towards the end 
+----- specifically the Continuous Deployment pipeline was significantly more complex than initially thought. This ended up in `feat/` branch with multiple `sub-feat/` branches. 
+--- tried to keep commits small and with good descriptions, but was difficult at times, since it feels like a Habit one has to culture. 
+-- Sharing
+--- great docs, 
+--- PR reviewing with proper reading content 
+---- bots with summaries and diagrams helped greatly in simplifying it for the Reviewer
+---- PR templates helped give easy and fast intuition of PR intent and problem it solves
+
+What keeps from Fully DevOps
+
+- better identification of Silos 
+-- should have used `whoknows_variations` branches more closely, since that would eleviate the technical complexity and Thus given space for DevOps reflections throught the Course. 
+
+
+---
+
+
+
+
+
+
+ 
+ 
+
+
+
+
+
+
+
+
