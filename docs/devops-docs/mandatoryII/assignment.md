@@ -51,7 +51,7 @@ We adopted the **Git Flow** branching model.
   - Clear separation of development, release preparation, and production code.
 - **Why not others?**
   - Why not GitHub Flow?
-    - "While GitHub Flow offers simplicity for continuous deployment, we anticipated more distinct release phases where Git Flow's `release/*` branches would be beneficial for stabilization."
+    - While GitHub Flow offers simplicity for continuous deployment, we anticipated more distinct release phases where Git Flow's `release/*` branches would be beneficial for stabilization.
 
 ### What advantages and disadvantages did we experience?
 
