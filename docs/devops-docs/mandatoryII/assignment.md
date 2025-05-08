@@ -83,20 +83,33 @@ This section reflects on our adoption of DevOps principles, inspired by course l
 
 | Lens            | Evidence & Reflection                                                                                                                                                                                                                                                                                                                                                        |
 | --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **C**ulture     | Actively used PR reviews for knowledge sharing and quality control. Attempted regular team sync meetings (Tuesdays/Thursdays) and blameless retrospectives. Maintained good documentation. Fostered a positive, collaborative environment in person, with a "no blame" approach to issues.                                                                     |
-| **A**utomation  | Leveraged `make` targets and `gh` CLI for local dev tasks. Implemented 3-stage GitHub Actions CI/CD pipelines (branch testing → dev deployment → prod deployment). Automated database migrations within pipelines. Utilized PR review bots. Integrated Kanban board with PRs and branches.                                                                                      |
-| **L**ean        | Aimed for small Work-In-Progress (WIP) limits (e.g., ≤5 per dev). Used feature toggles to guard incomplete features in shared branches. Employed deploy previews (branch deployments) to significantly shorten the feedback loop. Strived for small, well-described commits.                                                                                                     |
-| **M**easurement | Implemented Prometheus for counters and histograms. Utilized Grafana dashboards to visualize metrics (e.g., RPS at `/` endpoint, CPU/memory usage, p95 latency). CI trend badges provided insights into test coverage and linter warnings.                                                                                                     |
-| **S**haring     | Maintained a `/docs/` "markdown garden" including Architecture Decision Records (ADRs) and runbooks. Practiced pair-review rotation for PRs. Used post-merge Slack digests for team awareness. PR templates and bot summaries aided in quick understanding of changes. Ensured documentation was a priority to enable independent work and avoid knowledge silos.                               |
+| **C**ulture     | PR reviews for knowledge sharing & quality. Regular team syncs (Tue/Thu) & blameless retros. Good documentation. Positive, collaborative, "no blame" in-person environment.                                                                                                                                                                                                |
+| **A**utomation  | `make` targets & `gh` CLI for local dev. 3-stage GitHub Actions CI/CD (branch test → dev deploy → prod deploy). Automated DB migrations in pipelines. PR review bots. Kanban integrated with PRs/branches.                                                                                                                                                                     |
+| **L**ean        | Small WIP limits (≤5/dev). Feature toggles for incomplete features. Deploy previews (branch deployments) for shorter feedback loop. Small, well-described commits.                                                                                                                                                                                                           |
+| **M**easurement | Prometheus for counters/histograms. Grafana dashboards for metrics (RPS at `/`, CPU/memory, p95 latency). CI trend badges for test coverage & linter warnings.                                                                                                                                                                                                           |
+| **S**haring     | `/docs/` "markdown garden" (ADRs, runbooks). Pair-review rotation for PRs. Post-merge Slack digests. PR templates & bot summaries for quick change comprehension. Prioritized documentation for independent work & avoiding knowledge silos.                                                                                                                                     |
 
 **Further Reflections on "How We've Been DevOps":**
-*   **General:** We've made progress in adopting DevOps principles but acknowledge we are not "100% DevOps," primarily due to inexperience and the learning curve with new tools and processes.
-*   **Continuous Improvement:** A core focus. We iterated on repository structure and documentation as the project grew in complexity to improve clarity.
-*   **Documentation:** Essential for backtracking and understanding. However, a challenge was keeping documentation consistently updated as the codebase evolved, leading to occasional discrepancies.
-*   **WIP & Batch Size:** Reducing WIP and aiming for smaller commits/PRs made reviews easier and context clearer. This was a habit that needed cultivation.
-*   **Fast Feedback (Inspired by Eficode):** Implemented tools and processes (e.g., CI, deploy previews, bot reviews) to get quicker insights into code quality and deployment readiness.
+*   **General:** 
+    *   We've made progress in adopting DevOps principles 
+        *   but acknowledge we are not "100% DevOps," 
+        *   primarily due to inexperience and the learning curve with new tools and processes.
+*   **Continuous Improvement:** 
+    *   A core focus. 
+    *   We iterated on repository structure and documentation as the project grew in complexity to improve clarity.
+*   **Documentation:** 
+    *   Essential for backtracking and understanding. 
+    *   However, a challenge was keeping documentation consistently updated as the codebase evolved, leading to occasional discrepancies.
+*   **WIP & Batch Size:** 
+    *   Reducing WIP and aiming for smaller commits/PRs made reviews easier and context clearer. 
+    *   This was a habit that needed cultivation.
+*   **Fast Feedback (Inspired by Eficode):** 
+    *   Implemented tools and processes (e.g., CI, deploy previews, bot reviews) to get quicker insights into code quality and deployment readiness.
 *   **Gaps & Areas for Improvement:**
-    *   **Silo Identification & Management:** Better identification and management of knowledge or technical silos. Using specialized branches (e.g., for `whoknows_variations`) more effectively might have reduced technical complexity earlier, allowing more focus on DevOps process refinement.     
+    *   **Silo Identification & Management:** 
+        *   Better identification and management of knowledge or technical silos. 
+        *   Using specialized branches (e.g., for `whoknows_variations`) more effectively might have reduced technical complexity earlier, 
+        *   allowing more focus on DevOps process refinement.     
     *   **Metrics Coverage:** 
         *   this could for example be: *(User to reflect: What key DevOps metrics, e.g., DORA metrics like Deployment Frequency, Lead Time for Changes, Change Failure Rate, MTTR, are we not tracking? Why not? What would be the benefit of tracking them?)*
             *   Deployment Frequency: 
@@ -116,16 +129,21 @@ This section reflects on our adoption of DevOps principles, inspired by course l
 ## 3. Software Quality
 
 We have configured and utilized several tools to analyze and improve software quality: 
-- CodeRabbit (`.coderabbit.yml`), 
-- SonarCloud (`.sonar-project.properties`), 
-- DeepSource (`.deepsource.toml`). 
-- A pre-commit hook (`.pre-commit-config.yaml`) is also used locally to run some of these checks.
+*   Copilot (no config needed), 
+*   CodeRabbit (`.coderabbit.yml`), 
+*   SonarCloud (`.sonar-project.properties`), 
+*   DeepSource (`.deepsource.toml`). 
+*   A pre-commit hook (`.pre-commit-config.yaml`) is also used locally to run some of these checks.
 
-*(The following subsections need to be filled based on the team's detailed reflection, addressing the four key questions from the assignment requirements.)*
-
-### Our Agreement with Tool Findings
-*   *(User to elaborate: Overall, did the team agree with the types of issues flagged? Were there categories of findings that were consistently accurate or consistently off-base/false positives? Any surprising or particularly insightful findings?)*
-*   The existing `assignment.md` notes: "Does not take business logic in to context. The static tools can check for patterns, and lack of variables but sometimes the context is more important to understand such as 'Does it solve the need of the customer?'" - This is a good point for critical reflection.
+### Our Agreement with Tool Findings (DX (Developer Experience) of Using our Software Quality Tools (DeepSource, SonarQube, CodeRabbit, Copilot))
+*   *(User to elaborate: 
+    *   Overall, did the team agree with the types of issues flagged? 
+    *   Were there categories of findings that were consistently accurate or consistently off-base/false positives? 
+    *   Any surprising or particularly insightful findings?)*
+*   The existing `assignment.md` notes: 
+    *   "Does not take business logic in to context. 
+        *   The static tools can check for patterns, and lack of variables but sometimes the context is more important to understand such as 'Does it solve the need of the customer?'" 
+        *   -> This is a good point for critical reflection.
 
 ### Issues We Fixed (and Why)
 *   From existing `assignment.md` (DeepSource on Rust - needs more detail): "Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented." (This sounds more like a benefit of bots in general, rather than a specific fix prompted by a quality tool).
