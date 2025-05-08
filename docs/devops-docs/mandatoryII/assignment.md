@@ -113,13 +113,10 @@ This section reflects on our adoption of DevOps principles, inspired by course l
     - this could for example be:
       - Deployment Frequency:
         - ie. how often we deploy to production.
-        -
       - Lead Time for Changes:
         - ie. the time it takes to make a change and deploy it to production.
-        -
       - Change Failure Rate:
         - ie. the rate of failed deployments.
-        -
       - MTTR:
         - ie. the time it takes to fix a failed deployment.
 
@@ -130,38 +127,31 @@ This section reflects on our adoption of DevOps principles, inspired by course l
 We have configured and utilized several tools to analyze and improve software quality:
 
 - Copilot (no config needed),
-- CodeRabbit (`.coderabbit.yml`),
-- SonarCloud (`.sonar-project.properties`),
-- DeepSource (`.deepsource.toml`).
+- CodeRabbit (`.coderabbit.yml`)
+- SonarCloud (`.sonar-project.properties`)
+- DeepSource (`.deepsource.toml`)
 - A pre-commit hook (`.pre-commit-config.yaml`) is also used locally to run some of these checks.
 
 ### Our Agreement with Tool Findings (DX (Developer Experience) of Using our Software Quality Tools (DeepSource, SonarQube, CodeRabbit, Copilot))
 
-- \*(User to elaborate:
-  - Overall, did the team agree with the types of issues flagged?
-  - Were there categories of findings that were consistently accurate or consistently off-base/false positives?
-  - Any surprising or particularly insightful findings?)\*
-- The existing `assignment.md` notes:
-  - "Does not take business logic in to context.
-    - The static tools can check for patterns, and lack of variables but sometimes the context is more important to understand such as 'Does it solve the need of the customer?'"
-    - -> This is a good point for critical reflection.
+- The tools can get addictive but the team needs to keep in mind that it does not take business logic into consideration.
+- The developer team is liable to become dependent on AI software quality tools, for security analysis, rather than using it as a complimentary tool.
 
 ### Issues We Fixed (and Why)
 
-- From existing `assignment.md` (DeepSource on Rust - needs more detail): "Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented." (This sounds more like a benefit of bots in general, rather than a specific fix prompted by a quality tool).
+- (DeepSource on Rust): Implemented bots gave a smoother experience for integration and ensured verification for the PR so if the assigne was not sure of the implementation then the bot could give feedback of what has been implemented.
 
 ### Issues We Ignored (and Why)
 
-- From existing `assignment.md`:
-  - SonarQube: "duplicates of the code in the analysis but we ignored it due to lack of experience in the new coding language." _(User to elaborate: What kind of duplicates? Was it a conscious decision that refactoring was too risky/time-consuming given inexperience?)_
-  - DeepSource (Docker): "apt install - Agree with the findings but did not fix it. The system works, and it throws no errors, if it throws then it will be an easy fix. We had our focus elsewhere." _(Good reflection on prioritization)._
-  - DeepSource (JavaScript): "Lack of documentation", "Bug risk" _(User to elaborate: Were these ignored? If so, why? Or were they fixed?)_.
-  - CodeClimate: "Does not support Rust." (Valid reason for not using it for Rust code).
-- From `suggestion.assignment.md` subjective audit: "ignored: 3 "duplicate code" flags in actix handlers (intentional inline optimization)" - _This is a good example of a reasoned ignore._
+- SonarQube: duplicates of the code in the analysis but we ignored it due to lack of experience in the new coding language.
+- DeepSource (Docker): apt install - Agree with the findings but did not fix it. The system works, and it throws no errors, if it throws then it will be an easy fix. We had our focus elsewhere.
+- DeepSource (JavaScript): Lack of documentation due to lack of time but will get fixed as we progress in the project.
+- CodeClimate: Does not support Rust.
 
 ### Integration into CI/CD
 
-- _(User to describe how these tools are integrated into the CI/CD pipeline beyond local pre-commit hooks. Do they run in GitHub Actions? Do they provide reports or alerts on PRs or merges? Do they affect the build/deployment if quality metrics drop?)_
+- The described tools are part of our CI pipeline, in such way for every PR a developer makes will run the tools to check the status of the code before it gets integrated in the designated branch
+  - The tools became a crucial aspect of our CI/CD pipeline. It would catch any unformatted or- unlinted text that slept through the cracks, and would point out known bugs and poor practices that were unknown to us at the time. It thus ensured that we integrated, and deployed code with much fewer errors and bugs.
 
 ---
 
