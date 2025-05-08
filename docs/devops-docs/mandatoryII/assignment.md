@@ -73,6 +73,8 @@ After you have setup a these code quality tools and gone through the issues, you
 
 - Does not take business logic in to context. The static tools can check for patterns, and lack of variables but sometimes the context is more important to understand such as "Does it solve the need of the customer?"
 
+-
+
 ### Impact of technology value stream
 
 - Technology value stream became important in software quality as we progressed

@@ -1,44 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>¿Who Knows?</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/styles.css" />
+    <script src="/static/js/api.js"></script>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>¿Who Knows?</title>
-  <link rel="stylesheet" type="text/css" href="/static/css/styles.css" />
-  <script src="/static/js/api.js"></script>
-</head>
-
-<body>
-  <div class="page">
-    <div class="navigation">
-      <nav>
-        <h1><a id="nav-logo" href="/search.html">¿Who Knows?</a></h1>
-        <a id="nav-login" href="/login.html">Log in</a>
-        <a id="nav-register" href="/register.html">Register</a>
-      </nav>
-    </div>
-    <div class="body">
-      <div>
-        <input id="search-input" placeholder="Search..." value="" />
-        <button id="search-button">Search</button>
+  <body>
+    <div class="page">
+      <div class="navigation">
+        <nav>
+          <h1><a id="nav-logo" href="/search.html">¿Who Knows?</a></h1>
+          <a id="nav-login" href="/login.html">Log in</a>
+          <a id="nav-register" href="/register.html">Register</a>
+        </nav>
       </div>
+      <div class="body">
+        <div>
+          <input id="search-input" placeholder="Search..." value="" />
+          <button id="search-button">Search</button>
+        </div>
 
-      <div id="results">
-        <!-- Search results will appear here -->
+        <div id="results">
+          <!-- Search results will appear here -->
+        </div>
+
+        <script src="/static/js/search.js"></script>
       </div>
-
-      <script src="/static/js/search.js"></script>
+      <div class="footer">
+        <span>¿Who Knows? &copy; 2009</span>
+        <a href="/about.html">About</a>
+        <a href="/sla.html">Service Level Agreement</a>
+      </div>
     </div>
-    <div class="footer">
-      <span>¿Who Knows? &copy; 2009</span>
-      <a href="/about.html">About</a>
-    </div>
-  </div>
 
-  <!-- validation -->
-  <script src="https://cdn.jsdelivr.net/npm/dompurify@latest/dist/purify.min.js"></script>
-  <script src="/static/js/validation.js"></script>
-</body>
-
+    <!-- validation -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@latest/dist/purify.min.js"></script>
+    <script src="/static/js/validation.js"></script>
+  </body>
 </html>

@@ -23,6 +23,13 @@ run-compose:
 	python ./scripts/check_env.py
 	docker compose up -d
 
+# === Compose without cache === 
+
+build-compose-no-cache:
+	@echo "Building compose without cache..."
+	docker compose build --no-cache
+	docker compose up -d
+
 stop-compose:
 	@echo "Stopping compose..."
 	docker compose down
