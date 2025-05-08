@@ -515,3 +515,32 @@ dist
 txt-copies/*
 PRD.MandatoryII.txt
 PRD.txt
+
+dev-debug.log
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# OS specific
+# Task files
+tasks.json
+tasks/
+.roomodes
+.taskmasterconfig
+.windsurfrules
+package.json
+.roo/rules/dev_workflow.md
+.roo/rules/roo_rules.md
+.roo/rules/self_improve.md
+.roo/rules/taskmaster.md
+.roo/rules-architect/architect-rules
+.roo/rules-ask/ask-rules
+.roo/rules-boomerang/boomerang-rules
+.roo/rules-code/code-rules
+.roo/rules-debug/debug-rules
+.roo/rules-test/test-rules
+scripts/example_prd.txt
