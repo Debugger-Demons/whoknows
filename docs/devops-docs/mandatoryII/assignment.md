@@ -161,27 +161,18 @@ This section describes a specific instance where our monitoring setup provided a
 
 - **Our Monitoring Setup (Summary):**
 
-  - **Exporter:** `prometheus_exporter` crate on a `/metrics` endpoint (from `suggestion.assignment.md`).
-  - **Visualization:** Grafana 10. Dashboards show metrics like RPS at `/` endpoint, CPU/memory, p95 latency.
-    - dashboard metrics:
-      - Total Queries at `/` endpoint
+  - Monitoring different metrics
+
+    - Http request for the page in general to see if there are spikes to the servers
+    - Amount of queries in our search engine to see if people actually use our page
+    - Counts queries defined by language
+
   - **Alerting:** Postman daily and weekly monitoring sends mails daily and weekly to the team.
-  - **Logging:**
 
 - **The Realization & Fix:**
-  - _(User to narrate the "grand realization" story here, covering:_
-    - _What specific metric/system aspect were you monitoring that led to the insight?_
-    - _What was the unexpected or important insight/realization?_
-    - _What action/fix did you implement as a result?_
-    - _What was the observable improvement or outcome, as confirmed by monitoring?)_
-  - _Example placeholder: "We were monitoring [Metric X] for [System Y]. We noticed [Observation Z], which was unexpected because [Reason]. This led us to investigate [Area A], where we discovered [Problem B]. We implemented [Fix C] by [Action D]. After the fix, monitoring showed that [Metric X] improved by [Amount E], confirming the positive impact."_
+  - Postman
+    - Realized our server was down so we made a new one on cloud google
+  - Grafana
+    - No incident yet
 
 ---
-
-## 6. Next Steps (Optional, but good for reflection)
-
-- _(User to list potential next steps for improving their DevOps practices, tooling, or system based on their reflections. Examples from `suggestion.assignment.md` include: "extend dashboards (per endpoint, db, cache)", "finish log pipeline (vector → loki) + search panel", "chaos drill before final release")._
-
----
-
-_This document is a living reflection and will be updated as new insights emerge._
