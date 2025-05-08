@@ -36,7 +36,7 @@ We adopted the **Git Flow** branching model.
   - We follow a "proud" philosophy for semantic versioning:
     - `1.0.0` (Major): Significant new features or breaking changes.
     - `1.1.0` (Minor): New features, non-breaking changes (e.g., DB migration from SQLite to PostgreSQL).
-    - `1.1.1` ("Shameful" / Patch): Small bug fixes, often post-release. _(User to elaborate on how "shameful" releases are branched/tagged if different from standard hotfixes or minor bumps)._
+    - `1.1.1` ("Shameful" / Patch): Small bug fixes, often post-release.
 - **Security Gates:**
   - Branch protection rules (as above).
   - Secrets scanning workflow (`.github/workflows/validate.env_and_secrets.yml`).
