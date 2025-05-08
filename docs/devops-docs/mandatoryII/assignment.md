@@ -1,13 +1,4 @@
-# Mandatory II
-
-## Reflection
-
 # Mandatory II – DevOps Reflection (Debugger-Demons, Spring 2025)
-
-> This document collates reflections for Mandatory II.
-> Required headers: Meta, Branch Strategy & Security, How We've Been DevOps (CALMS), Software Quality, Monitoring Realization, and Next Steps.
-
----
 
 ## 0. Meta
 
