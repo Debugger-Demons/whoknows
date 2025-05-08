@@ -97,13 +97,29 @@ This section reflects on our adoption of DevOps principles, inspired by course l
 *   **Fast Feedback (Inspired by Eficode):** Implemented tools and processes (e.g., CI, deploy previews, bot reviews) to get quicker insights into code quality and deployment readiness.
 *   **Gaps & Areas for Improvement:**
     *   **Silo Identification & Management:** Better identification and management of knowledge or technical silos. Using specialized branches (e.g., for `whoknows_variations`) more effectively might have reduced technical complexity earlier, allowing more focus on DevOps process refinement.     
-    *   **Metrics Coverage:** *(User to reflect: What key DevOps metrics, e.g., DORA metrics like Deployment Frequency, Lead Time for Changes, Change Failure Rate, MTTR, are we not tracking? Why not? What would be the benefit of tracking them?)*
+    *   **Metrics Coverage:** 
+        *   this could for example be: *(User to reflect: What key DevOps metrics, e.g., DORA metrics like Deployment Frequency, Lead Time for Changes, Change Failure Rate, MTTR, are we not tracking? Why not? What would be the benefit of tracking them?)*
+            *   Deployment Frequency: 
+                *   ie. how often we deploy to production. 
+                *   
+            *   Lead Time for Changes: 
+                *   ie. the time it takes to make a change and deploy it to production.
+                *   
+            *   Change Failure Rate: 
+                *   ie. the rate of failed deployments.
+                *   
+            *   MTTR: 
+                *   ie. the time it takes to fix a failed deployment.
 
 ---
 
 ## 3. Software Quality
 
-We have configured and utilized several tools to analyze and improve software quality: CodeRabbit (`.coderabbit.yml`), SonarCloud (`.sonar-project.properties`), and DeepSource (`.deepsource.toml`). A pre-commit hook (`.pre-commit-config.yaml`) is also used locally to run some of these checks.
+We have configured and utilized several tools to analyze and improve software quality: 
+- CodeRabbit (`.coderabbit.yml`), 
+- SonarCloud (`.sonar-project.properties`), 
+- DeepSource (`.deepsource.toml`). 
+- A pre-commit hook (`.pre-commit-config.yaml`) is also used locally to run some of these checks.
 
 *(The following subsections need to be filled based on the team's detailed reflection, addressing the four key questions from the assignment requirements.)*
 
