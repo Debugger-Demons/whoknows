@@ -513,3 +513,5 @@ dist
 # SvelteKit build / generate output
 .svelte-kit
 txt-copies/*
+PRD.MandatoryII.txt
+PRD.txt
