@@ -3,7 +3,7 @@ name: branch-test - Continuous Deployment
 
 on:
   push:
-    branches: [mandatoryII] # <-- adjust for current branch to test
+    branches: [some-branch] # <-- adjust for current branch to test
   workflow_dispatch:
 
 env:
