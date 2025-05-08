@@ -77,7 +77,13 @@ We adopted the **Git Flow** branching model.
 
 ---
 
-## 2. How We've Been DevOps – CALMS Framework
+## 2. How We've Been DevOps 
+
+### Flow, Feedback, and Continual Learning and Experimentation 
+
+this has been in connection with the CALMS framework, since it has become more apparent how Culture is key driver for 'ALMS' (and DevOps' in general) success.
+
+### CALMS Framework
 
 This section reflects on our adoption of DevOps principles, inspired by course lectures (including the Eficode guest lecture) and the CALMS model.
 
@@ -111,7 +117,7 @@ This section reflects on our adoption of DevOps principles, inspired by course l
         *   Using specialized branches (e.g., for `whoknows_variations`) more effectively might have reduced technical complexity earlier, 
         *   allowing more focus on DevOps process refinement.     
     *   **Metrics Coverage:** 
-        *   this could for example be: *(User to reflect: What key DevOps metrics, e.g., DORA metrics like Deployment Frequency, Lead Time for Changes, Change Failure Rate, MTTR, are we not tracking? Why not? What would be the benefit of tracking them?)*
+        *   this could for example be: 
             *   Deployment Frequency: 
                 *   ie. how often we deploy to production. 
                 *   
