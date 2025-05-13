@@ -13,7 +13,18 @@ class ApiClient {
    * Perform a search query
    * @param {string} query - The search query
    * @param {string} language - The language code (default: en)
-   * @returns {Promise<Object>} - Promise resolving to search results
+   * @returns {Promise<Object>} - Promise resolving to:
+   *   {
+   *     search_results: [
+   *       {
+   *         title: string,
+   *         url: string,
+   *         language: string,
+   *         last_updated: string,
+   *         content: string
+   *       }
+   *     ]
+   *   }
    */
   async search(query, language = "en") {
     try {
@@ -40,7 +51,22 @@ class ApiClient {
    * Attempt to log in a user by sending JSON data.
    * @param {string} username - The username
    * @param {string} password - The password
-   * @returns {Promise<Object>} - Promise resolving to login result
+   * @returns {Promise<Object>} - Promise resolving to:
+   *   {
+   *     success: boolean,
+   *     message: string,
+   *     user: {
+   *       id: number,
+   *       username: string,
+   *       email: string
+   *     }
+   *   }
+   *
+   * On error:
+   *   {
+   *     success: false,
+   *     error: string
+   *   }
    */
   async login(username, password) {
     try {
@@ -107,7 +133,16 @@ class ApiClient {
 
   /**
    * Logout a user
-   * @returns {Promise<Object>} - Promise resolving to logout result
+   * @returns {Promise<Object>} - Promise resolving to:
+   *   {
+   *     message: "Logout successful"
+   *   }
+   *
+   * On error:
+   *   {
+   *     success: false,
+   *     error: string
+   *   }
    */
   async logout() {
     try {
@@ -142,7 +177,21 @@ class ApiClient {
   /**
    * Register a new user by sending JSON data
    * @param {Object} userData - User registration data
-   * @returns {Promise<Object>} - Promise resolving to registration result
+   * @param {string} userData.username - The desired username
+   * @param {string} userData.email - User's email address
+   * @param {string} userData.password - User's password
+   * @param {string} userData.password2 - Password confirmation (must match password)
+   * @returns {Promise<Object>} - Promise resolving to:
+   *   {
+   *     success: true,
+   *     message: "User registered successfully"
+   *   }
+   *
+   * On error:
+   *   {
+   *     success: false,
+   *     error: string
+   *   }
    */
   async register(userData) {
     try {

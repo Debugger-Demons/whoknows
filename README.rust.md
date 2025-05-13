@@ -1,81 +1,124 @@
-# WhoKnows Modern Rust ActixWeb System
+# WhoKnows Modern Implementation
 
-A modern search engine implementation using Rust and ActixWeb, modernizing the legacy WhoKnows project from 2009.
+A modern search engine built with Rust and ActixWeb, modernizing the legacy WhoKnows project from 2009.
 
 ## Table of Contents
 
-- [Project Status](#project-status)
-- [Quick Start](#quick-start)
-- [Project Structure](#project-structure)
-- [Documentation Structure](#documentation-structure)
-- [Development](#development)
-- [Operations](#operations)
-- [Architecture](#architecture)
-- [API Documentation](#api-documentation)
-- [License](#license)
-- [Contact](#contact)
+- [WhoKnows Modern Implementation](#whoknows-modern-implementation)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Quick Start](#quick-start)
+  - [Documentation](#documentation)
+    - [Centralized Documentation](#centralized-documentation)
+    - [Component Documentation](#component-documentation)
+    - [Development Guides](#development-guides)
+    - [DevOps Documentation](#devops-documentation)
+  - [System Architecture](#system-architecture)
+  - [Development](#development)
+    - [Prerequisites](#prerequisites)
+    - [Development Workflow](#development-workflow)
+  - [Operations](#operations)
+  - [Project Status](#project-status)
+  - [License](#license)
 
-## Project Status
+## Overview
 
-current status: **In Development**
-
-current phase:
-
-- DevOps => Phase 2: CI/CD & Cloud Infrastructure
-- Rust Backend => phase 1 & 2: Rust Core and Web & Data
-
-roadmap docs:
-
-- [DevOps Roadmap](docs/development/roadmap.DevOps.md)
-- [Rust Backend Roadmap](docs/development/roadmap.Rust_Devving.md)
-  - [Ambitious Rust Learning and Devving Roadmap](docs/development/roadmap.Rust_Devving.ambitious.md)
+The modern WhoKnows implementation is a complete rewrite of the original Python-based search engine, employing contemporary technologies, architectural patterns, and development practices. The system consists of a Rust-based backend API and a lightweight frontend, both designed for simplicity, performance, and maintainability.
 
 ## Quick Start
 
-- [Getting Started Guide](docs/Getting-Started.md)
-- [Development Setup](docs/development/setup.md)
-- [Version Control Workflow](docs/VCS/VCS-Git-flow.md)
+To get the system up and running quickly:
 
-## Project Structure
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Debugger-Demons/whoknows.git
+   cd whoknows
+   ```
+
+2. **Start with Make cmd**
+   ```bash
+   # cp .env.template .env # create .env file
+
+   make run-compose
+
+   # make help for all available cmds
+   ```
+
+3. **Access the application**
+   - Frontend: http://localhost:8080
+   - Backend API: http://localhost:8080/api
+
+For more detailed setup instructions, see the [Getting Started Guide](docs/Getting-Started.md).
+
+## Documentation
+
+### Centralized Documentation
+- [Documentation Hub](docs/index.md) - Central navigation for all documentation
+
+### Component Documentation
+- **Backend**
+  - [Overview](backend/README.md) - Backend service introduction
+  - [API Reference](backend/docs/api.md) - Complete API documentation
+  - [Architecture](backend/docs/architecture.md) - Backend system design
+  - [Database Schema](backend/docs/database.md) - Data model and access patterns
+  - [Setup Guide](backend/docs/setup.md) - Detailed setup instructions
+
+- **Frontend**
+  - [Overview](frontend/README.md) - Frontend service introduction
+  - [Architecture](frontend/docs/architecture.md) - Frontend system design
+  - [Client-Side Documentation](frontend/docs/client-side.md) - UI implementation details
+  - [API Integration](frontend/docs/proxy-middleware.md) - Backend communication
+  - [Setup Guide](frontend/docs/setup.md) - Frontend setup instructions
+
+### Development Guides
+- [Contribution Guidelines](docs/development/contributing.md)
+- [Development Environment Setup](docs/development/setup.md)
+- [Git Workflow](docs/VCS/VCS-Git-flow.md)
+
+### DevOps Documentation
+- [DevOps Overview](docs/devops/index.md) - Central navigation for DevOps documentation
+- [DevOps Implementation Checklist](docs/devops/DevOps_Checklist.md) - Week-by-week DevOps implementation tracking
+- [Docker](docs/devops/docker/docker.md) - Docker setup and usage
+- [GitHub Actions](docs/devops/github-actions.md) - CI/CD workflows
+
+## System Architecture
+
+The modern WhoKnows system follows a clean, service-oriented architecture:
 
 ```
-.
-├── .github/           # GitHub specific configurations
-├── docs/             # Project documentation
-├── backend/          # Rust ActixWeb backend
-└── frontend/         # Frontend application
+┌─────────────┐      ┌──────────────┐      ┌──────────────┐
+│  Browser    │◄────►│  Frontend    │◄────►│  Backend     │
+│  (Client)   │      │  (Actix Web) │      │  (API)       │
+└─────────────┘      └──────────────┘      └──────────────┘
+                                                  │
+                                                  ▼
+                                           ┌──────────────┐
+                                           │  Database    │
+                                           │  (SQLite)    │
+                                           └──────────────┘
 ```
 
-## Documentation Structure
+- **Frontend**: Lightweight Rust Actix service serving static content and proxying API requests
+- **Backend**: RESTful API implemented in Rust with Actix Web
+- **Database**: SQLite with SQLx for type-safe queries
 
-```
-docs/
-├── README.md               # Documentation home
-├── architecture/           # System design and architecture
-├── development/           # Development guides and standards
-├── operations/            # Deployment and operations
-└── api/                   # API documentation
-```
+For detailed architectural documentation:
+- [Backend Architecture](backend/docs/architecture.md)
+- [Frontend Architecture](frontend/docs/architecture.md)
 
 ## Development
 
 ### Prerequisites
+- Rust 1.81 or later
+- Docker & Docker Compose (optional, for containerized development)
+- Git
 
-- Rust (latest stable)
-- Node.js (for frontend)
-- Docker (optional)
-
-### Local Setup
-
-See [Getting Started](docs/Getting-Started.md) for detailed setup instructions.
-
-## Development
-
-_before heading into it, orient yourself with:_
-
-- [Contribution Guidelines](docs/development/contributing.md)
-- [Git Workflow](docs/VCS/VCS-Git-flow.md)
-- [Pull Request Template](.github/templates/PULL_REQUEST_TEMPLATE.md)
+### Development Workflow
+1. Fork and clone the repository
+2. Set up your development environment using the [Setup Guide](docs/development/setup.md)
+3. Create a feature branch following our [Git Workflow](docs/VCS/VCS-Git-flow.md)
+4. Implement your changes with tests
+5. Submit a pull request for review
 
 ## Operations
 
@@ -83,30 +126,22 @@ _before heading into it, orient yourself with:_
 - [Monitoring Setup](docs/devops-docs/monitoring/setup.md)
 - [Troubleshooting](docs/operations/troubleshooting.md)
 
-## Architecture
+## Project Status
 
-- [System Overview](docs/architecture/overview.md)
-- [Backend Architecture](docs/architecture/backend.md)
-- [Frontend Architecture](docs/architecture/frontend.md)
+Current status: **In Development**
 
-## API Documentation
+Current phase:
+- DevOps => Phase 2: CI/CD & Cloud Infrastructure
+- Rust Backend => Phase 1 & 2: Rust Core and Web & Data
 
-- [API Endpoints](docs/api/endpoints.md)
-- [Data Models](docs/api/schemas.md)
+Implementation Progress:
+- [DevOps Implementation Checklist](docs/devops-docs/DevOps_Checklist.md) - Track current DevOps implementation status
+
+Roadmap docs:
+- [DevOps Roadmap](docs/development/roadmap.DevOps.md)
+- [Rust Backend Roadmap](docs/development/roadmap.Rust_Devving.md)
+- [Ambitious Rust Learning and Devving Roadmap](docs/development/roadmap.Rust_Devving.ambitious.md)
 
 ## License
 
-[Add License Information]
-
-## Contact
-
-[Add Contact Information]
-
-This README:
-
-- Provides clear navigation
-- Shows project structure
-- Lists key documentation
-- Includes setup instructions
-- Covers operations and development
-- Links to detailed guides
+This project is licensed under the terms included in [LICENSE](LICENSE).

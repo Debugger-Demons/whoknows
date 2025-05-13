@@ -19,7 +19,7 @@ RUN if [ ! -f Cargo.lock ]; then cargo generate-lockfile; fi
 COPY src ./src
 COPY .sqlx ./.sqlx
 
-RUN cargo build
+RUN cargo build --release
 
 # ---- Stage 2: Runtime ----
 # Production stage: minimal runtime image
@@ -34,7 +34,7 @@ WORKDIR /app
 # Create data directory
 # RUN mkdir -p /app/data
 
-COPY --from=builder /app/target/debug/backend .
+COPY --from=builder /app/release/debug/backend .
 
 RUN chmod +x ./backend
 

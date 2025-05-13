@@ -200,7 +200,6 @@ jobs:
           # scp directly to final names
           ${{ env.SCP_CMD }} ${{ env.DOCKER_COMPOSE_FILE }} ${SERVER_DEST_BASE}/docker-compose.yml
           ${{ env.SCP_CMD }} ${{ env.ENV_FILE }} ${SERVER_DEST_BASE}/.env
-          ${{ env.SCP_CMD }} ${{ env.NGINX_FILE_PATH }} ${SERVER_DEST_BASE}/nginx.conf
           ${{ env.SCP_CMD }} ${{ env.DEPLOY_SCRIPT }} ${SERVER_DEST_BASE}/deploy.sh
           ${{ env.SCP_CMD }} ${{ env.DOCKER_LOGIN_SCRIPT }} ${SERVER_DEST_BASE}/docker-login.sh
 
@@ -210,8 +209,7 @@ jobs:
                   # ├── .env
                   # ├── VERSION
                   # ├── deploy.sh
-                  # ├── docker-login.sh
-                  # └── nginx.conf
+                  # └── docker-login.sh
 
         # ------------------------------------------
 
