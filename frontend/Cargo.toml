@@ -17,11 +17,13 @@ awc = "3.1.1"
 futures = "0.3.28"
 prometheus = "0.13.3"
 lazy_static = "1.4.0"
+querystring = "1.1"
+
 
 [profile.dev]
 opt-level = 0
 debug = true
-split-debuginfo = '...'  # Platform-specific.
+#split-debuginfo = '...'  # Platform-specific.
 strip = "none"
 debug-assertions = true
 overflow-checks = true
