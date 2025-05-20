@@ -1,0 +1,89 @@
+
+focus: 
+3.1 GitHub Actions
+
+5.1 Docker implementation
+
+6.1 Multi-container
+
+9.1 Advanced CI/CD
+
+---
+
+1. GitHub Actions:
+
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+
+2. Docker implementations
+
+Context: 
+
+- Dockerfiles (not advanced docker-compose) 
+    - frontend\Dockerfile
+    - backend\Dockerfile
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+
+3. Multi-container 
+
+Docker Implementation, Build Tools, Simulation Environment 
+
+Learning Goals: 
+
+- Docker-compose benefits, hot reload in Docker, agile principles, DevOps history and concepts, Continuous Delivery implementation. 
+
+ 
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+
+4. Security Integration – Alek 
+
+Implement DevSecOps practices 
+
+ Set up fail2ban 
+
+ Configure firewall for Docker 
+
+ Secure GitHub Actions workflows 
+
+ 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+
+5. Test automation – Alek  
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 

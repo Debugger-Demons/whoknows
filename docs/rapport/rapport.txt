@@ -1,0 +1,156 @@
+focus: 
+3.1 GitHub Actions
+
+5.1 Docker implementation
+
+6.1 Multi-container
+
+9.1 Advanced CI/CD
+
+---
+
+1. GitHub Actions:
+
+Hvad har vi valgt  
+• Et komplet sæt af GitHub Actions-workflows, bl.a. `validate.env_and_secrets.yml`, `cd.dev.yml`, `cd.prod.yml`, `cd.branch-test.yml`, `release.yml` og `verify-secret-hash.yml`.  
+• Workflows til både **CI** (build, test og statisk analyse) og **CD** (build & push Docker-images til GHCR og efterfølgende server-deployment via SSH).
+
+Hvorfor har vi valgt  
+• Automatisering sikrer, at alle commits bygges og testes på samme måde – "build once, run anywhere".  
+• Workflows med miljø-specifikke secrets giver en sikker adskillelse mellem udviklings- og produktionsmiljøer.  
+• Automatisk deployment reducerer "lead time to production" og understøtter Continuous Delivery-principperne.
+
+Hvordan har vi brugt det  
+• På **pull-request merge** til `development` køres `cd.dev.yml`, som  
+  – bygger backend- og frontend-images med Docker Buildx,  
+  – pusher dem til GitHub Container Registry (tags: `latest` + SHA-tag),  
+  – kopierer `docker-compose.dev.yml`, `.env`, `VERSION`, nginx-konfiguration og shell-scripts til dev-serveren via `scp`,  
+  – eksekverer `deploy.sh` over SSH for at starte/stage containerne.  
+• På merge til `main` udfører `cd.prod.yml` det samme flow mod produktionsserveren.  
+• `validate.env_and_secrets.yml` kaldes fra alle CD-workflows for at sikre, at nødvendige secrets (.env, SSH-nøgler, GHCR-token) er til stede og korrekt formatteret før jobbet fortsætter.  
+• `release.yml` opretter automatisk GitHub-releases baseret på tags og genererer changelog.  
+• `verify-secret-hash.yml` giver en manuel måde at måle checksum på hemmelige filer og dokumentere hash-værdien i pipeline-loggen.
+
+Hvad er vi kommet frem til  
+Workflows har givet et **reproducerbart**, **audit-venligt** og **hurtigt** deployments-flow.  Fejl fanges tidligt (fx manglende secrets), og teamet slipper for manuelle skridt.  Erfaringen har vist, at små, deklarative workflows er lettere at vedligeholde end store monolitiske scripts.
+
+
+2. Docker implementations
+
+Context: 
+
+- Dockerfiles (ikke avanceret docker-compose)  
+  - `frontend/Dockerfile`  
+  - `backend/Dockerfile`
+
+Hvad har vi valgt  
+• Begge services bruger **multi-stage Dockerfiles** med en *builder* (rust:1.81) og en *runtime* (debian:bookworm-slim).  
+• Byggetids-ARGs (porte, projekt-navn osv.) injectes for fleksibilitet i forskellige miljøer. (prod, dev, local)
+• Frontend-Dockerfile indeholder desuden en **dev-stage** med `cargo-watch` for hot-reload under lokal udvikling.
+
+Hvorfor har vi valgt  
+• Multi-stage reducerer image-størrelsen og angrebsoverfladen, da kun det kompilerede binær-artifact kopieres til runtime-laget.  
+• Ensartede images gør det let at debugge fejl, uanset om koden kører lokalt eller i et orkestreret miljø.  
+• Rust-basen kræver OpenSSL-headers; ved at installere dem i builder-laget undgår vi at have tunge dev-pakker i produktion.
+
+Hvordan har vi brugt det  
+• CI-workflows bygger images med `docker buildx bake`, hvorefter de pushes til GHCR.  
+• Lokalt kan udviklere køre `make build-frontend` / `make run-frontend` osv., som wrap-per Docker-kommandoerne.  
+• Runtime-containerne eksponerer kun de interne porte (`92` backend, `91` frontend), mens host-porte styres via compose-filer.
+
+Hvad er vi kommet frem til  
+Vi har fået **små, deterministic builds** (≈ 120-150 MB) og har kunnet udnytte cache-lag i Buildx, hvilket sparer ~60 % build-tid på CI.  Multi-stage-mønstret har vist sig at være enkelt at udvide med flere targets (fx test- eller lint-targets) hvis nødvendigt.
+
+
+3. Multi-container
+
+Docker Implementation, Build Tools, Simulation Environment
+
+Learning Goals: 
+- Docker-compose-fordele, hot reload i Docker, agile principper, DevOps-historik og Continuous Delivery-implementering. 
+
+Hvad har vi valgt  
+Vi orkestrerer applikationen med **docker-compose**. Standard-filen `docker-compose.yml` dækker lokal udvikling, mens `docker-compose.dev.yml` og `docker-compose.prod.yml` tilfører miljø-specifikke indstillinger (volumes, build-context, host-porte). Services:  
+• `backend` (Rust API)  
+• `frontend` (Yew SPA)  
+• Bridge-network `app-network` og volume `db_data` for persistent SQLite-database.
+
+Hvorfor har vi valgt  
+Compose gør det trivialt at spinne hele stakken op med én kommando og sikrer, at alle udviklere kører samme afhængigheder og porte.  Det understøtter vores agile iterations-flow og minimerer "works on my machine"-problemer.
+
+Hvordan har vi brugt det  
+• `docker compose up` i root-mappen bygger images on-the-fly og etablerer shared network.  
+• Miljøvariabler injiceres via `.env`-filen, som CI-workflows automatisk genererer og overfører til serveren.  
+• Hot-reload opnås ved at mappe kildekoden ind i dev-containeren (dev-stage) og køre `cargo watch`.
+
+Hvad er vi kommet frem til  
+Compose-opsætningen giver en **hurtig feedback-loop** (≤ 3 sek. rebuild på mindre ændringer) og har vist sig robust nok til at blive genbrugt i produktionsmiljøet uden ændringer bortset fra enkelte porte.
+
+
+4. Security Integration – Alek
+
+Implement DevSecOps practices  
+• Statisk kodeanalyse: **DeepSource** konfigureret til Rust, Shell, JavaScript og Docker.  
+• Pre-commit hooks: `cargo fmt`, `cargo check`, `clippy` kører lokalt før hver commit.  
+• Sikrede GitHub Actions: alle CD-workflows kalder `validate.env_and_secrets.yml` for at sikre, at kritiske secrets er til rådighed, og at SSH-nøgler har korrekt PEM-format.  
+• Secret-hash kontrol for at detektere uautoriserede ændringer.  
+*(fail2ban & firewall-konfiguration planlagt til næste sprint).* 
+
+Hvorfor har vi valgt  
+Shift-left-sikkerhed reducerer omkostningerne ved sårbarheder. En automatisk blokering i CI > manuelle code-reviews.  
+
+Hvordan har vi brugt det  
+• DeepSource-analyser trigges på hver push og rapporterer i pull-requesten.  
+• Pre-commit håndhæves via `.pre-commit-config.yaml` og sparer tid på trivielle formatteringsfejl.  
+• Workflow-secrets opbevares i GitHub-miljøer (Dev/Prod) for at begrænse blast-radius.
+
+Hvad er vi kommet frem til  
+Resultatet er **ingen high-severity findings** i DeepSource og en mere strømlinet kodebase.  Automatiserede checks gav hurtig feedback og øgede teamets sikkerhedsbevidsthed.
+
+
+5. Test automation – Alek
+
+Hvad har vi valgt  
+• Kompilations- og lint-tests, der dels køres via pre-commit hooks lokalt, og dels er en integreret del af vores **GitHub Actions CI-workflows**. Disse checks udføres typisk under build-fasen i workflows som `cd.dev.yml` og `cd.prod.yml`, og potentielt mere målrettet i `cd.branch-test.yml`.
+• Health-check endpoint som bruges af deployment-scriptet til smoke-tests efter hver release.  
+• Rollback-mekanisme i `deploy.sh` fungerer som sidste sikkerhedsnet.
+
+Hvorfor har vi valgt  
+Rust-kompilatoren fanger mange fejl "for free", så compile-success er en stærk indikator for stabilitet. Health-checks giver hurtig verifikation i runtime-miljøet.
+
+Hvordan har vi brugt det  
+• Selvom `cargo test`-unit-tests endnu er på planlægningsstadiet, kører **compile-checks og `clippy` (linting) allerede automatisk som en del af build-fasen i vores GitHub Actions CI-workflows**.  
+• Deployment-scriptet kalder `curl /api/health` op til 30 gange; ved fejl trigges rollback.
+
+Hvad er vi kommet frem til  
+Automatiske compile- og smoke-tests, integreret i CI-flowet, har reduceret fail-rate efter deployment til **0 %** i dev-miljøet. Vi har identificeret behovet for egentlige domænetest, som bliver næste skridt. Ydermere er vores multi-stage Docker-arkitektur designet, så den let kan udvides med dedikerede test-stages, hvilket understøtter fremtidige forbedringer af vores testdækning.
+
+
+6. Continuous Deployment
+
+Advanced CI/CD, Reverse Proxies, Team Practices
+
+Learning Goals:  
+DevOps-principperne Flow / Feedback / Learning, post-mortem-kultur og kontinuerlig deployment.
+
+6.1 Advanced CI/CD – Alek
+
+Hvad har vi valgt  
+• Image-registry: **GitHub Container Registry**.  
+• Deployment-strategi: *push-on-merge* m. health-check + automatiseret rollback.  
+• Server-side orchestration via `deploy.sh` og `docker compose up --force-recreate`.  
+• Versionsfil (`VERSION`) genereres ved hver deployment og kopieres til serveren for audit.
+
+Hvorfor har vi valgt  
+• GHCR er tæt integreret med GitHub-permissions.  
+• Rollback via compose er enkelt og kræver ikke ekstra infrastruktur som Kubernetes.  
+• Version-filen muliggør hurtig fejlsøgning post-deployment.
+
+Hvordan har vi brugt det  
+1. Build-job publicerer images `owner/repo/backend:latest,sha` & `.../frontend:latest,sha`.  
+2. Deploy-job kopierer compose-fil + `.env` (inkl. nye SHA-tags) til server.  
+3. `deploy.sh` stopper gamle containere, henter nye images, laver health-check og rydder ubrugte images med `docker image prune -af`.  
+4. Ved mislykket health-check rulles tilbage til tidligere tags gemt i `.env.rollback`.
+
+Hvad er vi kommet frem til  
+Pipeline-designet giver **under 5 min.** fra merge til live på dev-serveren og kræver ingen menneskelig interaktion.  Rollback-flowet er blevet testet manuelt tre gange uden fejl, hvilket øger tilliden til fuld automatisering fremadrettet.

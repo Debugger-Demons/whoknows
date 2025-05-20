@@ -1,0 +1,768 @@
+DevOps – Debugger Demons 
+
+https://github.com/Debugger-Demons/whoknows/blob/feat/documentation-improving/docs/devops/DevOps_Checklist.md 
+
+ 
+
+2. Conventions and organization - Jafar 
+
+(ref: https://github.com/Debugger-Demons/whoknows/blob/development/docs/devops/DevOps_Checklist.md#week-2-rest-api-openapi-dotenv) 
+
+Hvad har vi valgt 
+Vi har valgt at følge nogle faste konventioner og organiseringsprincipper i vores projekt. Det inkluderer: 
+
+Git-konventioner (branching, commit-beskeder, navngivning) 
+
+Brug af .gitignore til at undgå uønskede filer i versionering 
+
+RESTful API-design og brug af OpenAPI til dokumentation 
+
+Brug af Postman til API-tests 
+
+Organisering af arbejdet i GitHub Projects med Kanban-board 
+
+Miljøvariabler via .env-filer 
+
+ 
+
+Hvorfor har vi valgt 
+Formålet med at bruge konventioner og en tydelig struktur var at gøre samarbejdet mere effektivt og undgå misforståelser. Ved at følge fælles regler for navngivning og struktur kunne vi nemmere forstå hinandens kode og undgå fejl. 
+
+Hvordan har vi brugt det 
+
+Vi navngav vores branches efter formålet: feat/, bugfix/, hotfix/, docs/, og release/. 
+
+Commit-beskeder skulle være tydelige og forklare hvorfor en ændring blev lavet. 
+
+.gitignore blev konfigureret til at udelukke filer som .env, IDE-indstillinger og build-artifacts. 
+
+API'et blev dokumenteret med OpenAPI-specifikationer og testet med Postman. 
+
+GitHub Projects blev sat op som Kanban-board til at holde styr på opgaver og PRs 
+
+Vi brugte .env-filer til at håndtere miljøvariabler som fx hemmelige koder og følsomme oplysninger, så de ikke blev uploadet til GitHub 
+
+Hvad er vi kommet frem til 
+Vi har oplevet, at det var en stor hjælp at have klare konventioner og en fast struktur i projektet. Det gjorde det nemmere at samarbejde, fordi vi vidste, hvordan tingene skulle gøres, og hvad vi kunne forvente af hinandens arbejde. 
+
+Det gav os også en mere professionel måde at arbejde på, og det gjorde projektet lettere at holde styr på. Vi har lært, hvor vigtigt det er med en god struktur, både for at holde kvaliteten oppe og for at undgå forvirring i gruppen. 
+
+ 
+
+Git and Conventions 
+
+ Implement proper branching strategy 
+
+ Set up consistent commit message format 
+
+ Apply proper naming conventions 
+
+ Set up .gitignore for files not to push 
+
+ API Modernization 
+
+ Generate OpenAPI specification from legacy app 
+
+ Test API with Postman 
+
+ Design RESTful API endpoints 
+
+ Make OpenAPI spec available in project 
+
+ Project Organization 
+
+ Set up Kanban board with GitHub Projects 
+
+Kanban board automation with PR, Issues 
+
+ Choose framework for rewrite 
+
+ Begin rewriting the project 
+
+ Configure environment variables with .env 
+
+Learning Goals: Proper version control practices, file management, naming conventions, OpenAPI understanding, environment variable usage. 
+
+ 
+
+ 
+
+ 
+
+ 
+ 
+
+ 
+
+3. Cloud deployment - (Kevin & Alek) 
+
+(Ref: 
+
+wk 3: https://github.com/Debugger-Demons/whoknows/blob/development/docs/devops/DevOps_Checklist.md#week-3-cloud-azure-deployment) 
+
+Actions, Cloud infrastructure, Initial deployment 
+
+ 
+
+3.1 GitHub Actions – CD - Alek 
+
+Hvad har vi valgt 
+
+Et komplet sæt af GitHub Actions-workflows, bl.a. validate.env_and_secrets.yml, cd.dev.yml, cd.prod.yml, cd.branch-test.yml, release.yml og verify-secret-hash.yml. 
+
+Workflows til både CI (build, test og statisk analyse) og CD (build & push Docker-images til GHCR og efterfølgende server-deployment via SSH). 
+
+Hvorfor har vi valgt 
+
+Automatisering sikrer, at alle commits bygges og testes på samme måde – "build once, run anywhere". 
+
+Workflows med miljø-specifikke secrets giver en sikker adskillelse mellem udviklings- og produktionsmiljøer. 
+
+Automatisk deployment reducerer "lead time to production" og understøtter Continuous Delivery-principperne. 
+
+Hvordan har vi brugt det 
+
+På pull-request merge til development køres cd.dev.yml, som 
+
+bygger backend- og frontend-images med Docker Buildx, 
+
+pusher dem til GitHub Container Registry (tags: latest + SHA-tag), 
+
+kopierer docker-compose.dev.yml, .env, VERSION, nginx-konfiguration og shell-scripts til dev-serveren via scp, 
+
+eksekverer deploy.sh over SSH for at starte/stage containerne. 
+
+• På merge til main udfører cd.prod.yml det samme flow mod produktionsserveren. 
+
+• validate.env_and_secrets.yml kaldes fra alle CD-workflows for at sikre, at nødvendige secrets (.env, SSH-nøgler, GHCR-token) er til stede og korrekt formatteret før jobbet fortsætter. 
+
+• release.yml opretter automatisk GitHub-releases baseret på tags og genererer changelog. 
+
+• verify-secret-hash.yml giver en manuel måde at måle checksum på hemmelige filer og dokumentere hash-værdien i pipeline-loggen. 
+
+Hvad er vi kommet frem til 
+
+Workflows har givet et reproducerbart, audit-venligt og hurtigt deployments-flow.  
+Fejl fanges tidligt (fx manglende secrets), og teamet slipper for manuelle skridt. Erfaringen har vist, at små, deklarative workflows er lettere at vedligeholde end store monolitiske scripts. 
+
+ 
+
+ 
+
+3.2 Cloud infrastructure - kevin 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+3.3 Initial deployment - kevin 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+ 
+
+4. Software Quality, Linting, CI - (Kevin & Jafar) 
+
+ref: https://github.com/Debugger-Demons/whoknows/blob/development/docs/devops/DevOps_Checklist.md#week-4-software-quality-linting-ci 
+
+Code Quality Tools, Branching Strategy, Continuous Integration 
+
+Learning Goals: Software quality measurement, technical debt prevention, linting benefits, CI/CD pipeline implementation, branching strategies. 
+
+ 
+4.1 Code Quality Tools,  - kevin 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+4.2 Branching Strategy,  - Jafar 
+
+(https://github.com/Debugger-Demons/whoknows/blob/3e293516721f8052f2563391e26808ecc052d1c0/docs/devops/mandatoryI/branchstrategy/gitflow.md) 
+
+Hvad har vi valgt 
+Vi har valgt at benytte Gitflow som vores branching strategy. 
+
+Hvorfor har vi valgt 
+Vi valgte Gitflow, fordi nogle af gruppens medlemmer allerede havde erfaring med det, hvilket gjorde det nemmere at komme i gang.  
+Gitflow gør det nemt at adskille forskellige arbejdsmiljøer, som udvikling og produktion, ved at bruge forskellige branches. Det gør det lettere at styre, hvad der er klar til test, og hvad der er klar til at blive udgivet. 
+
+Hvordan har vi brugt det 
+Vi har organiseret vores arbejde i branches med navngivning baseret på formålet: 
+
+feat/ til nye features 
+
+bugfix/ til fejlrettelser 
+
+hotfix/ til kritiske rettelser 
+
+docs/ til dokumentation 
+
+release/ til release-forberedelse 
+
+Hver gang en ny task skulle laves, blev der oprettet en branch med det passende prefix. Når tasken var færdig, blev der lavet et Pull Request(PR), som skulle beskrive formålet med ændringen, og godkendes af et andet gruppemedlem. Før merge skulle alle automatiske tests og CI-checks være bestået. 
+ 
+Derudover fulgte vi nogle grundlæggende Git-principper som at skrive tydelige commit-beskeder, slette branches efter merge og sikre, at koden var formateret korrekt med Rust-standarder og Clippy. Vi brugte også en PR-template, hvor man skulle linke til relevante issues og beskrive ændringernes formål. 
+
+Hvad er vi kommet frem til 
+
+Vi har oplevet, at Gitflow har givet os en god struktur og har gjort samarbejdet mere effektivt og overskueligt. Det var især en fordel, at vi kunne arbejde parallelt uden at konflikte, 
+Vi havde en klar måde at få vores kode ud i produktion på. Det gjorde også, at kvaliteten blev bedre, fordi vi fulgte nogle enkle regler, og der blev tjekket automatisk for fejl, inden vi kunne merge koden 
+ 
+
+4.3 Continuous Integration - kevin 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+5. Docker, The Simulation - (Alek & Mazlum) 
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-5-docker-the-simulation 
+
+Docker Implementation, Build Tools, Simulation Environment 
+
+ 
+
+ 
+
+5.1 Docker Implementation – Alek 
+
+https://github.com/Debugger-Demons/whoknows/blob/b93a8f45d208c5877e1b51b9af0bf5551f815fa4/docs/rapport/rapport.txt 
+
+Dockerfiles (ikke avanceret docker-compose) 
+
+  - frontend/Dockerfile 
+
+  - backend/Dockerfile 
+
+Hvad har vi valgt 
+
+• Begge services bruger multi-stage Dockerfiles med en builder (rust:1.81) og en runtime (debian:bookworm-slim). 
+
+• Byggetids-ARGs (porte, projekt-navn osv.) injectes for fleksibilitet i forskellige miljøer. (prod, dev, local) • Frontend-Dockerfile indeholder desuden en dev-stage med cargo-watch for hot-reload under lokal udvikling. 
+
+Hvorfor har vi valgt 
+
+• Multi-stage reducerer image-størrelsen og angrebsoverfladen, da kun det kompilerede binær-artifact kopieres til runtime-laget. 
+
+• Ensartede images gør det let at debugge fejl, uanset om koden kører lokalt eller i et orkestreret miljø. 
+
+• Rust-basen kræver OpenSSL-headers; ved at installere dem i builder-laget undgår vi at have tunge dev-pakker i produktion. 
+
+Hvordan har vi brugt det 
+
+• CI-workflows bygger images med docker buildx bake, hvorefter de pushes til GHCR. 
+
+• Lokalt kan udviklere køre make build-frontend / make run-frontend osv., som wrap-per Docker-kommandoerne. 
+
+• Runtime-containerne eksponerer kun de interne porte (92 backend, 91 frontend), mens host-porte styres via compose-filer. 
+
+Hvad er vi kommet frem til 
+
+Vi har fået små, deterministic builds (≈ 120-150 MB) og har kunnet udnytte cache-lag i Buildx, hvilket sparer ~60 % build-tid på CI. Multi-stage-mønstret har vist sig at være enkelt at udvide med flere targets (fx test- eller lint-targets) hvis nødvendigt. 
+
+ 
+
+ 
+
+5.2 Build Tools - Mazlum 
+
+Makefiles, bash scripts (?) 
+
+Hvad har vi valgt 
+Anvendelse af sprogspecifikke build-værktøjer, primært cargo for Rust-backendet. Brug af Makefile og potentielt bash scripts til at orkestrere og simplificere bygge- og kørselskommandoer, især i forbindelse med Docker. 
+
+Hvorfor har vi valgt 
+cargo er standard build-system og package manager for Rust og tilbyder robuste funktioner til kompilering, test, dependency management, m.m. Makefile tillader definition af genbrugelige kommandoer, der kan simplificere komplekse Docker-operationer og sikre konsistens på tværs af udviklermiljøer og CI. 
+
+Hvordan har vi brugt det 
+cargo build, cargo run, cargo test, cargo clippy, cargo fmt blev brugt intensivt under udviklingen af backend. Makefile indeholder targets som make build-frontend, make run-frontend (som nævnt i 5.1), der internt kalder de nødvendige Docker- og cargo-kommandoer. Dette abstraherer detaljerne væk og gør det nemmere at bygge og køre de forskellige services. 
+
+Hvad er vi kommet frem til 
+Kombinationen af cargo og Makefile har givet os et effektivt og fleksibelt build-system. cargo sikrer korrekt håndtering af Rust-projektet, mens Makefile tilbyder et bekvemt lag til at styre Docker-relaterede opgaver og andre udviklingsscripts. 
+
+ 
+
+ 
+
+6. Docker-compose, CD, Agile, DevOps - (Alek & Mazlum)  
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-6-docker-compose-cd-agile-devops 
+
+Docker Implementation, Build Tools, Simulation Environment 
+
+Learning Goals: 
+
+ Docker-compose benefits, hot reload in Docker, agile principles, DevOps history and concepts, Continuous Delivery implementation. 
+
+ 
+
+ 
+
+6.1 Multi-container Setup - Alek 
+
+Hvad har vi valgt 
+Vi orkestrerer applikationen med docker-compose. Standard-filen docker-compose.yml dækker lokal udvikling, mens docker-compose.dev.yml og docker-compose.prod.yml tilfører miljø-specifikke indstillinger (volumes, build-context, host-porte). Services: 
+
+• backend (Rust API) 
+
+• frontend (Yew SPA) 
+
+• Bridge-network app-network og volume db_data for persistent SQLite-database. 
+
+Hvorfor har vi valgt 
+Compose gør det trivialt at spinne hele stakken op med én kommando og sikrer, at alle udviklere kører samme afhængigheder og porte. Det understøtter vores agile iterations-flow og minimerer "works on my machine"-problemer. 
+
+Hvordan har vi brugt det 
+• docker compose up i root-mappen bygger images on-the-fly og etablerer shared network. 
+
+• Miljøvariabler injiceres via .env-filen, som CI-workflows automatisk genererer og overfører til serveren. 
+
+• Hot-reload opnås ved at mappe kildekoden ind i dev-containeren (dev-stage) og køre cargo watch. 
+
+Hvad er vi kommet frem til 
+Compose-opsætningen giver en hurtig feedback-loop (≤ 3 sek. rebuild på mindre ændringer) og har vist sig robust nok til at blive genbrugt i produktionsmiljøet uden ændringer bortset fra enkelte porte. 
+
+ 
+
+ 
+
+6.2 Continuous Delivery  
+
+Hvad har vi valgt 
+Implementering af Continuous Delivery (CD) gennem automatiserede GitHub Actions workflows, der bygger, tester og deployer applikationen til forskellige miljøer (dev, prod) ved merge til respektive branches. 
+
+Hvorfor har vi valgt 
+CD automatiserer release-processen, hvilket reducerer manuelt arbejde, minimerer risikoen for menneskelige fejl og sikrer, at ny kode hurtigt og pålideligt kan leveres til brugerne eller testmiljøer. Dette understøtter en agil udviklingsproces. 
+
+Hvordan har vi brugt det 
+GitHub Actions workflows (cd.dev.yml, cd.prod.yml) er konfigureret til at: 
+1. Bygge Docker images for frontend og backend. 
+2. Pushe images til GitHub Container Registry (GHCR). 
+3. Kopiere nødvendige filer (docker-compose, .env, VERSION, scripts) til målserveren (dev/prod) via scp. 
+4. Eksekvere et deploy.sh script via SSH på serveren, som håndterer docker compose up, health checks og potentiel rollback. 
+Workflow-strategier inkluderer triggers på merge til development for dev-deployment og merge til main for prod-deployment. 
+
+Hvad er vi kommet frem til 
+Vi har en robust Continuous Delivery-pipeline, der automatiserer deployment-processen fra kode-commit til kørende applikation på serveren. Dette har markant forbedret deployment-hastigheden og -pålideligheden og understøtter principperne for "build once, run anywhere". 
+
+ 
+
+6.3 DevOps Practices - Mazlum 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+ 
+
+7. DevOps (guest lecturer) - Mazlum 
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-7-guest-lecture---eficode 
+
+DevOps Culture, DevOps Assessment 
+
+Learning Goals: 
+
+DevOps history and evolution, organizational problem-solving, psychological safety, pipeline execution optimization. 
+
+ 
+
+7.1 DevOps Culture 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+7.2 DevOps Assessment 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+8. Continuous Deployment  
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-8-continuous-deployment 
+
+Advanced CI/CD, Reverse Proxies, Team Practices 
+
+Learning Goals: 
+
+DevOps definitions and principles, Flow/Feedback/Learning, postmortem importance, continuous deployment methods. 
+
+ 
+
+8.1 Advanced CI/CD - Alek  
+
+Hvad har vi valgt 
+
+• Image-registry: GitHub Container Registry. 
+
+• Deployment-strategi: push-on-merge m. health-check + automatiseret rollback. 
+
+• Server-side orchestration via deploy.sh og docker compose up --force-recreate. 
+
+• Versionsfil (VERSION) genereres ved hver deployment og kopieres til serveren for audit. 
+
+Hvorfor har vi valgt 
+
+• GHCR er tæt integreret med GitHub-permissions. 
+
+• Rollback via compose er enkelt og kræver ikke ekstra infrastruktur som Kubernetes. 
+
+• Version-filen muliggør hurtig fejlsøgning post-deployment. 
+
+Hvordan har vi brugt det  
+
+Build-job publicerer images owner/repo/backend:latest,sha & .../frontend:latest,sha.  
+
+Deploy-job kopierer compose-fil + .env (inkl. nye SHA-tags) til server.  
+
+deploy.sh stopper gamle containere, henter nye images, laver health-check og rydder ubrugte images med docker image prune -af.  
+
+Ved mislykket health-check rulles tilbage til tidligere tags gemt i .env.rollback. 
+
+Hvad er vi kommet frem til 
+
+Pipeline-designet giver under 5 min. fra merge til live på dev-serveren og kræver ingen menneskelig interaktion. Rollback-flowet er blevet testet manuelt tre gange uden fejl, hvilket øger tilliden til fuld automatisering fremadrettet. 
+
+ 
+
+8.2 Reverse Proxies –  
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+8.3 Team Practices - Mazlum	 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+ 
+
+9. Testing, Security - 
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-9-testing-security 
+
+Security Integration, TLS Configuration, Test Automation 
+
+Learning Goals: 
+
+DevSecOps mentality, security testing types, Docker security scanning, continuous testing, shift-left vs shift-right testing. 
+
+ 
+
+9.1 Security Integration – Alek 
+
+Implement DevSecOps practices 
+
+ Set up fail2ban 
+
+ Configure firewall for Docker 
+
+ Secure GitHub Actions workflows 
+
+(fail2ban & firewall-konfiguration  lavet ? (til @Kevin) 
+
+Implement DevSecOps practices 
+
+• Statisk kodeanalyse: DeepSource konfigureret til Rust, Shell, JavaScript og Docker. 
+
+• Pre-commit hooks: cargo fmt, cargo check, clippy kører lokalt før hver commit. 
+
+• Sikrede GitHub Actions: alle CD-workflows kalder validate.env_and_secrets.yml for at sikre, at kritiske secrets er til rådighed, og at SSH-nøgler har korrekt PEM-format. 
+
+• Secret-hash kontrol for at detektere uautoriserede ændringer. 
+
+Hvorfor har vi valgt 
+
+Shift-left-sikkerhed reducerer omkostningerne ved sårbarheder. En automatisk blokering i CI > manuelle code-reviews.  
+
+Hvordan har vi brugt det 
+
+• DeepSource-analyser trigges på hver push og rapporterer i pull-requesten. 
+
+• Pre-commit håndhæves via .pre-commit-config.yaml og sparer tid på trivielle formatteringsfejl. 
+
+• Workflow-secrets opbevares i GitHub-miljøer (Dev/Prod) for at begrænse blast-radius. 
+
+Hvad er vi kommet frem til 
+
+Resultatet er ingen high-severity findings i DeepSource og en mere strømlinet kodebase. Automatiserede checks gav hurtig feedback og øgede teamets sikkerhedsbevidsthed. 
+
+ 
+
+9.2 TLS Configuration 
+
+ 
+
+9.3 Test automation – Alek  
+
+Hvad har vi valgt 
+
+• Kompilations- og lint-tests, der dels køres via pre-commit hooks lokalt, og dels er en integreret del af vores GitHub Actions CI-workflows. Disse checks udføres typisk under build-fasen i workflows som cd.dev.yml og cd.prod.yml, og potentielt mere målrettet i cd.branch-test.yml. • Health-check endpoint som bruges af deployment-scriptet til smoke-tests efter hver release. 
+
+• Rollback-mekanisme i deploy.sh fungerer som sidste sikkerhedsnet. 
+
+Hvorfor har vi valgt 
+
+Rust-kompilatoren fanger mange fejl "for free", så compile-success er en stærk indikator for stabilitet. Health-checks giver hurtig verifikation i runtime-miljøet. 
+
+Hvordan har vi brugt det 
+
+• Selvom cargo test-unit-tests endnu er på planlægningsstadiet, kører compile-checks og clippy (linting) allerede automatisk som en del af build-fasen i vores GitHub Actions CI-workflows. 
+
+• Deployment-scriptet kalder curl /api/health op til 30 gange; ved fejl trigges rollback. 
+
+Hvad er vi kommet frem til 
+
+Automatiske compile- og smoke-tests, integreret i CI-flowet, har reduceret fail-rate efter deployment til 0 % i dev-miljøet. Vi har identificeret behovet for egentlige domænetest, som bliver næste skridt. Ydermere er vores multi-stage Docker-arkitektur designet, så den let kan udvides med dedikerede test-stages, hvilket understøtter fremtidige forbedringer af vores testdækning. 
+
+ 
+
+ 
+
+10. Databases, ORM, Data Scraping 
+
+ 
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-10-databases-orm-data-scraping 
+
+Databases, ORM, Data Scraping 
+
+Learning Goals: 
+
+Database selection criteria, ORM usage considerations, migration vs seeding, web scraping vs crawling, ethical scraping practices. 
+
+ 10.1 Database Management  
+
+ Implement database migrations 
+
+ Set up indexing for better performance 
+
+ Create database backup procedures 
+
+ Dumping and Backup directory 
+
+ Document database structure 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+10.2 ORM Implementation 
+
+ Choose appropriate ORM based on needs 
+
+ Set up data access layer 
+
+ Configure connection pooling 
+
+ 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+10.3 Web Scraping 
+
+ Implement data collection framework 
+
+ Set up proper scraping practices 
+
+ Enable search functionality with collected data 
+
+ 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+ 
+
+ 
+
+11: Searching, Logging, Monitoring - Mazlum 
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-11-searching-logging-monitoring 
+
+Search Functionality, Logging, Monitoring 
+
+Learning Goals: 
+
+Search indexing principles, logging vs monitoring differences, monitoring in DevOps, push vs pull monitoring, monitoring architecture. 
+
+ 11.1 Search Functionality  
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+11.2 Logging System  
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+11.3 Monitoring Setup 
+
+ 
+
+Hvad har vi valgt 
+
+Hvorfor har vi valgt 
+
+Hvordan har vi brugt det 
+
+Hvad er vi kommet frem til 
+
+ 
+
+ 
+
+12: Infrastructure as Code  
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-12-infrastructure-as-code-iac 
+
+Search Functionality, Logging, Monitoring 
+
+Learning Goals: 
+
+IaC purpose and benefits, IaC vs Configuration Management differences, Terraform basics, declarative vs imperative approaches. 
+
+ 12.1 IaC Implementation 
+
+ 
+
+12.2 Configuration Management 
+
+ 
+
+ 
+
+12.3 Accessibility 
+
+ 
+
+ 
+
+ 
+
+ 
+
+13. Deployment Strategies, Orchestration, Maintenance 
+
+ref: https://github.com/Debugger-Demons/whoknows/tree/development/docs/devops#week-13-deployment-strategies-orchestration-maintenance 
+
+Advanced Deployment, Container Orchestration, Maintenance Procedures 
+
+Learning Goals: 
+
+Advanced deployment strategies, container orchestration, maintenance procedures, incident response. 
+
+ 
+
+ 13.1 Advanced Deployment 
+
+ 
+
+13.2 Container Orchestration 
+
+ 
+
+ 
+
+13.3 Maintenance Procedures 
+
+ 
+
+ 
+
+ 
