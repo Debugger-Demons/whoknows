@@ -34,7 +34,6 @@ For a detailed week-by-week implementation status, see the [DevOps Implementatio
 
 | Tool | Purpose | Documentation |
 |------|---------|---------------|
-
 | GitHub Actions | CI/CD | [GitHub Actions](github-actions.md) |
 | Docker | Containerization | [Docker Documentation](./docker/docker.md) |
 | Monitoring | | [Monitoring documentation](./monitoring/setup.md) |
