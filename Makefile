@@ -5,6 +5,7 @@
 GH_REPO := Debugger-Demons/whoknows
 GH_PROJECT := whoknows-kanban
 GH_ASSIGNEE := @me
+PR_ASSIGNEE := $(shell gh api user --jq .login)
 ISSUE_TITLE_PREFIX := "[DEV]: "
 
 # Allow shorthands for issue creation: t for TITLE_DESC, f for BODY_FILE
@@ -81,7 +82,6 @@ env-update:
 
 # === Pull Request Creation ===
 
-PR_ASSIGNEE := $(shell gh api user --jq .login)
  
 # Create a pull request with the updated env secrets
 # -> This assumes you have a branch already created for the changes
