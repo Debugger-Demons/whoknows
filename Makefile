@@ -73,8 +73,9 @@ build-backend:
 
 env-update:
 	@echo "Updating prod and dev .env secrets..."
-	@gh secret set PROD_ENV_FILE < .env.production
+	@gh secret set PROD_ENV_FILE < .env
 	@gh secret set DEV_ENV_FILE < .env.development
+	@gh secret set BRANCH_TEST_ENV_FILE < .env.branch-test
 	@echo "Secrets updated successfully!"
 
 # === Pull Request Creation ===
