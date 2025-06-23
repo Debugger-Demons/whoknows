@@ -15,7 +15,7 @@
 
   After the images has been put in a container we show our result for local changes
 
-  We can add small changes such as changing the CSS in the background of the applicaiton
+  We can add small changes such as changing the CSS in the background of the application
 
 ## Branch test workflow
 
