@@ -1,5 +1,5 @@
 services:
-  backend:.
+  backend:
     container_name: whoknows.local.backend
     env_file:
       - .env
