@@ -435,6 +435,7 @@ web_modules/
 .env.test.local
 .env.production.local
 .env.local
+!.env.template
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -529,4 +530,3 @@ package.json
 .roo/rules-debug/debug-rules
 .roo/rules-test/test-rules
 scripts/example_prd.txt
-
