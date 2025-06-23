@@ -15,7 +15,8 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 # Declare targets that don't represent files
 .PHONY: help update-env-secrets update-env-vars pr-create i-create \
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
-	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend
+	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend \
+	pr-update-env
 
 # === Compose Management ===
 run-compose: 
@@ -80,11 +81,26 @@ env-update:
 
 # === Pull Request Creation ===
 
+PR_ASSIGNEE := $(shell gh api user --jq .login)
+ 
 # Create a pull request with the updated env secrets
 # -> This assumes you have a branch already created for the changes
-pr-create: env-update
+pr:
 	@echo "Creating pull request..."
-	@gh pr create
+	@gh pr create \
+	-a $(PR_ASSIGNEE) \
+	-p "whoknows-kanban" \
+	-T PULL_REQUEST_TEMPLATE.md
+	@gh pr view --web
+	@echo "Pull request created successfully!"
+
+pr-update-env: env-update
+	@echo "Creating pull request..."
+	@gh pr create \
+	-a $(PR_ASSIGNEE) \
+	-p "whoknows-kanban" \
+	-T PULL_REQUEST_TEMPLATE.md
+	@gh pr view --web
 	@echo "Pull request created successfully!"
 # === GitHub Issue Creation ===
 
