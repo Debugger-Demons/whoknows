@@ -25,7 +25,7 @@ env:
   SCP_CMD: scp -i ~/.ssh/id_rsa -P ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no
   # paths:
   ENV_FILE: .env.branch-test # production or development
-  DEPLOY_DIR: ./deployment/whoknows-test
+  DEPLOY_DIR: ./deployment/whoknows-branch-test
   FRONTEND_PATH: ./frontend
   BACKEND_PATH: ./backend
   DOCKER_COMPOSE_FILE: ./docker-compose.branch-test.yml # prod or dev
