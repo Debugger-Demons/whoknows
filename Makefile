@@ -14,7 +14,7 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 
 # === Phony Targets ===
 # Declare targets that don't represent files
-.PHONY: help update-env-secrets update-env-vars pr-create i-create \
+.PHONY: help update-env-secrets update-env-vars pr i-create \
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
 	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend \
 	pr-update-env
