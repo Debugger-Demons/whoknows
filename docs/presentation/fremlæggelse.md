@@ -21,8 +21,6 @@
 
 The purpose is to ensure the feature branches can pass the workflow as the final test when the feature has been declared done.
 
-Must be done using github CLI to show our template in the terminal.
-
 - Add the feature branch name in cd.branch-test.yml file
 - Push your changes to github, to activate the workflow
 - Once the workflow has passed, it means the feature branch is done
@@ -33,3 +31,14 @@ The purpose of the dev branch is to ensure all the new features can be merged to
 
 - After branch-test.yml make a merge pr to dev branch where you have added a small change
 - Merge the changes to the dev branch
+
+## Pull request
+
+Must be done using github CLI to show our template in the terminal.
+
+- Make small changes (frontend)
+- Write gh pr create -a (github username)
+- Choose the correct repository
+- Give it a title (You decide)
+- Choose a template (Choose ours)
+- Body means where you want to fill out your template. Press e to open notepad
