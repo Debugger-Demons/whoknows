@@ -28,7 +28,7 @@ env:
   DEPLOY_DIR: ./deployment/whoknows-test
   FRONTEND_PATH: ./frontend
   BACKEND_PATH: ./backend
-  DOCKER_COMPOSE_FILE: ./docker-compose.dev.yml # prod or dev
+  DOCKER_COMPOSE_FILE: ./docker-compose.branch-test.yml # prod or dev
   DEPLOY_SCRIPT: ./deployment/scripts/deploy.sh
   DOCKER_LOGIN_SCRIPT: ./deployment/scripts/docker-login.sh
 
@@ -169,7 +169,7 @@ jobs:
 
       - name: Transfer files to server
         run: |
-          SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}-test"
+          SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
 
           # mkdir
           ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}-test" 
