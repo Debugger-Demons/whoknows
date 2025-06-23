@@ -36,14 +36,14 @@ Must be done using github CLI to show our template in the terminal.
 - Choose a template (Choose ours)
 - Body means where you want to fill out your template. Press e to open notepad
 
-## Dev branch
+## Dev deployment
 
 The purpose of the dev branch is to ensure all the new features can be merged together, and add its functionalities.
 
 - After branch-test.yml make a merge pr to dev branch where you have added a small change
 - Merge the changes to the dev branch
 
-## DeepSource præsentation
+## DeepSource presentation
 
 The purpose is to demonstrate, and make DeepSource changes to our code.
 
