@@ -4,7 +4,6 @@ This document outlines the key differences and desired configurations for the Co
 
 ## Current State of CD Pipelines
 
-
 The table below reflects the **current configuration based on the actual workflow files as of the last review**. 
 It highlights how Production, Development, and Branch-Test pipelines are set up, including areas of overlap and potential conflict.
 
@@ -24,6 +23,7 @@ It highlights how Production, Development, and Branch-Test pipelines are set up,
 ## Desired State for Isolated CD Pipelines
 
 The following table outlines the target configuration to ensure all three pipelines can operate independently and safely on the same server. The `.env.*` files mentioned below are sourced from GitHub Secrets (`secrets.PROD_ENV_FILE`, `secrets.DEV_ENV_FILE`, `secrets.BRANCH_TEST_ENV_FILE`).
+
 
 | Feature                                              | Production Pipeline (`cd.prod.yml`)                                 | Development Pipeline (`cd.dev.yml`)                                 | Branch-Test Pipeline (`cd.branch-test.yml`)                                                               |
 | :--------------------------------------------------- | :------------------------------------------------------------------ | :------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------- |
@@ -122,6 +122,7 @@ Beyond `COMPOSE_PROJECT_NAME`, the following components are crucial for ensuring
 *   **Isolation Impact:** The `deploy.sh` script invokes `docker compose --env-file .env up ...`. Docker Compose reads the `docker-compose.yml` from the current directory. This file defines the service names, how they link, default port mappings (which can be overridden by the `.env`), and volume definitions. Ensuring it's the correct one for the environment is vital for the structural integrity of that deployment. For example, the production `docker-compose.yml` might have different resource limits or logging configurations than the development one.
 
 These components, working together, ensure that the `deploy.sh` script, when executed within a specific environment's deployment directory, manages only that environment's lifecycle without impacting others.
+
 
 The 'Internal Workflow Differentiation for `cd.branch-test.yml`' section further below describes the *target state modifications* needed for the Branch-Test pipeline to achieve full isolation and prevent it from overwriting other environments.
 
