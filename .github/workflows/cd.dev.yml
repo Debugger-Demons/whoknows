@@ -17,7 +17,7 @@ env:
   SERVER_USER: ${{ secrets.DEV_SERVER_USER }} # deployer
   SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }} # IP or domain
   SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }} # 22 ssh port, 10222
-  DATABASE_URL: ${{ secrets.DB_PATH}}
+  DATABASE_URL: ${{ secrets.DB_PATH_DEV}}
   # SSH:
   SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }} # private key for SSH access
   ENV_FILE_CONTENT: ${{ secrets.DEV_ENV_FILE }} # .env file loaded content
@@ -26,7 +26,7 @@ env:
   SCP_CMD: scp -i ~/.ssh/id_rsa -P ${{ secrets.DEV_SERVER_PORT }} -o StrictHostKeyChecking=no
   # paths:
   ENV_FILE: .env.development # production or development
-  DEPLOY_DIR: ./deployment/whoknows
+  DEPLOY_DIR: ./deployment/whoknows-dev
   FRONTEND_PATH: ./frontend
   NGINX_FILE_PATH: ./frontend/nginx.conf
   BACKEND_PATH: ./backend
@@ -78,8 +78,8 @@ jobs:
       contents: read # permission to read the repository contents
       packages: write # permission to write to the GitHub Container Registry (GHCR)
     outputs:
-      backend_image_sha: ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend:${{ steps.image_tags.outputs.tag_sha }} # backend container image sha tag
-      frontend_image_sha: ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend:${{ steps.image_tags.outputs.tag_sha }} # frontend container image sha tag
+      backend_image_sha: ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend-dev:${{ steps.image_tags.outputs.tag_sha }} # backend container image sha tag
+      frontend_image_sha: ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend-dev:${{ steps.image_tags.outputs.tag_sha }} # frontend container image sha tag
 
     steps:
       - name: Checkout Repository
@@ -117,8 +117,8 @@ jobs:
           file: ${{ env.BACKEND_PATH }}/Dockerfile
           push: true # push true to push the image to the registry
           tags: |
-            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend:${{ steps.image_tags.outputs.tag_latest }}
-            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend:${{ steps.image_tags.outputs.tag_sha }}
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend-dev:${{ steps.image_tags.outputs.tag_latest }}
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/backend-dev:${{ steps.image_tags.outputs.tag_sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -129,8 +129,8 @@ jobs:
           file: ${{ env.FRONTEND_PATH }}/Dockerfile
           push: true
           tags: |
-            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend:${{ steps.image_tags.outputs.tag_latest }}
-            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend:${{ steps.image_tags.outputs.tag_sha }}
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend-dev:${{ steps.image_tags.outputs.tag_latest }}
+            ${{ env.GHCR_REGISTRY }}/${{ steps.lowercaser.outputs.image_base }}/frontend-dev:${{ steps.image_tags.outputs.tag_sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -156,6 +156,7 @@ jobs:
 
         # ------------------------------------------
 
+          # dos2unix - for windows line endings -> unix line endings
       - name: Install dos2unix
         run: sudo apt-get update && sudo apt-get install -y dos2unix
 
@@ -195,7 +196,7 @@ jobs:
           SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
 
           # mkdir
-          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}" 
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}-dev" 
 
           # scp directly to final names
           ${{ env.SCP_CMD }} ${{ env.DOCKER_COMPOSE_FILE }} ${SERVER_DEST_BASE}/docker-compose.yml

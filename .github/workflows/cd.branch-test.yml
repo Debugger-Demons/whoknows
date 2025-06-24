@@ -17,6 +17,7 @@ env:
   SERVER_USER: ${{ secrets.DEV_SERVER_USER }}
   SERVER_HOST: ${{ secrets.DEV_SERVER_HOST }}
   SERVER_PORT: ${{ secrets.DEV_SERVER_PORT }}
+  DATABASE_URL: ${{ secrets.DB_PATH_TEST}}
   # SSH:
   SSH_PRIVATE_KEY: ${{ secrets.DEV_SSH_PRIVATE_KEY }}
   ENV_FILE_CONTENT: ${{ secrets.BRANCH_TEST_ENV_FILE }}
