@@ -14,7 +14,7 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 
 # === Phony Targets ===
 # Declare targets that don't represent files
-.PHONY: help update-env-secrets update-env-vars pr i-create \
+.PHONY: help env-update pr i-create \
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
 	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend \
 	pr-update-env
@@ -82,26 +82,21 @@ env-update:
 
 # === Pull Request Creation ===
 
- 
-# Create a pull request with the updated env secrets
-# -> This assumes you have a branch already created for the changes
-pr:
+pr-create-core:
 	@echo "Creating pull request..."
-	@gh pr create \
-	-a $(PR_ASSIGNEE) \
-	-p "whoknows-kanban" \
+	@gh pr create \\
+	-a $(PR_ASSIGNEE) \\
+	-p "$(GH_PROJECT)" \\
 	-T PULL_REQUEST_TEMPLATE.md
 	@gh pr view --web
 	@echo "Pull request created successfully!"
 
-pr-update-env: env-update
-	@echo "Creating pull request..."
-	@gh pr create \
-	-a $(PR_ASSIGNEE) \
-	-p "whoknows-kanban" \
-	-T PULL_REQUEST_TEMPLATE.md
-	@gh pr view --web
-	@echo "Pull request created successfully!"
+# Create a pull request with the updated env secrets
+# -> This assumes you have a branch already created for the changes
+pr: pr-create-core
+
+pr-update-env: env-update pr-create-core
+
 # === GitHub Issue Creation ===
 
 # --- Main Issue Creation Target ---

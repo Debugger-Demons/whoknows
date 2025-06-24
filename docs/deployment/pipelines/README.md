@@ -30,7 +30,7 @@ The following table outlines the target configuration to ensure all three pipeli
 | **Triggering Event**                                 | *PR Merged* to `main` branch                                        | *PR Merged* to `development` branch                                 | *Push* to `<feat-branch>`                                                                                 |
 | **Base .env File Source (Secret Name)**              | `secrets.PROD_ENV_FILE`                                             | `secrets.DEV_ENV_FILE`                                              | `secrets.BRANCH_TEST_ENV_FILE`                                                                            |
 | **Effective .env on Runner (Filename)**              | `.env.production` (Workflow copies `PROD_ENV_FILE` content to this) | `.env.development` (Workflow copies `DEV_ENV_FILE` content to this) | `.env.branch-test` (Workflow copies `BRANCH_TEST_ENV_FILE` content to this)                               |
-| **VM Deployment Directory (`env.DEPLOY_DIR`)**       | `./deployment/whoknows/`                                            | `./deployment/whoknows-dev/`                                        | `./deployment/whoknows-branch-test/`                                                                      |
+| **VM Deployment Directory (`env.DEPLOY_DIR`)**       | `./deployment/whoknows/`                                            | `./deployment/whoknows-dev/`                                        | `./deployment/whoknows-test/`                                                                             |
 | **`COMPOSE_PROJECT_NAME` (in respective .env file)** | `whoknows_prod`                                                     | `whoknows_dev`                                                      | `whoknows_test`                                                                                           |
 | **Docker Image Tagging (by Workflow)**               | `img_base/svc:prod-<sha>` <br/> `img_base/svc:prod-latest`          | `img_base/svc:dev-<sha>` <br/> `img_base/svc:dev-latest`            | `img_base/svc:test-${branch_slug}-<sha>` <br/> `img_base/svc:test-${branch_slug}-latest`                  |
 | **`HOST_PORT_FRONTEND` (in respective .env file)**   | `8080` (Internal, Nginx proxies from 80/443)                        | `8081`                                                              | `8082`                                                                                                    |
@@ -45,7 +45,7 @@ The 'Internal Workflow Differentiation for `cd.branch-test.yml`' section further
 To ensure the `branch-test` pipeline doesn't interfere with the development environment (or production), it differentiates itself as follows:
 
 1.  **Dedicated VM Deployment Directory:**
-    *   The workflow's `env.DEPLOY_DIR` variable will be set to a unique path for branch testing, e.g., `~/deployment/whoknows-branch-test/`. All files (`docker-compose.yml`, `.env`, `VERSION`) will be copied here.
+    *   The workflow's `env.DEPLOY_DIR` variable will be set to a unique path for branch testing, e.g., `~/deployment/whoknows-test/`. All files (`docker-compose.yml`, `.env`, `VERSION`) will be copied here.
 
 2.  **Separate Environment Configuration (`.env.branch-test` from `secrets.BRANCH_TEST_ENV_FILE`):**
     *   A new GitHub Secret `BRANCH_TEST_ENV_FILE` will store the content for the test environment.
@@ -59,7 +59,7 @@ To ensure the `branch-test` pipeline doesn't interfere with the development envi
 
 3.  **Docker Image Naming Suffix (via Workflow Logic):**
     *   The workflow will dynamically generate a `branch_slug` from the Git branch name (e.g., `feature/login-ux` becomes `feature-login-ux`).
-    *   Image tags will be constructed like: `your_registry/your_repo/backend:test-${branch_slug}-${{ github.sha }}` and `your_registry/your_repo/backend:test-${branch_slug}-latest`.
+    *   Image tags will be constructed like: `your_registry/your_repo/backend-test:{{ github.sha }}` and `your_registry/your_repo/backend-test:${branch_slug}-latest`.
 
 4.  **Docker Compose File Selection (`docker-compose.branch-test.yml` or adapted `docker-compose.dev.yml`):
     *   Ideally, create a `docker-compose.branch-test.yml` if specific service adjustments are needed for testing beyond what `.env` can control.
