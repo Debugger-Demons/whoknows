@@ -29,6 +29,7 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
 	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend \
 	pr-update-env
+	restart-compose
 
 # === Compose Management ===
 
@@ -190,6 +191,7 @@ help:
 	@echo "---- Compose Management ----"
 	@echo ""
 	@echo "  make run-compose         - Run the compose"
+	@echo "  make restart-compose     - Restart the compose"
 	@echo "  make stop-compose        - Stop the compose"
 	@echo "  make clean-compose       - Clean the compose"
 	@echo ""
