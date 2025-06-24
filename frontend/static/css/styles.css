@@ -8,6 +8,8 @@ body {
 
 div.page div.body {
   padding: 10px;
+  background-color: #198a7d;
+  color: #fff;
 }
 
 div.page div.footer {
