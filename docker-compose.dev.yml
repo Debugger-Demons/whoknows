@@ -1,7 +1,7 @@
 # docker-compose.dev.yml
 services:
   backend:
-    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_backend_dev
+    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_backend
     image: ${IMAGE_TAG_BACKEND}
     build:
       context: ./backend
@@ -26,7 +26,7 @@ services:
       - app-network
 
   frontend:
-    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_frontend_dev
+    container_name: ${COMPOSE_PROJECT_NAME:-mywebapp}_frontend
     image: ${IMAGE_TAG_FRONTEND}
     build:
       context: ./frontend
@@ -48,9 +48,9 @@ services:
 
 volumes:
   db_data:
-    name: ${COMPOSE_PROJECT_NAME}_db_data_dev
+    name: ${COMPOSE_PROJECT_NAME}_db_data
 
 networks:
   app-network:
-    name: ${COMPOSE_PROJECT_NAME}_network_dev
+    name: ${COMPOSE_PROJECT_NAME}_network
     driver: bridge
