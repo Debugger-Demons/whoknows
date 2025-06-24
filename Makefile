@@ -1,5 +1,16 @@
 # Makefile for updating environment secrets, creating issues, and pull requests
 
+# check os, set separator ( ; or &&)
+ifeq ($(OS),Windows_NT)
+	SHELL := powershell.exe
+	SEPARATOR := ;
+	CLEAR_COMMAND := cls
+else
+	# Default SHELL (e.g., /bin/sh) handles ';' as separator
+	SEPARATOR := ;
+	CLEAR_COMMAND := clear
+endif
+
 # === Configuration ===
 # Define fixed parameters for easy modification
 GH_REPO := Debugger-Demons/whoknows
@@ -20,10 +31,15 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 	pr-update-env
 
 # === Compose Management ===
+
+restart-compose:
+	@echo "Restarting compose..."
+	$(CLEAR_COMMAND)$(SEPARATOR) $(MAKE) clean-compose$(SEPARATOR) $(MAKE) run-compose
+
 run-compose: 
 	@echo "Running compose..."
 	python ./scripts/check_env.py
-	docker compose up -d
+	docker compose up -d --build
 
 # === Compose without cache === 
 
