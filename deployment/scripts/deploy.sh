@@ -45,6 +45,8 @@ load_env_vars() {
   : "${IMAGE_TAG_BACKEND:?FATAL: IMAGE_TAG_BACKEND not set in .env}"
   : "${IMAGE_TAG_FRONTEND:?FATAL: IMAGE_TAG_FRONTEND not set in .env}"
   : "${HOST_PORT_FRONTEND:?FATAL: HOST_PORT_FRONTEND not set in .env}"
+  : "${SERVICE_BACKEND:=backend}"
+  : "${SERVICE_FRONTEND:=frontend}"
 }
 
 # --- Function: prepare_rollback --- ##
@@ -52,8 +54,8 @@ load_env_vars() {
 prepare_rollback() {
   log_message "Preparing for potential rollback by identifying current running images..."
   # Assuming service names in docker-compose.yml are 'backend' and 'frontend'
-  local backend_service_name="backend"
-  local frontend_service_name="frontend"
+  local backend_service_name="${SERVICE_BACKEND}"
+  local frontend_service_name="${SERVICE_FRONTEND}"
   local current_backend_image=""
   local current_frontend_image=""
 
@@ -188,8 +190,8 @@ handle_rollback() {
 log_success_confirmation() {
   log_message "Deployment successful!"
   # Assuming service names in docker-compose.yml are 'backend' and 'frontend'
-  local backend_service_name="backend"
-  local frontend_service_name="frontend"
+  local backend_service_name="${SERVICE_BACKEND}"
+  local frontend_service_name="${SERVICE_FRONTEND}"
   local final_backend_image="Not running or not found"
   local final_frontend_image="Not running or not found"
 
