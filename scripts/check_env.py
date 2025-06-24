@@ -2,10 +2,10 @@
 import os
 import sys
 
-ENV_FILE_PATH = ".env"
+ENV_FILE_PATH = ".env.local"
 REQUIRED_FILES = [
             "./database/whoknows.db",
-            ".env"
+            ".env.local"
 ]
 
 def check_env():
