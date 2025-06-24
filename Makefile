@@ -82,20 +82,19 @@ env-update:
 
 # === Pull Request Creation ===
 
-pr-create-core:
+pr:
 	@echo "Creating pull request..."
-	@gh pr create \\
-	-a $(PR_ASSIGNEE) \\
-	-p "$(GH_PROJECT)" \\
+	@gh pr create \
+	-a $(PR_ASSIGNEE) \
+	-p "$(GH_PROJECT)" \
 	-T PULL_REQUEST_TEMPLATE.md
 	@gh pr view --web
 	@echo "Pull request created successfully!"
 
 # Create a pull request with the updated env secrets
 # -> This assumes you have a branch already created for the changes
-pr: pr-create-core
 
-pr-update-env: env-update pr-create-core
+pr-update-env: env-update pr
 
 # === GitHub Issue Creation ===
 
