@@ -5,6 +5,7 @@
 GH_REPO := Debugger-Demons/whoknows
 GH_PROJECT := whoknows-kanban
 GH_ASSIGNEE := @me
+PR_ASSIGNEE := $(shell gh api user --jq .login)
 ISSUE_TITLE_PREFIX := "[DEV]: "
 
 # Allow shorthands for issue creation: t for TITLE_DESC, f for BODY_FILE
@@ -13,9 +14,10 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 
 # === Phony Targets ===
 # Declare targets that don't represent files
-.PHONY: help update-env-secrets update-env-vars pr-create i-create \
+.PHONY: help env-update pr i-create \
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
-	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend
+	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend \
+	pr-update-env
 
 # === Compose Management ===
 run-compose: 
@@ -73,18 +75,28 @@ build-backend:
 
 env-update:
 	@echo "Updating prod and dev .env secrets..."
-	@gh secret set PROD_ENV_FILE < .env.production
+	@gh secret set PROD_ENV_FILE < .env
 	@gh secret set DEV_ENV_FILE < .env.development
+	@gh secret set BRANCH_TEST_ENV_FILE < .env.branch-test
 	@echo "Secrets updated successfully!"
 
 # === Pull Request Creation ===
 
+pr-create-core:
+	@echo "Creating pull request..."
+	@gh pr create \\
+	-a $(PR_ASSIGNEE) \\
+	-p "$(GH_PROJECT)" \\
+	-T PULL_REQUEST_TEMPLATE.md
+	@gh pr view --web
+	@echo "Pull request created successfully!"
+
 # Create a pull request with the updated env secrets
 # -> This assumes you have a branch already created for the changes
-pr-create: env-update
-	@echo "Creating pull request..."
-	@gh pr create
-	@echo "Pull request created successfully!"
+pr: pr-create-core
+
+pr-update-env: env-update pr-create-core
+
 # === GitHub Issue Creation ===
 
 # --- Main Issue Creation Target ---
@@ -180,7 +192,8 @@ help:
 	@echo ""
 	@echo "---- Environment & PR Management ----"
 	@echo ""
-	@echo "  make pr-create           "
+	@echo "  make pr                  - Creates a pull request"
+	@echo "  make pr-update-env       - Updates PROD_ENV_FILE & DEV_ENV_FILE secrets"
 	@echo ""
 	@echo "  make env-update  		-- Updates PROD_ENV_FILE & DEV_ENV_FILE secrets"
 	@echo ""

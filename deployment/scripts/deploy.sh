@@ -12,9 +12,9 @@ set -e -u -o pipefail
 
 # === Configuration === ##
 # --------------------- ##
-HEALTH_CHECK_MAX_RETRIES=30       # How many times to check health
-HEALTH_CHECK_RETRY_INTERVAL=3     # Seconds to wait between health checks
-ROLLBACK_STABILITY_WAIT=5         # Seconds to wait after rollback before checking health
+HEALTH_CHECK_MAX_RETRIES=30   # How many times to check health
+HEALTH_CHECK_RETRY_INTERVAL=3 # Seconds to wait between health checks
+ROLLBACK_STABILITY_WAIT=5     # Seconds to wait after rollback before checking health
 
 # === Function Definitions === ##
 # ---------------------------- ##
@@ -30,8 +30,8 @@ log_message() {
 load_env_vars() {
   log_message "Loading environment variables from .env file..."
   if [ ! -f .env ]; then
-      log_message "FATAL: .env file not found!"
-      exit 1
+    log_message "FATAL: .env file not found!"
+    exit 1
   fi
   # Use set -a/+a to export variables temporarily, primarily for visibility
   # Using --env-file in docker compose commands is the preferred way.
@@ -45,39 +45,53 @@ load_env_vars() {
   : "${IMAGE_TAG_BACKEND:?FATAL: IMAGE_TAG_BACKEND not set in .env}"
   : "${IMAGE_TAG_FRONTEND:?FATAL: IMAGE_TAG_FRONTEND not set in .env}"
   : "${HOST_PORT_FRONTEND:?FATAL: HOST_PORT_FRONTEND not set in .env}"
+  : "${SERVICE_BACKEND:=backend}"
+  : "${SERVICE_FRONTEND:=frontend}"
 }
 
 # --- Function: prepare_rollback --- ##
 # Identifies currently running images for this project and saves them to .env.rollback.
 prepare_rollback() {
   log_message "Preparing for potential rollback by identifying current running images..."
-  local backend_container_name="${COMPOSE_PROJECT_NAME}_backend_dev"
-  local frontend_container_name="${COMPOSE_PROJECT_NAME}_frontend_dev"
+  # Assuming service names in docker-compose.yml are 'backend' and 'frontend'
+  local backend_service_name="${SERVICE_BACKEND}"
+  local frontend_service_name="${SERVICE_FRONTEND}"
   local current_backend_image=""
   local current_frontend_image=""
 
-  current_backend_image=$(docker inspect --format='{{.Config.Image}}' "${backend_container_name}" 2>/dev/null || echo "")
-  current_frontend_image=$(docker inspect --format='{{.Config.Image}}' "${frontend_container_name}" 2>/dev/null || echo "")
+  # Get container ID for backend service
+  local backend_container_id
+  backend_container_id=$(docker compose --env-file .env ps -q "${backend_service_name}" 2>/dev/null || echo "")
+  if [[ -n "$backend_container_id" ]]; then
+    current_backend_image=$(docker inspect --format='{{.Config.Image}}' "${backend_container_id}" 2>/dev/null || echo "")
+  fi
+
+  # Get container ID for frontend service
+  local frontend_container_id
+  frontend_container_id=$(docker compose --env-file .env ps -q "${frontend_service_name}" 2>/dev/null || echo "")
+  if [[ -n "$frontend_container_id" ]]; then
+    current_frontend_image=$(docker inspect --format='{{.Config.Image}}' "${frontend_container_id}" 2>/dev/null || echo "")
+  fi
 
   # Create or clear the rollback file
   rm -f .env.rollback
 
   if [[ -n "$current_backend_image" ]]; then
-    echo "IMAGE_TAG_BACKEND=${current_backend_image}" > .env.rollback
+    echo "IMAGE_TAG_BACKEND=${current_backend_image}" >.env.rollback
     log_message "  - Saving current backend image for rollback: ${current_backend_image}"
   else
-    log_message "  - No running backend container found for project ${COMPOSE_PROJECT_NAME}. Will not include in rollback."
+    log_message "  - No running backend container found for service '${backend_service_name}' in project ${COMPOSE_PROJECT_NAME}. Will not include in rollback."
   fi
 
   if [[ -n "$current_frontend_image" ]]; then
-    echo "IMAGE_TAG_FRONTEND=${current_frontend_image}" >> .env.rollback
+    echo "IMAGE_TAG_FRONTEND=${current_frontend_image}" >>.env.rollback
     log_message "  - Saving current frontend image for rollback: ${current_frontend_image}"
   else
-     log_message "  - No running frontend container found for project ${COMPOSE_PROJECT_NAME}. Will not include in rollback."
+    log_message "  - No running frontend container found for service '${frontend_service_name}' in project ${COMPOSE_PROJECT_NAME}. Will not include in rollback."
   fi
 
-  if [ ! -f .env.rollback ]; then
-     log_message "  - Warning: No running containers found for this project. Rollback will not be possible."
+  if [ ! -f .env.rollback ] || ([ -z "$current_backend_image" ] && [ -z "$current_frontend_image" ]); then
+    log_message "  - Warning: No running containers found for this project, or failed to get their image. Rollback may not be possible or complete."
   fi
 }
 
@@ -152,8 +166,8 @@ handle_rollback() {
   source .env.rollback
   set +a
   if ! docker compose --env-file .env.rollback up -d --force-recreate --remove-orphans; then
-      log_message "FATAL: Rollback command (docker-compose up) itself failed! Manual intervention likely required."
-      exit 1
+    log_message "FATAL: Rollback command (docker-compose up) itself failed! Manual intervention likely required."
+    exit 1
   fi
 
   # Optional: Brief health check for the rollback itself
@@ -161,9 +175,9 @@ handle_rollback() {
   sleep "$ROLLBACK_STABILITY_WAIT"
   local health_endpoint="http://localhost:${HOST_PORT_FRONTEND}/api/health" # Re-evaluate endpoint based on potentially different rollback port? Assume same for now.
   if curl -s -f -L -o /dev/null "${health_endpoint}"; then
-      log_message "Rollback appears successful. System is running previous version."
+    log_message "Rollback appears successful. System is running previous version."
   else
-      log_message "WARNING: Rollback command executed, but health check on rolled-back version failed. Manual inspection needed."
+    log_message "WARNING: Rollback command executed, but health check on rolled-back version failed. Manual inspection needed."
   fi
 
   # Exit with a non-zero code to signal deployment failure to the CI/CD system
@@ -174,18 +188,30 @@ handle_rollback() {
 # --- Function: log_success_confirmation --- ##
 # Logs the final running image versions after a successful deployment.
 log_success_confirmation() {
-    log_message "Deployment successful!"
-    local backend_container_name="${COMPOSE_PROJECT_NAME}_backend_dev"
-    local frontend_container_name="${COMPOSE_PROJECT_NAME}_frontend_dev"
-    local final_backend_image=""
-    local final_frontend_image=""
+  log_message "Deployment successful!"
+  # Assuming service names in docker-compose.yml are 'backend' and 'frontend'
+  local backend_service_name="${SERVICE_BACKEND}"
+  local frontend_service_name="${SERVICE_FRONTEND}"
+  local final_backend_image="Not running or not found"
+  local final_frontend_image="Not running or not found"
 
-    final_backend_image=$(docker inspect --format='{{.Config.Image}}' "${backend_container_name}" 2>/dev/null || echo "Not running")
-    final_frontend_image=$(docker inspect --format='{{.Config.Image}}' "${frontend_container_name}" 2>/dev/null || echo "Not running")
+  # Get container ID for backend service
+  local backend_container_id
+  backend_container_id=$(docker compose --env-file .env ps -q "${backend_service_name}" 2>/dev/null || echo "")
+  if [[ -n "$backend_container_id" ]]; then
+    final_backend_image=$(docker inspect --format='{{.Config.Image}}' "${backend_container_id}" 2>/dev/null || echo "Error inspecting backend")
+  fi
 
-    log_message "Final running images:"
-    log_message "  - Backend : ${final_backend_image}"
-    log_message "  - Frontend: ${final_frontend_image}"
+  # Get container ID for frontend service
+  local frontend_container_id
+  frontend_container_id=$(docker compose --env-file .env ps -q "${frontend_service_name}" 2>/dev/null || echo "")
+  if [[ -n "$frontend_container_id" ]]; then
+    final_frontend_image=$(docker inspect --format='{{.Config.Image}}' "${frontend_container_id}" 2>/dev/null || echo "Error inspecting frontend")
+  fi
+
+  log_message "Final running images:"
+  log_message "  - Backend (${backend_service_name}): ${final_backend_image}"
+  log_message "  - Frontend (${frontend_service_name}): ${final_frontend_image}"
 }
 
 # --- Function: cleanup_docker_images --- ##
@@ -205,10 +231,10 @@ cleanup_docker_images() {
   # IMPORTANT: This command is SAFE regarding running containers. It will NOT remove
   #            images used by ANY running container.
   if ! docker image prune -af; then
-      # Log a warning, but don't fail the deployment just because prune failed
-      log_message "Warning: 'docker image prune -af' command failed. Continuing deployment."
+    # Log a warning, but don't fail the deployment just because prune failed
+    log_message "Warning: 'docker image prune -af' command failed. Continuing deployment."
   else
-      log_message "General image pruning completed."
+    log_message "General image pruning completed."
   fi
 }
 
