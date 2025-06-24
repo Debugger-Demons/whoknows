@@ -55,12 +55,12 @@ stop-compose:
 
 clean-compose:
 	@echo "Cleaning compose..."
-	docker stop whoknows.local.backend 
-	docker stop whoknows.local.frontend
-	docker rm whoknows.local.backend
-	docker rm whoknows.local.frontend
-	docker rmi whoknows.local.backend
-	docker rmi whoknows.local.frontend
+	docker stop whoknows.local.backend  || true  
+	docker stop whoknows.local.frontend || true  
+	docker rm   whoknows.local.backend  || true  
+	docker rm   whoknows.local.frontend || true  
+	docker rmi  whoknows.local.backend  || true  
+	docker rmi  whoknows.local.frontend || true 
 	@echo "Compose cleaned up!"
 
 # === Frontend Docker ===
