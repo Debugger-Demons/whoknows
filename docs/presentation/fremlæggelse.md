@@ -49,3 +49,13 @@ The purpose is to demonstrate, and make DeepSource changes to our code.
 
 - Make changes in the frontend, where you change the color for example to something false.
 - Make a pr where you show changes in deepsource
+
+## Coderabbit præsentation
+
+Lav et par ændringer. Det kan være i .md filer for dokumentation. Tilføje ændringer i rust filen med kommentarer. Juster frontenden.
+Disse ændringer skal have 3 commits
+
+- Lav pr ved hjælp af gh cli hvor vi anvender vores template
+- Efter Pr'en er created venter vi på coderabbit præsentation.
+- I mellemtiden så vis hvordan commits ser ud originalt. Det kan være besværligt at skulle læse alle commit historiks. Selvom der kun er 3, så kan det godt hobe sig op og blive for meget.
+- Vise coderabbit opsummer vores ændringer med hvad vi har lavet, hvor den beskriver dem dybdegående.
