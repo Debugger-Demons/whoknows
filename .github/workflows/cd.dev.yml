@@ -196,7 +196,7 @@ jobs:
           SERVER_DEST_BASE="${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.DEPLOY_DIR }}"
 
           # mkdir
-          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}-dev" 
+          ${{ env.SSH_CMD }} "mkdir -p ${{ env.DEPLOY_DIR }}" 
 
           # scp directly to final names
           ${{ env.SCP_CMD }} ${{ env.DOCKER_COMPOSE_FILE }} ${SERVER_DEST_BASE}/docker-compose.yml
