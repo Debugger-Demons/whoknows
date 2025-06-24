@@ -3,6 +3,8 @@
 Demonstrere hvordan vi har gjort udvikling processen nemmere for software udvikleren.
 Målet har været at udvikleren kun skal pushe til GitHub uden at være nervøs for breaking changes.
 
+Måske illustrere vores monitor?
+
 ## Local presentation
 
 - Run make script
