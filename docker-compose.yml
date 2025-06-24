@@ -2,7 +2,7 @@ services:
   backend:
     container_name: whoknows.local.backend
     env_file:
-      - .env
+      - .env.local
     image: ${IMAGE_TAG_BACKEND_LOCAL}
     build:
       context: ./backend
