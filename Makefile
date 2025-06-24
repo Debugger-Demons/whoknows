@@ -2,7 +2,6 @@
 
 # check os, set separator ( ; or &&)
 ifeq ($(OS),Windows_NT)
-	SHELL := powershell.exe
 	SEPARATOR := ;
 	CLEAR_COMMAND := cls
 else
