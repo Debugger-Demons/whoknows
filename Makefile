@@ -38,12 +38,14 @@ stop-compose:
 
 clean-compose:
 	@echo "Cleaning compose..."
-	docker stop whoknows.local.backend 
-	docker stop whoknows.local.frontend
-	docker rm whoknows.local.backend
-	docker rm whoknows.local.frontend
-	docker rmi whoknows.local.backend
-	docker rmi whoknows.local.frontend
+	# Stop and remove containers (ignore errors if not running)
+	-docker stop whoknows.local.backend whoknows.local.frontend
+	-docker rm whoknows.local.backend whoknows.local.frontend
+
+	# Remove Docker images by actual repo names and tags
+	-docker rmi whoknows-backend:latest || true
+	-docker rmi whoknows-frontend:latest || true
+
 	@echo "Compose cleaned up!"
 
 # === Frontend Docker ===
