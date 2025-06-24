@@ -204,7 +204,7 @@ jobs:
           ${{ env.SCP_CMD }} ${{ env.DOCKER_LOGIN_SCRIPT }} ${SERVER_DEST_BASE}/docker-login.sh
 
               # dir: 
-                # ~/deployment/whoknows/
+                # ~/deployment/whoknows-dev/
                   # ├── docker-compose.yml
                   # ├── .env
                   # ├── VERSION
