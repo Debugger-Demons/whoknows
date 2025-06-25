@@ -27,14 +27,15 @@ BODY_FILE  := $(if $(f),$(f),$(BODY_FILE))
 .PHONY: help env-update pr i-create \
 	i-create-enhancement i-create-bug i-create-dependencies i-create-documentation \
 	run-frontend stop-frontend build-frontend run-backend stop-backend build-backend \
-	pr-update-env
-	restart-compose
+	pr-update-env restart-compose clean-compose run-compose
 
 # === Compose Management ===
 
 restart-compose:
 	@echo "Restarting compose..."
-	$(CLEAR_COMMAND)$(SEPARATOR) $(MAKE) clean-compose$(SEPARATOR) $(MAKE) run-compose
+	@$(CLEAR_COMMAND)
+	@$(MAKE) clean-compose
+	@$(MAKE) run-compose
 
 run-compose: 
 	@echo "Running compose..."
